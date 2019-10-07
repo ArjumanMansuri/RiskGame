@@ -16,7 +16,7 @@ public class GameLaunch extends java.awt.Frame{
     private FileDialog fileSelectDialog;
  
     public GameLaunch() {
-        super("RISK Game");
+        super("RISK GAME");
         initMenuComponents();
         jButton1.setEnabled(true);
         setLocationRelativeTo(null);
@@ -33,8 +33,8 @@ public class GameLaunch extends java.awt.Frame{
     private void initMenuComponents() {
         jPanel1 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(1, 1, 1));
