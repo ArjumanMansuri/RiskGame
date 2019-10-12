@@ -6,6 +6,7 @@ import java.awt.FileDialog;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.Scanner;
 
 public class GameLaunch extends java.awt.Frame{
 	private javax.swing.JButton jButton1;
@@ -23,11 +24,20 @@ public class GameLaunch extends java.awt.Frame{
     }
    
     public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
+    	java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new GameLaunch().setVisible(true);
+                Scanner sc = new Scanner(System.in);
+                String st = sc.nextLine();
+                System.out.println("Hi "+st);
+                System.out.println(sc.nextLine());
             }
         });
+    	java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new GameLaunch().setVisible(true);
+                }
+        });
+        
     }
     
     private void initMenuComponents() {
@@ -54,7 +64,7 @@ public class GameLaunch extends java.awt.Frame{
         jButton1.setName("jButton1");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-        
+            	
             }
         });
         

@@ -13,8 +13,13 @@ public class Game {
 	 * @param map Refers to the map used for the game play
 	 * @param playersList Refers to the all the players of a particular game
 	 */
-	Map map;
-	HashMap<Integer,Player> playersList;
+	private Map map;
+	private HashMap<Integer,Player> playersList;
+
+	public Game() {
+		playersList = new HashMap<Integer, Player>();
+		map = new Map();
+	}
 
 	public Map getMap() {
 		return map;
