@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 import models.Continent;
 import models.Map;
-import models.Country;;
+import models.Country;
 
 /**
  * Controller to read Map file.
@@ -33,13 +33,13 @@ public class MapFileParser {
 	 * Reads the map file data and create Map object.  	
 	 * @return map - Map object containing territories and continents
 	 */
-	public Map readFileData(){
+	public Map readFileData(String fileName){
 		Map map = new Map();
 		HashMap<String, Continent> continents = new HashMap<String, Continent>();
 		 		
 		try {
 			boolean territoryLineFound = false,continentsLineFound = false;
-			BufferedReader readMap = new BufferedReader(new FileReader(MAP_FILE_NAME));			
+			BufferedReader readMap = new BufferedReader(new FileReader(fileName));			
 			while(readMap.ready()) {
 				String line = readMap.readLine().trim();
 				
