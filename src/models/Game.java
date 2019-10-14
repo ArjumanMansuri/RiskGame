@@ -13,8 +13,8 @@ public class Game {
 	 * @param map Refers to the map used for the game play
 	 * @param playersList Refers to the all the players of a particular game
 	 */
-	private Map map;
-	private HashMap<Integer,Player> playersList;
+	private static Map map;
+	private static HashMap<Integer,Player> playersList;
 
 	public Game() {
 		playersList = new HashMap<Integer, Player>();
@@ -29,11 +29,11 @@ public class Game {
 		this.map = map;
 	}
 
-	public HashMap<Integer, Player> getPlayersList() {
+	public static HashMap<Integer, Player> getPlayersList() {
 		return playersList;
 	}
 
-	public void setPlayersList(HashMap<Integer, Player> playersList) {
-		this.playersList = playersList;
+	public static void setPlayersList(HashMap<Integer, Player> playersList) {
+		playersList = playersList;
 	}
 }

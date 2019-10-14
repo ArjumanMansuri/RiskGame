@@ -14,7 +14,7 @@ public class FortificationPhase {
 	 * @param toCountry
 	 * @param num
 	 */
-	public String fortify(String fromCountry,String toCountry,int num) {
+	public String fortify(int player,String command) {
 		// proceed only if the countries are adjacent countries
 		// return true only if the fromCountry is left with one army after the move
 		return "";

@@ -1,128 +1,118 @@
 package view;
-import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
-import java.awt.FileDialog;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.util.Scanner;
 
-public class GameLaunch extends java.awt.Frame{
-	private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JPanel jPanel1;
-    private FileDialog fileSelectDialog;
- 
-    public GameLaunch() {
-        super("RISK GAME");
-        initMenuComponents();
-        jButton1.setEnabled(true);
-        setLocationRelativeTo(null);
-    }
-   
-    public static void main(String args[]) {
-    	java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                Scanner sc = new Scanner(System.in);
-                String st = sc.nextLine();
-                System.out.println("Hi "+st);
-                System.out.println(sc.nextLine());
-            }
-        });
-    	java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new GameLaunch().setVisible(true);
-                }
-        });
-        
-    }
-    
-    private void initMenuComponents() {
-        jPanel1 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
+import controller.FortificationPhase;
+import controller.ReinforcementPhase;
+import controller.StartUpPhase;
+import models.Game;
 
-        setBackground(new java.awt.Color(1, 1, 1));
-        addWindowListener(new java.awt.event.WindowAdapter() {
+public class GameLaunch {
 
-            //Method to terminate and close the program window.
-            public void windowClosing(java.awt.event.WindowEvent evt) {
-                System.exit(0);
-            }
-        });
+	public static void main(String[] args) {
 
-        jPanel1.setBackground(new java.awt.Color(1, 1, 1));
-        jPanel1.setName("jPanel1");
+		int optionMain;
+		String noOfPlayers;
+		do {
 
-        //On click the button starts game in single mode.
-        jButton1.setText("Play Game");
-        jButton1.setName("jButton1");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-            	
-            }
-        });
-        
-      //On click the button starts game in riskModels.tournament mode.
-        jButton2.setText("Select Map");
-        jButton2.setName("jButton2");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-               
-            }
-        });
+			System.out.println("Welcome to the Game");
+			System.out.println("Select from the following options:");
+			System.out.println("1.Play Game");
+			System.out.println("2.Edit Map");
+			System.out.println("3.Exit");
 
-        //On click the button terminates the game.
-        jButton3.setText("Exit");
-        jButton3.setName("jButton6");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                System.exit(0);
-            }
-        });
-      
-        jLabel1.setName("jLabel1");
-        //set the layout of the panel with all the components added
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        //set the horizontal group for the panel layout
-        jPanel1Layout.setHorizontalGroup
-                (
-                        jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addContainerGap()
-                                        .addComponent(jLabel1)
-                                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                        .addGap(60, 60, 60)
-                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                                                .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 102, Short.MAX_VALUE)
-                                                .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 102, Short.MAX_VALUE)
-                                                .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 102, Short.MAX_VALUE)
-                                        .addGap(55, 55, 55))
-                ));
-        //set the vertical group for the panel layout
-        jPanel1Layout.setVerticalGroup
-                (
-                        jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addContainerGap()
-                                        .addComponent(jLabel1)
-                                        .addGap(15, 15, 15)
-                                        .addComponent(jButton1)
-                                        .addGap(12, 12, 12)
-                                        .addComponent(jButton2)
-                                        .addGap(15, 15, 15)
-                                        .addComponent(jButton3)
-                                        .addGap(18, 18, 18)
-                ));
-        add(jPanel1, java.awt.BorderLayout.CENTER);
-        pack();
-    }
+			Scanner sc = new Scanner(System.in);
+			optionMain = Integer.parseInt(sc.nextLine());
+
+			switch(optionMain) {
+			case 1:
+				System.out.println("Enter number of players ranging from 2 to 6:");
+				noOfPlayers = sc.nextLine().trim();
+
+				String response ;
+				StartUpPhase startUpPhase = new StartUpPhase();
+				startUpPhase.parser(noOfPlayers);
+				// choose map phase
+				System.out.println("Choose Map :");
+				// List the map files to choose from from the maps folder in the project
+				do {
+					System.out.println("To load a map, use loadmap 'filename'.");
+					String input = sc.nextLine();
+					response = startUpPhase.parser(input);
+					if(response.equals("error")) {
+						System.out.println("Incorrect command format.");
+					}
+				}while(!response.equals("exit"));
+
+				// add Player phase
+				do {
+					System.out.println("Enter gameplayer -add playername -remove playername");
+					String input = sc.nextLine();
+					response = startUpPhase.parser(input);
+					if(response.equals("error")) {
+						System.out.println("Incorrect command format.");
+					}
+				}while(!response.equals("exit"));
+
+				// Show what countries belong to which player
+
+				// Army assignment starts
+				System.out.println("Army assignment starts");
+				while(!response.equals("done")) {
+					for(int i=1;i<=Integer.parseInt(noOfPlayers);i++) {
+						System.out.println("Player : "+Game.getPlayersList().get(i).getPlayerName());
+						System.out.println("Selct your option");
+						System.out.println("1.Place armies individually");
+						System.out.println("2.Place All");
+						int armyOption = Integer.parseInt(sc.nextLine());
+						if(armyOption==1) {
+							if(Game.getPlayersList().get(i).getPlayerNumOfArmy()!=0) {
+								System.out.println("Enter command as : placearmy 'countryname'");
+								response = startUpPhase.placeArmy(i, sc.nextLine().toString());
+							}
+							else {
+								continue;
+							}
+						}
+						else {
+							if(Game.getPlayersList().get(i).getPlayerNumOfArmy()!=0) {
+								response = startUpPhase.placeAll(i);
+							}
+						}
+					}
+				}
+
+				System.out.println("Initial army assignment is done");
+
+				// reinforcement phase starts
+				
+				ReinforcementPhase rp = new ReinforcementPhase();
+				FortificationPhase fp = new FortificationPhase();
+				
+				for(int i=1;i<=Integer.parseInt(noOfPlayers);i++) {
+					System.out.println("Player : "+Game.getPlayersList().get(i).getPlayerName());
+					System.out.println("Reinforcement phase starts");
+					while(Game.getPlayersList().get(i).getPlayerNumOfArmy()!=0) {
+							System.out.println("Use command : reinforce 'countryname' 'num'");
+							System.out.println("Player : "+Game.getPlayersList().get(i).getPlayerName());
+							rp.reinforce(i,sc.nextLine());
+				}
+				
+				// fortification phase starts
+				System.out.println("Fortification phase starts");
+					
+				System.out.println("Use command : fortify 'fromcountry' 'tocountry' 'num'");
+				System.out.println("Or use command : fortify none");
+				System.out.println("Player : "+Game.getPlayersList().get(i).getPlayerName());
+
+				if(Game.getPlayersList().get(i).getPlayerNumOfArmy()!=0) {
+					response = fp.fortify(i,sc.nextLine());
+				}
+				
+				System.out.println("Player "+i+"'s turn ends");
+			}
+		}
+		}while(optionMain!=3);
+	}
 
 }
