@@ -13,7 +13,7 @@ public class Player {
     private int playerNumOfArmy;
     private Map<String, Continent> playerContinent;
 
-    Player(){
+    public Player(){
         playerContinent = new HashMap<String, Continent>();
     }
 
