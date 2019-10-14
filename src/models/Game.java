@@ -21,12 +21,12 @@ public class Game {
 		map = new Map();
 	}
 
-	public Map getMap() {
+	public static Map getMap() {
 		return map;
 	}
 
-	public void setMap(Map map) {
-		this.map = map;
+	public static void setMap(Map map) {
+		map = map;
 	}
 
 	public static HashMap<Integer, Player> getPlayersList() {

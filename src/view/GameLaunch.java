@@ -99,18 +99,25 @@ public class GameLaunch {
 							System.out.println("Player : "+Game.getPlayersList().get(i).getPlayerName());
 							rp.reinforce(i,sc.nextLine());
 				}
+				System.out.println("Attack Phase for now is skipped.");
 				
 				// fortification phase starts
 				System.out.println("Fortification phase starts");
-					
-				System.out.println("Use command : fortify 'fromcountry' 'tocountry' 'num'");
-				System.out.println("Or use command : fortify none");
-				System.out.println("Player : "+Game.getPlayersList().get(i).getPlayerName());
-
-				if(Game.getPlayersList().get(i).getPlayerNumOfArmy()!=0) {
-					response = fp.fortify(i,sc.nextLine());
+				response = "";
+				do {
+				if(response.contains("Error")) {
+					System.out.println(response);
 				}
 				
+				System.out.println("Player : "+Game.getPlayersList().get(i).getPlayerName());
+				System.out.println("Use command : fortify 'fromcountry' 'tocountry' 'num'");
+				System.out.println("Or use command : fortify none");
+				
+				if(Game.getPlayersList().get(i).getPlayerNumOfArmy()!=0) {
+					response = fp.fortify(i,sc.nextLine().trim());
+				}
+				}
+				while(!response.equals("done"));
 				System.out.println("Player "+i+"'s turn ends");
 			}
 			break;
