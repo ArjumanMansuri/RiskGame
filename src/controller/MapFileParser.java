@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 import models.Continent;
 import models.Map;
-import models.Territory;
+import models.Country;;
 
 /**
  * Controller to read Map file.
@@ -75,12 +75,12 @@ public class MapFileParser {
 			    	if(continents.containsKey(territoryContinent) == false) { 
 			    		// Continent doesn't exist - throw invalid map error		    		
 			    	}else {
-			    		Territory currentTerritory = new Territory(); // create new territory for the continent 
-			    		currentTerritory.setTerritoryName(territoryLine[0]); 
-			    		currentTerritory.setNeighbours(convertToTerritories(territoryLine));			    		
+			    		Country currentCountry = new Country(); // create new territory for the continent 
+			    		currentCountry.setCountryName(territoryLine[0]); 
+			    		currentCountry.setNeighbours(convertToTerritories(territoryLine));			    		
 			    		
 			    		Continent continentToUpdate = continents.get(territoryContinent);
-			    		continentToUpdate.pushTerritory(currentTerritory);
+			    		continentToUpdate.pushTerritory(currentCountry);
 			    	}
 			    }			   
 			}	
@@ -103,13 +103,13 @@ public class MapFileParser {
 	 * @param territoryLine territory line from map file. 
 	 * @return territories List of territories.
 	 */
-	private ArrayList<Territory> convertToTerritories(String[] territoryLine) {
-		ArrayList<Territory> territories = new ArrayList<Territory>();		
+	private ArrayList<Country> convertToTerritories(String[] territoryLine) {
+		ArrayList<Country> countries = new ArrayList<Country>();		
 		for(int territoryLineIndex = 4;territoryLineIndex < territoryLine.length;territoryLineIndex++) {
-			Territory currentTerritory = new Territory();
-			currentTerritory.setTerritoryName(territoryLine[territoryLineIndex]);			
-			territories.add(currentTerritory);
+			Country currentTerritory = new Country();
+			currentTerritory.setCountryName(territoryLine[territoryLineIndex]);			
+			countries.add(currentTerritory);
 		}		
-		return territories;		
+		return countries;		
 	}	
 }
