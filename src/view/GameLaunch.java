@@ -2,6 +2,10 @@ package view;
 
 import java.util.Scanner;
 
+/**
+ * @author Mudra-PC
+ */
+
 import controller.FortificationPhase;
 import controller.MapFileEdit;
 import controller.ReinforcementPhase;

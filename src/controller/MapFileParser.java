@@ -18,7 +18,7 @@ import models.Territory;
  */
 public class MapFileParser {
 	
-	public static final String MAP_FILE_NAME = "Default.map";
+	public static final String MAP_FILE_NAME = "maps/World.map";
 	String fileData;
 
 	public String getFileData() {
@@ -42,6 +42,9 @@ public class MapFileParser {
 			BufferedReader readMap = new BufferedReader(new FileReader(MAP_FILE_NAME));			
 			while(readMap.ready()) {
 				String line = readMap.readLine().trim();
+				
+				System.out.println(line);
+				
 				if(line.isEmpty()) {
 					continue;
 				}
@@ -83,7 +86,7 @@ public class MapFileParser {
 			}	
 			
 			readMap.close();
-			map.setContinents(continents);
+			map.setContinents(continents);			
 			if(!map.getContinents().isEmpty()) {
 				return map;	
 			}			

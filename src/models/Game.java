@@ -5,6 +5,7 @@ import java.util.HashMap;
 /**
  * 
  * @author Arjuman Mansuri
+ * @author Mudra-PC
  * Model class for Game with map and playersList as its data members
  */
 public class Game {

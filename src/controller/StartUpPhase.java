@@ -3,6 +3,8 @@ package controller;
 import models.Player;
 import java.util.HashMap;
 
+import java.util.*;
+
 /**
  * This class controls the startup phase
  */
@@ -15,12 +17,11 @@ public class StartUpPhase {
 	}
 
 	public String parser(String input){
-		// if the command is loadmap, check the validity of the map before loading
-		
-		// if populatecountries, call corresponding method
 
 		//Check if input is empty or blank
-		if(input.isEmpty() || input.isEmpty()) return "error";
+		if(input.isEmpty() || input.trim().length()==0) {
+			return "error";
+		}
 
 		input = input.trim();
 
@@ -41,7 +42,7 @@ public class StartUpPhase {
 			return "final return";
 	}
 
-	public String gamePlayer(String thisInput){
+	String gamePlayer(String thisInput){
 
 		String[] parsedString = thisInput.split(" ");
 		int playerId=1,army[]={60,35,30,25,20};
@@ -80,7 +81,7 @@ public class StartUpPhase {
 	}
 
 	//input validator
-	public int inputValidator(String thisInput) throws ArrayIndexOutOfBoundsException{
+	int inputValidator(String thisInput) throws ArrayIndexOutOfBoundsException{
 		String[] parsedString = thisInput.split(" ");
 		try{
 			if(parsedString[0].equals("gameplayer")){
@@ -103,20 +104,23 @@ public class StartUpPhase {
 		}
 
 	}
-	public String placeArmy(int player,String command) {
-		return "";
-	}
-	
-	public String placeAll(int player) {
-		return "";
+
+	public static void main(String[] args){
+		Scanner sc = new Scanner(System.in);
+		StartUpPhase s = new StartUpPhase();
+		System.out.println(s.parser(sc.nextLine()));
+		System.out.println(s.parser(sc.nextLine()));
 	}
 
-	/*
-	 * public static void main(String[] args){ Scanner sc = new Scanner(System.in);
-	 * StartUpPhase s = new StartUpPhase();
-	 * System.out.println(s.parser(sc.nextLine()));
-	 * System.out.println(s.parser(sc.nextLine())); }
-	 */
+	public String placeArmy(int i, String string) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String placeAll(int i) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
 
 

@@ -5,6 +5,7 @@ import java.util.Map;
 
 /**
  * This class contains the data members for the player
+ * @author Mudra-PC
  */
 
 public class Player {
