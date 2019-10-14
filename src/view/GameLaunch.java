@@ -3,6 +3,7 @@ package view;
 import java.util.Scanner;
 
 import controller.FortificationPhase;
+import controller.MapFileEdit;
 import controller.ReinforcementPhase;
 import controller.StartUpPhase;
 import models.Game;
@@ -23,13 +24,12 @@ public class GameLaunch {
 
 			Scanner sc = new Scanner(System.in);
 			optionMain = Integer.parseInt(sc.nextLine());
-
+			String response ="";
 			switch(optionMain) {
 			case 1:
 				System.out.println("Enter number of players ranging from 2 to 6:");
 				noOfPlayers = sc.nextLine().trim();
 
-				String response ;
 				StartUpPhase startUpPhase = new StartUpPhase();
 				startUpPhase.parser(noOfPlayers);
 				// choose map phase
@@ -54,6 +54,8 @@ public class GameLaunch {
 					}
 				}while(!response.equals("exit"));
 
+				System.out.println("populatecountries - to assign countries to players");
+				startUpPhase.parser(sc.nextLine());
 				// Show what countries belong to which player
 
 				// Army assignment starts
@@ -111,6 +113,24 @@ public class GameLaunch {
 				
 				System.out.println("Player "+i+"'s turn ends");
 			}
+			break;
+			case 2:
+				System.out.println("To Edit Map File - editmap 'filename'");
+				String command = sc.nextLine();
+				MapFileEdit mapFileEdit = new MapFileEdit();
+				do {
+					String fileExistsResponse = mapFileEdit.fileExists(command);
+				if(!fileExistsResponse.equals("exists")) {
+					System.out.println("Map file does not exist. New Map File created with name "+fileExistsResponse);
+				}
+					System.out.println("Map File edit commands:");
+					System.out.println("editcontinent -add continentname continentvalue -remove continentname \neditcountry -add countryname continentname -remove countryname \neditneighbor -add countryname neighborcountryname -remove countryname neighborcountryname \nshowmap (show all continents and countries and their neighbors)");
+					System.out.println("savemap 'filename' If done with editing file.");
+					System.out.println("validatemap - to check the validity of map");
+					command = sc.nextLine().trim();
+					response = mapFileEdit.commandParser(command);
+				
+				}while(!response.equals("saved"));
 		}
 		}while(optionMain!=3);
 	}

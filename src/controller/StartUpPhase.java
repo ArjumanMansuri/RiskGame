@@ -3,8 +3,6 @@ package controller;
 import models.Player;
 import java.util.HashMap;
 
-import java.util.*;
-
 /**
  * This class controls the startup phase
  */
@@ -12,14 +10,17 @@ public class StartUpPhase {
 	private HashMap<Integer,Player> playersData;
 	private int noOfPlayers;
 
-	StartUpPhase(){
+	public StartUpPhase(){
 		playersData = new HashMap<Integer,Player>();
 	}
 
-	String parser(String input){
+	public String parser(String input){
+		// if the command is loadmap, check the validity of the map before loading
+		
+		// if populatecountries, call corresponding method
 
 		//Check if input is empty or blank
-		if(input.isEmpty() || input.isBlank()) return "error";
+		if(input.isEmpty() || input.isEmpty()) return "error";
 
 		input = input.trim();
 
@@ -40,7 +41,7 @@ public class StartUpPhase {
 			return "final return";
 	}
 
-	String gamePlayer(String thisInput){
+	public String gamePlayer(String thisInput){
 
 		String[] parsedString = thisInput.split(" ");
 		int playerId=1,army[]={60,35,30,25,20};
@@ -79,7 +80,7 @@ public class StartUpPhase {
 	}
 
 	//input validator
-	int inputValidator(String thisInput) throws ArrayIndexOutOfBoundsException{
+	public int inputValidator(String thisInput) throws ArrayIndexOutOfBoundsException{
 		String[] parsedString = thisInput.split(" ");
 		try{
 			if(parsedString[0].equals("gameplayer")){
@@ -102,13 +103,20 @@ public class StartUpPhase {
 		}
 
 	}
-
-	public static void main(String[] args){
-		Scanner sc = new Scanner(System.in);
-		StartUpPhase s = new StartUpPhase();
-		System.out.println(s.parser(sc.nextLine()));
-		System.out.println(s.parser(sc.nextLine()));
+	public String placeArmy(int player,String command) {
+		return "";
 	}
+	
+	public String placeAll(int player) {
+		return "";
+	}
+
+	/*
+	 * public static void main(String[] args){ Scanner sc = new Scanner(System.in);
+	 * StartUpPhase s = new StartUpPhase();
+	 * System.out.println(s.parser(sc.nextLine()));
+	 * System.out.println(s.parser(sc.nextLine())); }
+	 */
 }
 
 
