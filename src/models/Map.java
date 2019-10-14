@@ -15,5 +15,5 @@ public class Map {
 
 	public void setContinents(HashMap<String, Continent> continents) {
 		this.continents = continents;
-	}
+	}	
 }

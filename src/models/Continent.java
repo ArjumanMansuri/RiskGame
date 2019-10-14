@@ -34,6 +34,10 @@ public class Continent {
 	}
 
 	public void setTerritories(List<Territory> territories) {
-		this.territories = territories;
+		this.territories = territories;		
+	}	
+	
+	public void pushTerritory(Territory territory) {
+		this.territories.add(territory);
 	}
 }
