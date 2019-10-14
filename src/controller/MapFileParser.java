@@ -42,9 +42,7 @@ public class MapFileParser {
 			BufferedReader readMap = new BufferedReader(new FileReader(fileName));			
 			while(readMap.ready()) {
 				String line = readMap.readLine().trim();
-				
-				System.out.println(line);
-				
+								
 				if(line.isEmpty()) {
 					continue;
 				}
