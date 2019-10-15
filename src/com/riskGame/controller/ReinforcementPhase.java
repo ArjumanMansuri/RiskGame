@@ -1,8 +1,8 @@
-package controller;
+package com.riskGame.controller;
 
 
-import models.Game;
-import models.Player;
+import com.riskGame.models.Game;
+import com.riskGame.models.Player;
 
 public class ReinforcementPhase {
 	public String reinforce(int player,String command) {		

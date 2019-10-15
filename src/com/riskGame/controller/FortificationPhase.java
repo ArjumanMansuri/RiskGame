@@ -1,11 +1,11 @@
-package controller;
+package com.riskGame.controller;
 
 import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeSet;
 
-import models.Country;
-import models.Game;
+import com.riskGame.models.Country;
+import com.riskGame.models.Game;
 
 /**
  * 
