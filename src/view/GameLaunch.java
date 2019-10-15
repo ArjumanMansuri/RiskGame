@@ -102,7 +102,7 @@ public class GameLaunch {
 							System.out.println("Use command : reinforce 'countryname' 'num'");
 							System.out.println("Player : "+Game.getPlayersList().get(i).getPlayerName());
 							rp.reinforce(i,sc.nextLine());
-				}
+				    }
 				System.out.println("Attack Phase for now is skipped.");
 				
 				// fortification phase starts
@@ -125,23 +125,36 @@ public class GameLaunch {
 				System.out.println("Player "+i+"'s turn ends");
 			}
 			break;
-			case 2:
-				System.out.println("To Edit Map File - editmap 'filename'");
-				String command = sc.nextLine();
-				MapFileEdit mapFileEdit = new MapFileEdit();
+			case 2:				
+				String fileExistsResponse;
 				do {
-					String fileExistsResponse = mapFileEdit.fileExists(command);
-				if(!fileExistsResponse.equals("exists")) {
-					System.out.println("Map file does not exist. New Map File created with name "+fileExistsResponse);
-				}
-					System.out.println("Map File edit commands:");
-					System.out.println("editcontinent -add continentname continentvalue -remove continentname \neditcountry -add countryname continentname -remove countryname \neditneighbor -add countryname neighborcountryname -remove countryname neighborcountryname \nshowmap (show all continents and countries and their neighbors)");
-					System.out.println("savemap 'filename' If done with editing file.");
-					System.out.println("validatemap - to check the validity of map");
-					command = sc.nextLine().trim();
-					response = mapFileEdit.commandParser(command);
-				
-				}while(!response.equals("saved"));
+					boolean mapFileExists = true;
+					System.out.println("To Edit Map File -editmap 'filename'");
+					String command = sc.nextLine();
+					MapFileEdit mapFileEdit = new MapFileEdit();					
+					fileExistsResponse = mapFileEdit.fileExists(command);
+					
+					if(fileExistsResponse.contains("error")) {
+						System.out.println("Error in the -editmap command. Re-enter the command.");
+						continue;
+					}
+					
+					// Map file checked and created if not exist 
+					if(!fileExistsResponse.equals("exists")) {
+						mapFileExists = false;
+						System.out.println("Map file does not exist. New Map File created with name "+ fileExistsResponse);
+					}
+					
+					do {					
+						System.out.println("Map File edit commands:");
+						System.out.println("editcontinent -add continentname continentvalue -remove continentname \neditcountry -add countryname continentname -remove countryname \neditneighbor -add countryname neighborcountryname -remove countryname neighborcountryname \nshowmap (show all continents and countries and their neighbors)");
+						System.out.println("savemap 'filename' If done with editing file.");
+						System.out.println("validatemap - to check the validity of map");
+						command = sc.nextLine().trim();
+						response = mapFileEdit.commandParser(command, fileExistsResponse, mapFileExists);				
+					} while(!response.equals("saved"));
+				} while(fileExistsResponse.equals("error"));
+			break;
 		}
 		}while(optionMain!=3);
 	}

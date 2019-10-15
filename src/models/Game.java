@@ -16,10 +16,11 @@ public class Game {
 	 */
 	private static Map map;
 	private static HashMap<Integer,Player> playersList;
-
+	private static Map editMap = new Map();
+	
 	public Game() {
 		playersList = new HashMap<Integer, Player>();
-		map = new Map();
+		map = new Map();		
 	}
 
 	public static Map getMap() {
@@ -36,5 +37,13 @@ public class Game {
 
 	public static void setPlayersList(HashMap<Integer, Player> playersList) {
 		playersList = playersList;
+	}
+
+	public static Map getEditMap() {
+		return editMap;
+	}
+
+	public static void setEditMap(Map editMap) {
+		Game.editMap = editMap;
 	}
 }
