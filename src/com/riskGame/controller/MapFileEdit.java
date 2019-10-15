@@ -213,4 +213,9 @@ public class MapFileEdit {
 		Game.setEditMapSet(false); // last statement in this method 
 		return null;
 	}
+
+	public String commandParser(String command) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
