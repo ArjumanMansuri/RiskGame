@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import com.riskGame.models.Continent;
 import com.riskGame.models.Country;
@@ -60,7 +61,8 @@ public class MapFileEdit {
 	 * @return error / success 
 	 */
 	public String commandParser(String command, String fileNameInput, boolean mapFileExists) {				
-		String[] commands = {"editcontinent", "editcountry", "editneighbor", "showmap", "validatemap"};
+		String[] commands = {"editcontinent", "editcountry", "editneighbor"};
+		String[] commandsNonArgs = {"showmap", "validatemap", "savemap"};
 		Map editMap = Game.getEditMap();
 		String[] commandInput = command.split(" ");
 		
@@ -88,13 +90,29 @@ public class MapFileEdit {
 						break;
 					case "editneighbor":						
 						editNeighbor(commandInput);
-						break;
+						break;					
 				}
 			}			
-		}
+		}else if(Arrays.asList(commandsNonArgs).contains(commandInput[0].trim().toLowerCase())) {
+			switch(commandInput[0]) {
+				case "validatemap":
+					validateMap();
+					break;
+				case "showmap":
+					showMap();
+					break;
+				case "savemap":
+					saveMap();
+					break;
+			}
+		}		
 		return "error";		
 	}
 	
+	private void showMap() {
+				
+	}
+
 	/**
 	 * Edit the neighbor of a country.
 	 * @param commandInput
@@ -114,14 +132,18 @@ public class MapFileEdit {
 					Continent currentContinent = editMapContinents.get(continentKey);
 					currentContinent.getTerritories().forEach(country -> {
 						if(country.getCountryName().equals(countryName)) {
-							country.getNeighbours().add(addCountry);							 
+							System.out.println("Before adding : " + country.getNeighbours().size());
+							country.getNeighbours().add(addCountry);
+							System.out.println("after adding : " + country.getNeighbours().size());
 						}
 					});
 				}				
 			} else if(operation.equals("-remove")) {
 				for(String continentKey : editMapContinents.keySet()) {										
 					editMapContinents.get(continentKey).getTerritories().forEach(country -> {
+						System.out.println("Before remove : " + country.getNeighbours().size());
 						country.getNeighbours().removeIf(neighbor -> neighbor.getCountryName().equals(neightborCountryName));
+						System.out.println("After remove : " + country.getNeighbours().size());
 					}); 					
 				}								
 			}
@@ -199,10 +221,127 @@ public class MapFileEdit {
 	 * Run before loading a map/saving a map.
 	 * @return validMap value holds true/false.
 	 */
-	public Boolean validateMap() {
-		
-		return null;		
+	public boolean validateMap() {
+//		validateContinentConnections();
+		System.out.println(validateCountryConnections());
+//		validateNeighbors();
+		return false;		
 	}
+	
+	/**
+	 * Validate 
+	 * @return
+	 */
+	public boolean validateCountryConnections(){
+		int continentsConnected = 0;
+		for(String continentKey: Game.getEditMap().getContinents().keySet()) {
+			Continent currentContinent = Game.getEditMap().getContinents().get(continentKey);
+			
+			/**
+			 *  Iterate all the countries in the continent and check if either of them doesn't have a neighbor 
+			 *  which is from the same continent
+			 */	
+			int countriesConnected = 0;
+			for(Country currentCountry : currentContinent.getTerritories()) {				
+				if(countrySameContinentNeighbor(currentCountry.getNeighbours(), getCountryNames(currentContinent.getTerritories()))) {
+					countriesConnected++;
+				}
+			}			
+			if(countriesConnected == currentContinent.getTerritories().size()) {
+				continentsConnected++;
+			}
+		}		
+		if(continentsConnected == Game.getEditMap().getContinents().size()) {
+			return true;
+		}
+		return false;		
+	}
+	
+	/**
+	 * Checks if neighbors are from the countriesInContinent
+	 * @param neighbors
+	 * @param countriesInContinent
+	 * @return neighbourFromCountryFound true if neighbor is found from same continent 
+	 */
+	private boolean countrySameContinentNeighbor(ArrayList<Country> neighbors, String[] countriesInContinent) {
+		boolean neighbourFromCountryFound = false;
+		for(Country neighbor : neighbors) {
+			if(Arrays.asList(countriesInContinent).contains(neighbor.getCountryName())) {
+				neighbourFromCountryFound = true;
+				break;
+			}
+		}
+		return neighbourFromCountryFound;
+	}	
+	
+	/**
+	 * Get country names from Country array list
+	 * @param continentCountries
+	 * @return
+	 */
+	private String[] getCountryNames(List<Country> continentCountries) {
+		String[] countryNames = new String[continentCountries.size()];
+		int countryIndex = 0;		
+		for(Country country : continentCountries) {
+			countryNames[countryIndex] = country.getCountryName();			
+			countryIndex++;
+		}
+		return countryNames;
+	}
+
+	/**
+	 * Validate if a given continent is connected to at least one other continent in the graph.
+	 * 
+	 */
+	private boolean validateContinentConnections() {
+		int connectedContinents = 0;
+				
+		for(String currentContinentKey: Game.getEditMap().getContinents().keySet()) {
+			boolean continentConnected = false;
+			if(continentConnected) {				
+				continue;
+			}			
+			Continent currentContinent = Game.getEditMap().getContinents().get(currentContinentKey);			
+			for(Country currentContinentCountry : currentContinent.getTerritories()) {			
+				if(isCountryExistInOtherContinents(currentContinentKey, currentContinentCountry)) {					
+					continentConnected = true;
+					connectedContinents++;
+					break;
+				}
+			}
+		}		
+		if(connectedContinents != Game.getEditMap().getContinents().size()) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Check if the given checkCountry exists in all other continent's country's neighbor list. 
+	 * @param ignoreContinentKey Ignores this continent while checking for the country check.
+	 * @param checkCountry Checks this country in all other continents excepts the ignoreContinentKey  
+	 */
+	private boolean isCountryExistInOtherContinents(String ignoreContinentKey, Country checkCountry) {
+		boolean countryExists = false;		
+		for(String otherContinentKey : Game.getEditMap().getContinents().keySet()) {
+			if(countryExists) {
+				break;
+			}			
+			Continent otherContinent = Game.getEditMap().getContinents().get(otherContinentKey);			
+			if(!otherContinentKey.equals(ignoreContinentKey)) {
+				for(Country otherContinentCountry : otherContinent.getTerritories()) {
+					for(Country neighbor : otherContinentCountry.getNeighbours()) {
+						if(neighbor.getCountryName().equals(checkCountry.getCountryName())) {
+							countryExists = true;
+//							System.out.println("Country " + checkCountry.getCountryName() + " found in " + otherContinentKey + " as a neighbor for " + otherContinentCountry.getCountryName());
+							break;
+						}
+					}
+				}			
+			}			
+		}	
+		return countryExists;
+	}	
 	
 	/**
 	 * Save the map object to the filename
@@ -219,3 +358,7 @@ public class MapFileEdit {
 		return null;
 	}
 }
+
+
+
+
