@@ -25,6 +25,7 @@ public class ReinforcementPhase {
 			if(numberOfArmies <= newArmies) {
 				currentArmies += newArmies;
 				currentPlayer.getOwnedCountries().get(countryName).setNumberOfArmies(currentArmies);
+				currentPlayer.setPlayerNumOfArmy(currentPlayer.getPlayerNumOfArmy() + newArmies);
 				return "saved";
 			}			
 		} 
