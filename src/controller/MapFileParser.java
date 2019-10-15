@@ -33,10 +33,9 @@ public class MapFileParser {
 	 * Reads the map file data and create Map object.  	
 	 * @return map - Map object containing territories and continents
 	 */
-	public Map readFileData(String fileName){
+	public Map readFileData(String fileName){		
 		Map map = new Map();
-		HashMap<String, Continent> continents = new HashMap<String, Continent>();
-		 		
+		HashMap<String, Continent> continents = new HashMap<String, Continent>();		 		
 		try {
 			boolean territoryLineFound = false,continentsLineFound = false;
 			BufferedReader readMap = new BufferedReader(new FileReader(fileName));			
@@ -109,5 +108,6 @@ public class MapFileParser {
 			countries.add(currentTerritory);
 		}		
 		return countries;		
-	}	
+	}
+
 }
