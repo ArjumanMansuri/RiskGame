@@ -1,4 +1,4 @@
-package models;
+package com.riskGame.models;
 
 import java.util.ArrayList;
 import java.util.Set;

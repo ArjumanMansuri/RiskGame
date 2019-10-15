@@ -1,6 +1,6 @@
-package controller;
+package com.riskGame.controller;
 
-import models.Player;
+import com.riskGame.models.Player;
 import java.util.HashMap;
 
 import java.util.*;

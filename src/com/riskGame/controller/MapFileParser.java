@@ -1,4 +1,4 @@
-package controller;
+package com.riskGame.controller;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -7,9 +7,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import models.Continent;
-import models.Map;
-import models.Country;
+import com.riskGame.models.Continent;
+import com.riskGame.models.Map;
+import com.riskGame.models.Country;
 
 /**
  * Controller to read Map file.

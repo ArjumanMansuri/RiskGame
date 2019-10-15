@@ -1,4 +1,4 @@
-package view;
+package com.riskGame.view;
 
 import java.util.Scanner;
 
@@ -6,11 +6,11 @@ import java.util.Scanner;
  * @author Mudra-PC
  */
 
-import controller.FortificationPhase;
-import controller.MapFileEdit;
-import controller.ReinforcementPhase;
-import controller.StartUpPhase;
-import models.Game;
+import com.riskGame.controller.FortificationPhase;
+import com.riskGame.controller.MapFileEdit;
+import com.riskGame.controller.ReinforcementPhase;
+import com.riskGame.controller.StartUpPhase;
+import com.riskGame.models.Game;
 
 public class GameLaunch {
 

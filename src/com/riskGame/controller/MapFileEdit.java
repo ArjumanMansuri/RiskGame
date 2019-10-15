@@ -1,4 +1,4 @@
-package controller;
+package com.riskGame.controller;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -11,10 +11,10 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import models.Continent;
-import models.Country;
-import models.Game;
-import models.Map;
+import com.riskGame.models.Continent;
+import com.riskGame.models.Country;
+import com.riskGame.models.Game;
+import com.riskGame.models.Map;
 
 public class MapFileEdit {
 
