@@ -31,7 +31,7 @@ public class GameLaunch {
 
 				String response ;
 				StartUpPhase startUpPhase = new StartUpPhase();
-				startUpPhase.parser(noOfPlayers);
+				System.out.println(startUpPhase.parser(noOfPlayers));
 				// choose map phase
 				System.out.println("Choose Map :");
 				// List the map files to choose from from the maps folder in the project
