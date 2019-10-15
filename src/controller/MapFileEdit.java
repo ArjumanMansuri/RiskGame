@@ -74,22 +74,21 @@ public class MapFileEdit {
 	 * @param fileName
 	 * @return error / success 
 	 */
-	public String commandParser(String command, String fileNameInput, boolean mapFileExists) {
-		String fileName = fileNameInput.split(" ")[1];
-		String[] commandInput = command.split(" ");		
+	public String commandParser(String command, String fileNameInput, boolean mapFileExists) {				
 		String[] commands = {"editcontinent", "editcountry", "editneighbor", "showmap", "validatemap"};
-		Map editMap;
+		Map editMap = Game.getEditMap();
+		String[] commandInput = command.split(" ");
 		
 		// instantiate a map object
-		if(mapFileExists) {
-			MapFileParser mapParser = new MapFileParser();
-			editMap = mapParser.readFileData(MAP_FILE_DIR + fileName);
-		}else {
-			editMap = new Map();			
+		if(!Game.isEditMapSet()) {		
+			String fileName = fileNameInput.split(" ")[1];			
+			if(mapFileExists) {
+				MapFileParser mapParser = new MapFileParser();
+				editMap = mapParser.readFileData(MAP_FILE_DIR + fileName);
+				Game.setEditMapSet(true);
+				Game.setEditMap(editMap);
+			}			
 		}
-				
-		// Set the edit map object to Game 
-		Game.setEditMap(editMap);
 						
 		// Check if the entered command is a valid command. 
 		if(Arrays.asList(commands).contains(commandInput[0].trim().toLowerCase())) {
@@ -128,13 +127,15 @@ public class MapFileEdit {
 					if(editMapContinents.containsKey(continentName)) {  
 						Country addCountry = new Country();
 						addCountry.setContinent(continentName);
-						addCountry.setCountryName(countryName);												
+						addCountry.setCountryName(countryName);
 						editMapContinents.get(continentName).getTerritories().add(addCountry);
 					}	
 				}
-			} else if(operation.equals("-remove")){
-				for(String continentKey : editMapContinents.keySet()) {					
-//					editMapContinents.get(continentKey).getTerritories().
+			} else if(operation.equals("-remove")) {
+				for(String continentKey : editMapContinents.keySet()) {	
+					Country removeCountry = new Country();
+					removeCountry.setCountryName(countryName);
+					editMapContinents.get(continentKey).getTerritories().removeIf(country -> country.getCountryName().equals(countryName));
 				}
 			}		
 		}
@@ -192,6 +193,8 @@ public class MapFileEdit {
 	 * @return boolean 
 	 */
 	public Boolean saveMap() {
+		
+		Game.setEditMapSet(false); // last statement in this method 
 		return null;
 	}
 }
