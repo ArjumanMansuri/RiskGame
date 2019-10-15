@@ -5,6 +5,7 @@ import java.util.Map;
 
 /**
  * This class contains the data members for the player
+ * @author Mudra-PC
  */
 
 public class Player {
@@ -12,12 +13,28 @@ public class Player {
     private String playerName;
     private int playerNumOfArmy;
     private Map<String, Continent> playerContinent;
-
+    private HashMap<String,Country> ownedCountries;
+    
     public Player(){
         playerContinent = new HashMap<String, Continent>();
+        ownedCountries = new HashMap();
     }
+    
+    public HashMap<String, Country> getOwnedCountries() {
+		return ownedCountries;
+	}
 
-    /**
+
+
+
+	public void setOwnedCountries(HashMap<String, Country> ownedCountries) {
+		this.ownedCountries = ownedCountries;
+	}
+
+
+
+
+	/**
      * @return The player name
      */
     public String getPlayerName() {

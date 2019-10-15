@@ -5,6 +5,7 @@ import java.util.HashMap;
 /**
  * 
  * @author Arjuman Mansuri
+ * @author Mudra-PC
  * Model class for Game with map and playersList as its data members
  */
 public class Game {
@@ -15,18 +16,19 @@ public class Game {
 	 */
 	private static Map map;
 	private static HashMap<Integer,Player> playersList;
-
+	private static Map editMap = new Map();
+	
 	public Game() {
 		playersList = new HashMap<Integer, Player>();
-		map = new Map();
+		map = new Map();		
 	}
 
-	public Map getMap() {
+	public static Map getMap() {
 		return map;
 	}
 
-	public void setMap(Map map) {
-		this.map = map;
+	public static void setMap(Map map) {
+		map = map;
 	}
 
 	public static HashMap<Integer, Player> getPlayersList() {
@@ -35,5 +37,13 @@ public class Game {
 
 	public static void setPlayersList(HashMap<Integer, Player> playersList) {
 		playersList = playersList;
+	}
+
+	public static Map getEditMap() {
+		return editMap;
+	}
+
+	public static void setEditMap(Map editMap) {
+		Game.editMap = editMap;
 	}
 }

@@ -27,7 +27,9 @@ public class StartUpPhase {
 	public String parser(String input){
 
 		//Check if input is empty or blank
-		if(input.isEmpty() || input.isBlank()) return "error";
+		if(input.isEmpty() || input.trim().length()==0) {
+			return "error";
+		}
 
 		input = input.trim();
 
@@ -129,6 +131,16 @@ public class StartUpPhase {
 		System.out.println(s.parser(sc.nextLine()));
 		System.out.println(s.parser(sc.nextLine()));
 	}
+
+	/*public String placeArmy(int i, String string) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String placeAll(int i) {
+		// TODO Auto-generated method stub
+		return null;
+	}*/
 }
 
 
