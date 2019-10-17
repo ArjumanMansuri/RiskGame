@@ -1,9 +1,9 @@
 package com.riskGame.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
-import java.util.TreeSet;
 
+import com.riskGame.models.Continent;
 import com.riskGame.models.Country;
 import com.riskGame.models.Game;
 
@@ -24,8 +24,12 @@ public class FortificationPhase {
 	public String fortify(int player,String command) {
 		if(command.isEmpty() || command.trim().length()==0) return "Error : Invalid Command";
 		
-		// check if it is a fortification command
 		String[] commandComponents = command.split(" ");
+		
+		
+		
+		// check if it is a fortification command
+		
 		String commandName = commandComponents[0];
 		if(!commandName.equalsIgnoreCase("fortify")) {
 			return "Error : Please enter fortification command";
@@ -36,15 +40,27 @@ public class FortificationPhase {
 				return "done";
 			}
 		}
-		// fortify 'fromcountry' 'tocountry' 'num'
+		
 		if(!(commandComponents.length == 4)) {
 			return "Error : Number of arguments does not match";
-		}else {
+		}
+		
+		// fortify 'fromcountry' 'tocountry' 'num'
+		else {
 			String fromCountry = commandComponents[1];
 			String toCountry = commandComponents[2];
 			int num = Integer.parseInt(commandComponents[3]);
+			
+			 HashMap<String,Continent> continentList =  Game.getMap().getContinents();
+	            ArrayList<String> countries = new ArrayList<>();
+	            for (Continent continent: continentList.values()) {
+	                for(Country country : continent.getTerritories()){
+	                    countries.add(country.getCountryName());
+	                }
+	            }
+			
 			// check if those countries exist
-			if(!(Country.getListOfCountries().contains(fromCountry)) || !(Country.getListOfCountries().contains(toCountry))){
+			if(!(countries.contains(fromCountry)) || !(countries.contains(toCountry))){
 				return "Error : Either one or both of the country names do not exist";
 			}
 			// check if they are owned by same player
@@ -53,11 +69,15 @@ public class FortificationPhase {
 				return "Error : Either one or both of the country names are not owned by you";
 			}
 			// check if they are adjacent
-			if(!(ownedCountries.get(fromCountry).getNeighbours().contains(toCountry))){
-				return "Error : Given countries are not adjacent";
+			ArrayList<String> adjacentCountries = new ArrayList<String>();
+			for(Country country : ownedCountries.get(fromCountry).getNeighbours()) {
+				adjacentCountries.add(country.getCountryName());
+			}
+				if(!(adjacentCountries.contains(toCountry))){
+					return "Error : Given countries are not adjacent";
 			}
 			// move armies
-			if(!(ownedCountries.get(fromCountry).getNumberOfArmies()>=num)) {
+			if(!(ownedCountries.get(fromCountry).getNumberOfArmies()>num)) {
 				return "Error : Insufficient armies to move";
 			}
 			ownedCountries.get(fromCountry).setNumberOfArmies(ownedCountries.get(fromCountry).getNumberOfArmies()-num);
@@ -65,5 +85,4 @@ public class FortificationPhase {
 		}
 		return "done";
 	}
-// After fortification check if the player has at least one territory otherwise remove him from the game	
 }
