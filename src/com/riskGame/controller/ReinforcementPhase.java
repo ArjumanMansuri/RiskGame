@@ -8,7 +8,7 @@ public class ReinforcementPhase {
 	
 	public void calculateReinforcementArmies(int i) {
 		Player p = Game.getPlayersList().get(i);
-		int newArmies =  p.getOwnedCountries().size() /3;
+		int newArmies =  calculateReinforcementArmies(p);
 		p.setPlayerNumOfArmy(newArmies);
 	}
 	
@@ -42,5 +42,10 @@ public class ReinforcementPhase {
 		
 		
 		return "";			
+	}
+	
+	public int calculateReinforcementArmies(Player currentPlayer) {
+		int reinformentArmies =  currentPlayer.getOwnedCountries().size() /3;
+		return reinformentArmies;
 	}
 }
