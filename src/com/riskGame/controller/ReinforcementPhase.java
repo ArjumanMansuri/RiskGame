@@ -4,17 +4,36 @@ package com.riskGame.controller;
 import com.riskGame.models.Game;
 import com.riskGame.models.Player;
 
+/**
+ * This class contains the business logic of the Reinforcement Phase.
+ * @author goumis
+ *
+ */
 public class ReinforcementPhase {
 	
-	public void calculateReinforcementArmies(int i) {
-		Player p = Game.getPlayersList().get(i);
-		int newArmies =  calculateReinforcementArmies(p);
+	/**
+	 * This method is used to  calculate the number of Reinforcement armies and set to access globally.
+	 * @param playerNumber turn of player.
+	 * 
+	 */
+	public void calculateReinforcementArmies(int playerNumber) {
+		Player p = Game.getPlayersList().get(playerNumber);
+		int newArmies =  p.getOwnedCountries().size() /3;
 		p.setPlayerNumOfArmy(newArmies);
 	}
 	
+	/**
+	 * This method checks and calculates the number of reinforcement armies depending on the number of players.
+	 * @param player - number of player.
+	 * @param command - command from the user input.
+	 * @return error if incorrect or saved if correct.
+	 * 
+	 */
 	public String reinforce(int player,String command) {	
 		
-		if(command.isEmpty() || command.trim().length()==0) return "Error : Invalid Command";
+		if(command.isEmpty() || command.trim().length()==0) {
+			return "Error : Invalid Command";
+		}
 		//check if it is a reinforcement command
 		String[] commandComponents = command.split(" ");
 		if(!(commandComponents.length == 3)) {
@@ -43,7 +62,12 @@ public class ReinforcementPhase {
 		
 		return "";			
 	}
-	
+	/**
+	 * This method is used to calculate reinforcement armies for testing.
+	 * @param currentPlayer turn of the current player.
+	 * @return number of reinforced armies.
+	 * 
+	 */
 	public int calculateReinforcementArmies(Player currentPlayer) {
 		int reinformentArmies =  currentPlayer.getOwnedCountries().size() /3;
 		return reinformentArmies;
