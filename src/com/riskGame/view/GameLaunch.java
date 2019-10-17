@@ -15,8 +15,18 @@ import com.riskGame.controller.StartUpPhase;
 import com.riskGame.models.Country;
 import com.riskGame.models.Game;
 
+/**
+ * This class holds the method that gives the menu option to start game and edit map.
+ * @author Mudra-PC
+ *
+ */
 public class GameLaunch {
 
+	/**
+     * This main method creates an instance to start the game.
+     * @param args arguments  to run main method.
+     * 
+     */
 	public static void main(String[] args) {
 
 		int optionMain;
@@ -196,9 +206,14 @@ public class GameLaunch {
 			}
 		}while(optionMain!=3);
 	}
-	public static void printPlayerInformation(int i) {
+	/**
+	 * This method prints the countries and the neighboring countries 
+	 * along with number of armies in each countries. 
+	 * @param numofPlayers number of players.
+	 */
+	public static void printPlayerInformation(int numofPlayers) {
 		// Printing players' countries with adjacent countries and number of armies
-		HashMap<String, Country> countries = Game.getPlayersList().get(i).getOwnedCountries();
+		HashMap<String, Country> countries = Game.getPlayersList().get(numofPlayers).getOwnedCountries();
 		for(java.util.Map.Entry<String, Country> k:countries.entrySet()) {
 			System.out.print(k.getKey() +" : "+ k.getValue().getNumberOfArmies() + " : ");
 			for(Country country : k.getValue().getNeighbours()) {
