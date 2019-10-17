@@ -31,9 +31,13 @@ public class MapFileParser {
 	
 	/**
 	 * Reads the map file data and create Map object.  	
-	 * @return map - Map object containing territories and continents
+	 * @return map - Map object containing territories and continents.
+	 * @param fileName name of the map file to read.
 	 */
-	public Map readFileData(String fileName){		
+	public Map readFileData(String fileName){
+		if(!validateValidMapFile(fileName)) {
+			return null;
+		}
 		Map map = new Map();
 		HashMap<String, Continent> continents = new HashMap<String, Continent>();		 		
 		try {
@@ -95,6 +99,37 @@ public class MapFileParser {
 		return null;
 	}
 	
+	/**
+	 * Validate if the given filename is a valid map file.
+	 * @param fileName
+	 * @return true if the file is a valid map file.
+	 */
+	public boolean validateValidMapFile(String fileName) {		
+		boolean validResult = false;
+		int findCount = 0;
+		try {
+			BufferedReader readMap = new BufferedReader(new FileReader(fileName));
+			while(readMap.ready()) {
+				String line = readMap.readLine().trim();								
+				if(line.isEmpty()) {
+					continue;
+				}
+				if(line.equals("[Continents]")) {
+					findCount++;
+				}
+				if(line.equals("[Territories]")) {
+					findCount++;
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		if(findCount == 2) {
+			validResult = true;
+		}
+		return validResult;
+	}
+
 	/**
 	 * Convert territoryLine into a list of territory instances
 	 * @param territoryLine territory line from map file. 

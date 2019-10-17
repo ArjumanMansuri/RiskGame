@@ -254,7 +254,7 @@ public class MapFileEdit {
 	 * @param editMap map object to be edited.
 	 * @param commandInput Full command entered by the user.
 	 */
-	private void editContinent(String[] commandInput) {
+	public void editContinent(String[] commandInput) {
 		String operation = commandInput[1]; // add or remove
 		String name = commandInput[2]; // continent Name value
 		int value = Integer.parseInt(commandInput[3]); // continent control value
@@ -311,7 +311,7 @@ public class MapFileEdit {
 	 * Validate a country's neighbor's list is synchronized.
 	 * @return true/false
 	 */
-	private boolean validateNeighbors() {
+	public boolean validateNeighbors() {
 		boolean validNeighbors = true;
 		for(String continentKey: Game.getEditMap().getContinents().keySet()) {
 			if(!validNeighbors) {

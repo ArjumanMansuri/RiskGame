@@ -156,6 +156,7 @@ public class GameLaunch {
 						System.out.println("savemap 'filename' If done with editing file.");
 						System.out.println("validatemap - to check the validity of map");
 						command = sc.nextLine().trim();
+						System.out.println(editMapFileNameCommand);
 						response = mapFileEdit.commandParser(command, editMapFileNameCommand, mapFileExists);				
 					} while(!response.equals("saved"));
 				} while(fileExistsResponse.equals("error"));
