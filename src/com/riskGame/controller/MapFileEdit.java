@@ -149,7 +149,11 @@ public class MapFileEdit {
 			System.out.println(ANSI_RED + "The map you've provided is invalid! Please correct the errors and try again." + ANSI_RESET);			
 		}
 	}
-
+	
+	/**
+	 * 
+	 * @return
+	 */
 	private String showMap() {
 		String mapContent = "";
 		// Check if the current edit map object has any continents 
@@ -270,8 +274,6 @@ public class MapFileEdit {
 		}			
 	}
 
-	
-	
 	/**
 	 * Checks the input command arguments. 
 	 * 
@@ -419,7 +421,7 @@ public class MapFileEdit {
 	 * Validate if a given continent is connected to at least one other continent in the graph.
 	 * @return true - if all continents are connected, else false.
 	 */
-	private boolean validateContinentConnections() {
+	public boolean validateContinentConnections() {
 		int connectedContinents = 0;
 				
 		for(String currentContinentKey: Game.getEditMap().getContinents().keySet()) {
