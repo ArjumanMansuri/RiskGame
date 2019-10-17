@@ -254,20 +254,20 @@ public class MapFileEdit {
 	 * @param editMap map object to be edited.
 	 * @param commandInput Full command entered by the user.
 	 */
-	public void editContinent(String[] commandInput) {
+	public void editContinent(String[] commandInput) {		
 		String operation = commandInput[1]; // add or remove
-		String name = commandInput[2]; // continent Name value
-		int value = Integer.parseInt(commandInput[3]); // continent control value
+		String name = commandInput[2]; // continent Name value		
 		HashMap<String, Continent> editMapContinents= Game.getEditMap().getContinents();		
 		
 		if(operation.equals("-add")) {
+			int value = Integer.parseInt(commandInput[3]); // continent control value
 			Continent addContinent = new Continent();
 			addContinent.setContinentName(name);
 			addContinent.setControlValue(value);
 			if(!editMapContinents.containsKey(name)) {
 				editMapContinents.put(name, addContinent);
 			}						
-		} else if(operation.equals("-remove")){
+		} else if(operation.equals("-remove")){			
 			if(editMapContinents.containsKey(name)) {
 				editMapContinents.remove(name);
 			}

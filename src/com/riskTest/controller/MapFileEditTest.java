@@ -57,5 +57,11 @@ public class MapFileEditTest {
 		assertEquals(7, previousContinentCount + 1);
 	}
 	
+	@Test
+	public void testEditContinentRemove() {
+		int previousContinentCount = Game.getEditMap().getContinents().size();		
+		mapEdit.editContinent("editcontinent -remove Australia".split(" "));		
+		assertEquals(5, previousContinentCount - 1);
+	}
 	
 }
