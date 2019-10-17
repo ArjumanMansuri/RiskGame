@@ -62,7 +62,7 @@ public class MapFileEditTest {
 	 */
 	@Test
 	public void testReadInvalidMapFile() {
-		assertFalse(mapParser.validateValidMapFile("maps/incorrectMapOne.map"));
+		assertFalse(mapParser.validateValidMapFile("maps/incorrectMapFour.map"));
 	}
 	
 	/**
