@@ -8,6 +8,8 @@ import com.riskGame.controller.ReinforcementPhase;
 import com.riskGame.controller.StartUpPhase;
 import com.riskGame.models.Country;
 import com.riskGame.models.Game;
+import com.riskGame.models.Map;
+import com.riskGame.models.Player;
 
 /**
  * This class holds the method that gives the menu option to start game and edit map.
@@ -26,6 +28,8 @@ public class GameLaunch {
 		int optionMain;
 		String noOfPlayers;
 		do {
+			Game.setEditMap(new Map());
+			Game.setPlayersList(new HashMap<Integer, Player>());
 			System.out.println("Welcome to the Game");
 			System.out.println("Select from the following options:");
 			System.out.println("1.Play Game");
@@ -54,6 +58,9 @@ public class GameLaunch {
 					response = startUpPhase.parser(input);
 					if(response.equals("error")) {
 						System.out.println("Incorrect command format.");
+					}
+					else if(response.equals("fileNotFound")) {
+						System.out.println("File not found");
 					}
 				}while(!response.equals("exit"));
 
@@ -92,6 +99,9 @@ public class GameLaunch {
 									}
 									System.out.println("Enter command as : placearmy 'countryname'");
 									response = startUpPhase.placeArmy(i, sc.nextLine().toString());
+									if(response.equals("donePlaceArmy")) {
+										GameLaunch.printPlayerInformation(i);
+									}
 								}while(!response.equals("donePlaceArmy"));
 							}
 							else {
@@ -103,6 +113,9 @@ public class GameLaunch {
 									String command = sc.nextLine().trim();
 
 									response = startUpPhase.placeAll(i,command);
+									if(response.equals("donePlaceall")) {
+										GameLaunch.printPlayerInformation(i);
+									}
 								}while(!response.equals("donePlaceall"));
 							}
 						}
@@ -133,7 +146,6 @@ public class GameLaunch {
 							System.out.println(response);
 						}
 						System.out.println("Use command : reinforce 'countryname' 'num'");
-						System.out.println("Player : "+Game.getPlayersList().get(i).getPlayerName());
 						GameLaunch.printPlayerInformation(i);
 						System.out.println("Number of reinforcement armies available : "+Game.getPlayersList().get(i).getPlayerNumOfArmy());
 						response = rp.reinforce(i,sc.nextLine());
@@ -219,5 +231,6 @@ public class GameLaunch {
 			}
 			System.out.println();
 		}
+		System.out.println();
 	}
 }
