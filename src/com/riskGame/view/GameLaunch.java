@@ -1,5 +1,7 @@
 package com.riskGame.view;
 
+import java.security.KeyStore.Entry;
+import java.util.HashMap;
 import java.util.Scanner;
 
 /**
@@ -10,6 +12,7 @@ import com.riskGame.controller.FortificationPhase;
 import com.riskGame.controller.MapFileEdit;
 import com.riskGame.controller.ReinforcementPhase;
 import com.riskGame.controller.StartUpPhase;
+import com.riskGame.models.Country;
 import com.riskGame.models.Game;
 
 public class GameLaunch {
@@ -71,64 +74,94 @@ public class GameLaunch {
 				while(!response.equals("done")) {
 					for(int i=1;i<=Integer.parseInt(noOfPlayers);i++) {
 						System.out.println("Player : "+Game.getPlayersList().get(i).getPlayerName());
-						System.out.println("Select your option");
-						System.out.println("1.Place armies individually");
-						System.out.println("2.Place All");
-						int armyOption = Integer.parseInt(sc.nextLine());
-						if(armyOption==1) {
-							if(Game.getPlayersList().get(i).getPlayerNumOfArmy()!=0) {
-								System.out.println("Enter command as : placearmy 'countryname'");
-								response = startUpPhase.placeArmy(i, sc.nextLine().toString());
+						if(Game.getPlayersList().get(i).getPlayerNumOfArmy()!=0) {
+							System.out.println("Select your option");
+							System.out.println("1.Place armies individually");
+							System.out.println("2.Place All");
+							int armyOption = Integer.parseInt(sc.nextLine());
+							if(armyOption==1) {
+
+								do {
+									if(response.contains("Error")) {
+										System.out.println(response);
+									}
+									System.out.println("Enter command as : placearmy 'countryname'");
+									response = startUpPhase.placeArmy(i, sc.nextLine().toString());
+								}while(!response.equals("donePlaceArmy"));
+
+
 							}
 							else {
-								continue;
+								do {
+									if(response.contains("Error")) {
+										System.out.println(response);
+									}
+									System.out.println("Enter command as : placeall");
+									String command = sc.nextLine().trim();
+
+									response = startUpPhase.placeAll(i,command);
+
+
+								}while(!response.equals("donePlaceall"));
 							}
+
 						}
 						else {
-							if(Game.getPlayersList().get(i).getPlayerNumOfArmy()!=0) {
-								response = startUpPhase.placeAll(i);
-							}
+							System.out.println("All your armies have been placed");
 						}
 					}
+					response = startUpPhase.allPlayerArmies();
 				}
 
 				System.out.println("Initial army assignment is done");
 
 				// reinforcement phase starts
-				
+
 				ReinforcementPhase rp = new ReinforcementPhase();
 				FortificationPhase fp = new FortificationPhase();
-				
+
 				for(int i=1;i<=Integer.parseInt(noOfPlayers);i++) {
 					System.out.println("Player : "+Game.getPlayersList().get(i).getPlayerName());
 					System.out.println("Reinforcement phase starts");
+					
+					rp.calculateReinforcementArmies(i);
+					
 					while(Game.getPlayersList().get(i).getPlayerNumOfArmy()!=0) {
-							System.out.println("Use command : reinforce 'countryname' 'num'");
-							System.out.println("Player : "+Game.getPlayersList().get(i).getPlayerName());
-							rp.reinforce(i,sc.nextLine());
-				    }
-				System.out.println("Attack Phase for now is skipped.");
-				
-				// fortification phase starts
-				System.out.println("Fortification phase starts");
-				response = "";
-				do {
-				if(response.contains("Error")) {
-					System.out.println(response);
+						if(response.contains("Error")) {
+							System.out.println(response);
+						}
+						System.out.println("Use command : reinforce 'countryname' 'num'");
+						System.out.println("Player : "+Game.getPlayersList().get(i).getPlayerName());
+						GameLaunch.printPlayerInformation(i);
+						System.out.println("Number of reinforcement armies available : "+Game.getPlayersList().get(i).getPlayerNumOfArmy());
+						response = rp.reinforce(i,sc.nextLine());
+					}
+					System.out.println("Attack Phase for now is skipped.");
+
+					// fortification phase starts
+					System.out.println("Fortification phase starts");
+					response = "";
+					do {
+						if(response.contains("Error")) {
+							System.out.println(response);
+						}
+
+						System.out.println("Player : "+Game.getPlayersList().get(i).getPlayerName());
+
+						GameLaunch.printPlayerInformation(i);
+
+						System.out.println("Use command : fortify 'fromcountry' 'tocountry' 'num'");
+						System.out.println("Or use command : fortify none");
+
+
+						String command = sc.nextLine().trim();
+						response = fp.fortify(i,command);
+
+					}
+					while(!response.equals("done"));
+					System.out.println("Player "+i+"'s turn ends");
 				}
-				
-				System.out.println("Player : "+Game.getPlayersList().get(i).getPlayerName());
-				System.out.println("Use command : fortify 'fromcountry' 'tocountry' 'num'");
-				System.out.println("Or use command : fortify none");
-				
-				if(Game.getPlayersList().get(i).getPlayerNumOfArmy()!=0) {
-					response = fp.fortify(i,sc.nextLine().trim());
-				}
-				}
-				while(!response.equals("done"));
-				System.out.println("Player "+i+"'s turn ends");
-			}
-			break;
+				break;
 			case 2:				
 				String fileExistsResponse;
 				do {
@@ -137,18 +170,18 @@ public class GameLaunch {
 					String command = sc.nextLine();
 					MapFileEdit mapFileEdit = new MapFileEdit();					
 					fileExistsResponse = mapFileEdit.fileExists(command);
-					
+
 					if(fileExistsResponse.contains("error")) {
 						System.out.println("Error in the -editmap command. Re-enter the command.");
 						continue;
 					}
-					
+
 					// Map file checked and created if not exist 
 					if(!fileExistsResponse.equals("exists")) {
 						mapFileExists = false;
 						System.out.println("Map file does not exist. New Map File created with name " + fileExistsResponse);
 					}
-					
+
 					do {
 						String editMapFileNameCommand = command;
 						System.out.println("Map File edit commands:");
@@ -156,13 +189,22 @@ public class GameLaunch {
 						System.out.println("savemap 'filename' If done with editing file.");
 						System.out.println("validatemap - to check the validity of map");
 						command = sc.nextLine().trim();
-						System.out.println(editMapFileNameCommand);
 						response = mapFileEdit.commandParser(command, editMapFileNameCommand, mapFileExists);				
 					} while(!response.equals("saved"));
 				} while(fileExistsResponse.equals("error"));
-			break;
-		}
+				break;
+			}
 		}while(optionMain!=3);
 	}
-
+	public static void printPlayerInformation(int i) {
+		// Printing players' countries with adjacent countries and number of armies
+		HashMap<String, Country> countries = Game.getPlayersList().get(i).getOwnedCountries();
+		for(java.util.Map.Entry<String, Country> k:countries.entrySet()) {
+			System.out.print(k.getKey() +" : "+ k.getValue().getNumberOfArmies() + " : ");
+			for(Country country : k.getValue().getNeighbours()) {
+				System.out.print(country.getCountryName()+" ");
+			}
+			System.out.println();
+		}
+	}
 }
