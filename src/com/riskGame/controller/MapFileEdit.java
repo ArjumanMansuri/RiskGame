@@ -13,6 +13,11 @@ import com.riskGame.models.Country;
 import com.riskGame.models.Game;
 import com.riskGame.models.Map;
 
+/**
+ * This class contains the business logic to edit the map file.
+ * @author SaiChitta
+ *
+ */
 public class MapFileEdit {
 
 	public static final String MAP_FILE_DIR = "maps/";
@@ -26,8 +31,9 @@ public class MapFileEdit {
 	private String editMapFileName;
 	
 	/**
-	 * Check if the map file exists.
-	 * @param command
+	 * Check if the given map file exists.
+	 * @param command - command to edit map file.
+	 * 
 	 */
 	public String fileExists(String command) {		
 		if(command.length() < 1) {
@@ -60,10 +66,11 @@ public class MapFileEdit {
 	}
 
 	/**
-	 * Validate the command and parse. 
-	 * @param command
-	 * @param fileName
-	 * @return error / success 
+	 * Validate the command and parse.
+	 * @param command - command input from the user.
+	 * @param fileName - name of the map file.
+	 * @return error if incorrect else success if correct.
+	 * 
 	 */
 	public String commandParser(String command, String fileNameInput, boolean mapFileExists) {		
 		String[] commands = {"editcontinent", "editcountry", "editneighbor"};
@@ -140,7 +147,8 @@ public class MapFileEdit {
 	
 	/**
 	 * Outputs to console the status of the map.
-	 * @param status status of the map - valid/invalid
+	 * @param status - status of the map - valid/invalid.
+	 * 
 	 */
 	private void printMapStatusMessage(boolean status) {
 		if(status) {
@@ -151,8 +159,9 @@ public class MapFileEdit {
 	}
 	
 	/**
-	 * Get the map file content as continents, countries, their neighbors 
-	 * @return mapfilecontent
+	 * This method is used to show the contents of the map file.
+	 * @return contents from the map file.
+	 * 
 	 */
 	public String showMap() {
 		String mapContent = "";
@@ -166,7 +175,8 @@ public class MapFileEdit {
 
 	/**
 	 * Edit the neighbor of a country.
-	 * @param commandInput
+	 * @param commandInput - input command from the user.
+	 * 
 	 */
 	public void editNeighbor(String[] commandInput) {
 		if(commandInput.length >= 4) {
@@ -204,8 +214,9 @@ public class MapFileEdit {
 	
 	/**
 	 * Check if a given country exists in the map.
-	 * @param countryName name of the country to check existence
-	 * @return Country object
+	 * @param countryName - name of the country to check existence.
+	 * @return Country object.
+	 * 
 	 */
 	public Country isCountryExists(String countryName){
 		HashMap<String, Continent> editMapContinents= Game.getEditMap().getContinents();
@@ -226,9 +237,10 @@ public class MapFileEdit {
 		return countryFound;		
 	}
 	
-	/** 
-	 * Edit a country - add or remove.
-	 * @param commandInput
+	/**
+	 * This method allows to edit a country - add or remove.
+	 * @param commandInput - command from the user.
+	 * 
 	 */
 	public void editCountry(String[] commandInput) {
 		if(commandInput.length > 2) {
@@ -257,7 +269,7 @@ public class MapFileEdit {
 	}
 
 	/**
-	 * Edit a continent in a map file. Add or remove continent.
+	 * This method edits a continent in a map file. Add or remove continent.
 	 * @param editMap map object to be edited.
 	 * @param commandInput Full command entered by the user.
 	 */
@@ -282,9 +294,10 @@ public class MapFileEdit {
 	}
 
 	/**
-	 * Checks the input command arguments. 
+	 * This method edits a continent in a map file. Add or remove continent.
+	 * @param editMap  - map object to be edited.
+	 * @param commandInput - Full command entered by the user.
 	 * 
-	 * @param commandInput
 	 */
 	private boolean checkArguments(String[] commandInput) {		
 		if(Arrays.asList(commandInput).contains("-add") || Arrays.asList(commandInput).contains("-remove")) {
@@ -294,9 +307,9 @@ public class MapFileEdit {
 	}
 
 	/**
-	 * Validate the loaded map.
-	 * Run before loading a map/saving a map.
-	 * @return true/false
+	 * This method validates the loaded map. Run before loading a map/saving a map.
+	 * @return true/false.
+	 * 
 	 */
 	public boolean validateMap() {				
 		// Check if the current edit map object has any continents 
@@ -315,8 +328,9 @@ public class MapFileEdit {
 	}
 	
 	/**
-	 * Validate a country's neighbor's list is synchronized.
-	 * @return true/false
+	 * This method validates a country's neighbor's list is synchronized.
+	 * @return true/false.
+	 * 
 	 */
 	public boolean validateNeighbors() {
 		boolean validNeighbors = true;
@@ -335,10 +349,11 @@ public class MapFileEdit {
 	}
 		
 	/**
-	 * Check if the neighbor countries have the given country as their neighbors. 
+	 *This method checks if the neighbor countries have the given country as their neighbors.
 	 * @param country
 	 * @param neighbours
-	 * @return
+	 * @return true/false
+	 * 
 	 */
 	public boolean checkNeighborsHasCountry(Country country, ArrayList<Country> neighbours) {
 		int neighbourCount = 0;
@@ -364,8 +379,10 @@ public class MapFileEdit {
 	}
 
 	/**
-	 * Validate all the countries in a continent are connected. 
-	 * @return true - if all countries are connected / false if a country is not connected to any country
+	 * This method validates all the countries in a continent are connected.
+	 * @return true - if all countries are connected / 
+	 * 				  false if a country is not connected to any country.
+	 * 
 	 */
 	public boolean validateCountryConnections(){
 		int continentsConnected = 0;
@@ -373,9 +390,10 @@ public class MapFileEdit {
 			Continent currentContinent = Game.getEditMap().getContinents().get(continentKey);
 			
 			/**
-			 *  Iterate all the countries in the continent and check if either of them doesn't have a neighbor 
-			 *  which is from the same continent
-			 */	
+			 * Iterate all the countries in the continent and check if either of them.
+			 * doesn't have a neighbor which is from the same continent.
+			 * 
+			 */
 			int countriesConnected = 0;
 			for(Country currentCountry : currentContinent.getTerritories()) {				
 				if(countrySameContinentNeighbor(currentCountry.getNeighbours(), getCountryNames(currentContinent.getTerritories()))) {
@@ -393,10 +411,11 @@ public class MapFileEdit {
 	}
 	
 	/**
-	 * Checks if neighbors are from the countriesInContinent
+	 * This method Checks if neighbors are from the countriesInContinent
 	 * @param neighbors
 	 * @param countriesInContinent
-	 * @return neighbourFromCountryFound true if neighbor is found from same continent 
+	 * @return neighbourFromCountryFound true if neighbor is found from same continent.
+	 * 
 	 */
 	private boolean countrySameContinentNeighbor(ArrayList<Country> neighbors, String[] countriesInContinent) {
 		boolean neighbourFromCountryFound = false;
@@ -410,9 +429,10 @@ public class MapFileEdit {
 	}	
 	
 	/**
-	 * Get country names from Country array list
+	 * ter method to get country names from Country array list
 	 * @param continentCountries
-	 * @return
+	 * @return countryNames
+	 * 
 	 */
 	private String[] getCountryNames(List<Country> continentCountries) {
 		String[] countryNames = new String[continentCountries.size()];
@@ -425,8 +445,10 @@ public class MapFileEdit {
 	}
 
 	/**
-	 * Validate if a given continent is connected to at least one other continent in the graph.
+	 * This method validates if a given continent is connected to at least one other continent in
+	 * the graph.
 	 * @return true - if all continents are connected, else false.
+	 * 
 	 */
 	public boolean validateContinentConnections() {
 		int connectedContinents = 0;
@@ -452,9 +474,11 @@ public class MapFileEdit {
 	}
 
 	/**
-	 * Check if the given checkCountry exists in all other continent's country's neighbor list. 
-	 * @param ignoreContinentKey Ignores this continent while checking for the country check.
-	 * @param checkCountry Checks this country in all other continents excepts the ignoreContinentKey  
+	 * this method checks if the given checkCountry exists in all other continent's country's
+	 * neighbor list.
+	 * @param ignoreContinentKey - Ignores this continent while checking for the country check.
+	 * @param checkCountry - Checks this country in all other continents excepts the ignoreContinentKey.
+	 * 
 	 */
 	private boolean isCountryExistInOtherContinents(String ignoreContinentKey, Country checkCountry) {
 		boolean countryExists = false;		
@@ -478,9 +502,10 @@ public class MapFileEdit {
 	}	
 	
 	/**
-	 * Save the map object to the filename
-	 * @param commandInput 
-	 * @return boolean 
+	 * this method saves the map object to the filename.
+	 * @param commandInput - command fro the user.
+	 * @return int value for the correct message.
+	 * 
 	 */
 	public int saveMap(String[] commandInput) {		
 		if(commandInput.length != 2) {
@@ -519,8 +544,9 @@ public class MapFileEdit {
 	}
 	
 	/**
-	 * Process the edit Map object and convert to string to save to file.
-	 * @return fileContent .map file content 
+	 * This method processes the edit Map object and convert to string to save to file.
+	 * @return fileContent .map file content.
+	 * 
 	 */
 	private String getSaveMapFileContent() {
 		String fileContent = "[Continents]\n";
@@ -546,9 +572,10 @@ public class MapFileEdit {
 	}
 	
 	/**
-	 * Get a Comma Separated String of neighbor list.
-	 * @param neighbours
-	 * @return CSV list 
+	 * getter method to get a Comma Separated String of neighbor list.
+	 * @param neighbours.
+	 * @return CSV list.
+	 * 
 	 */
 	private String getNeighborCSV(ArrayList<Country> neighbours) {
 		String neighborCSV = "";
@@ -560,16 +587,18 @@ public class MapFileEdit {
 	}
 	
 	/**
-	 * Getter method
-	 * @return editMapFileName
+	 * Getter method to get edit map file name.
+	 * @return editMapFileName.
+	 * 
 	 */
 	public String getEditMapFileName() {
 		return editMapFileName;
 	}
 	
 	/**
-	 * Setter method
-	 * @param editMapFileName
+	 * Setter method to set edit map file name.
+	 * @param editMapFileName.
+	 * 
 	 */
 	public void setEditMapFileName(String editMapFileName) {
 		this.editMapFileName = editMapFileName;

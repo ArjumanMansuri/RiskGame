@@ -12,7 +12,7 @@ import com.riskGame.models.Map;
 import com.riskGame.models.Country;
 
 /**
- * Controller to read Map file.
+ * This class contains the business logic  to read Map file.
  * @author SaiChitta
  * 
  */
@@ -30,9 +30,9 @@ public class MapFileParser {
 	}
 	
 	/**
-	 * Reads the map file data and create Map object.  	
+	 * Thi method reads the map file data and create Map object.  	
 	 * @return map - Map object containing territories and continents.
-	 * @param fileName name of the map file to read.
+	 * 
 	 */
 	public Map readFileData(String fileName){
 		if(!validateValidMapFile(fileName)) {
@@ -100,8 +100,8 @@ public class MapFileParser {
 	}
 	
 	/**
-	 * Validate if the given filename is a valid map file.
-	 * @param fileName
+	 * This method validates if the given filename is a valid map file.
+	 * @param fileName.
 	 * @return true if the file is a valid map file.
 	 */
 	public boolean validateValidMapFile(String fileName) {		
@@ -131,9 +131,10 @@ public class MapFileParser {
 	}
 
 	/**
-	 * Convert territoryLine into a list of territory instances
+	 * This method converts territoryLine into a list of territory instances.
 	 * @param territoryLine territory line from map file. 
 	 * @return territories List of territories.
+	 * 
 	 */
 	private ArrayList<Country> convertToTerritories(String[] territoryLine) {
 		ArrayList<Country> countries = new ArrayList<Country>();		
