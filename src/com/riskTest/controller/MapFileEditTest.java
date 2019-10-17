@@ -4,12 +4,14 @@ import org.junit.Test;
 
 import com.riskGame.controller.MapFileEdit;
 import com.riskGame.controller.MapFileParser;
+import com.riskGame.models.Country;
 import com.riskGame.models.Game;
 import com.riskGame.models.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 
@@ -64,4 +66,25 @@ public class MapFileEditTest {
 		assertEquals(5, previousContinentCount - 1);
 	}
 	
+	@Test
+	public void testEditCountryAdd() {
+		int australiaCountryCount = Game.getEditMap().getContinents().get("Australia").getTerritories().size();
+		mapEdit.editCountry("editcountry -add TeamRisk Australia".split(" "));
+		int australiaCountryCountAdd = Game.getEditMap().getContinents().get("Australia").getTerritories().size();
+		assertEquals(australiaCountryCount + 1, australiaCountryCountAdd);
+	}
+	
+	@Test
+	public void testEditCountryRemove() {
+		mapEdit.editCountry("editcountry -remove Alaska".split(" "));
+		Country alaskaCountry = mapEdit.isCountryExists("Alaska");
+		assertNull(alaskaCountry);
+	}
+	
+	@Test
+	public void testAddNeighbor() {
+		mapEdit.editCountry("editcountry -add TeamRisk Australia".split(" "));
+		mapEdit.editNeighbor("editneighbor -add Alaska TeamRisk".split(" "));				
+		System.out.println(mapEdit.showMap());				
+	}
 }

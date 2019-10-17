@@ -154,7 +154,7 @@ public class MapFileEdit {
 	 * 
 	 * @return
 	 */
-	private String showMap() {
+	public String showMap() {
 		String mapContent = "";
 		// Check if the current edit map object has any continents 
 		if(Game.getEditMap().getContinents().isEmpty()) {
@@ -168,14 +168,15 @@ public class MapFileEdit {
 	 * Edit the neighbor of a country.
 	 * @param commandInput
 	 */
-	private void editNeighbor(String[] commandInput) {
+	public void editNeighbor(String[] commandInput) {
 		if(commandInput.length >= 4) {
 			String operation = commandInput[1]; // add or remove
 			String countryName = commandInput[2]; 
 			String neighborCountryName = commandInput[3]; 
 			HashMap<String, Continent> editMapContinents= Game.getEditMap().getContinents();
 			
-			if(isCountryExists(neighborCountryName) != null) {						
+			Country neighbourCountry;
+			if((neighbourCountry = isCountryExists(neighborCountryName)) != null) {						
 				if(operation.equals("-add")) {			
 					Country addCountry = new Country();
 					addCountry.setCountryName(neighborCountryName);
@@ -184,6 +185,7 @@ public class MapFileEdit {
 					Country country = isCountryExists(countryName);
 					if(country != null) {
 						country.getNeighbours().add(addCountry);
+						neighbourCountry.getNeighbours().add(country);
 					}					
 				} else if(operation.equals("-remove")) {
 					for(String continentKey : editMapContinents.keySet()) {										
@@ -201,7 +203,7 @@ public class MapFileEdit {
 	 * @param countryName name of the country to check existence
 	 * @return Country object
 	 */
-	private Country isCountryExists(String countryName){
+	public Country isCountryExists(String countryName){
 		HashMap<String, Continent> editMapContinents= Game.getEditMap().getContinents();
 		Country countryFound = null;
 		
@@ -224,7 +226,7 @@ public class MapFileEdit {
 	 * Edit a country - add or remove.
 	 * @param commandInput
 	 */
-	private void editCountry(String[] commandInput) {
+	public void editCountry(String[] commandInput) {
 		if(commandInput.length > 2) {
 			String operation = commandInput[1]; // add or remove
 			String countryName = commandInput[2]; // country Name value		 
@@ -333,7 +335,7 @@ public class MapFileEdit {
 	 * @param neighbours
 	 * @return
 	 */
-	private boolean checkNeighborsHasCountry(Country country, ArrayList<Country> neighbours) {
+	public boolean checkNeighborsHasCountry(Country country, ArrayList<Country> neighbours) {
 		int neighbourCount = 0;
 		
 		// neighborCountry doesn't have neighbors set in the object. 
