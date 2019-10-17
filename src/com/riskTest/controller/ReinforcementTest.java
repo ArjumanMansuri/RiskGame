@@ -19,7 +19,9 @@ public class ReinforcementTest {
 	Continent myContinent;
 	Player myPlayer;
 	
-	
+	/**
+	 * This method iscalled before every test method of ReinforcementTest class.
+	 */
 	@Before
 	public void before() {
 		

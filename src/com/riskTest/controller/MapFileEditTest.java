@@ -22,7 +22,9 @@ import org.junit.Before;
 public class MapFileEditTest {	
 	MapFileParser mapParser;
 	MapFileEdit mapEdit;
-	
+	/**
+	 * This method is called before every TestMap Test is executed.
+	 */
 	@Before
 	public void beforeTestMap() {
 		mapParser = new MapFileParser();
