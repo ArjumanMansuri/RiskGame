@@ -1,7 +1,6 @@
 package com.riskGame.models;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class Player {
 
@@ -9,13 +8,18 @@ public class Player {
     private int playerNumOfArmy;
     private HashMap<String, Continent> playerContinent;
     private HashMap<String,Country> ownedCountries;
-    
+
+    /**
+     * This is a default constructor which will create player object.
+     *
+     */
     public Player(){
         playerContinent = new HashMap<String, Continent>();
         ownedCountries = new HashMap();
     }
 
 	/**
+     * getter method to get the name of the player.
      * @return The player name
      */
     public String getPlayerName() {
@@ -23,7 +27,7 @@ public class Player {
     }
 
     /**
-     *
+     * setter method to assign the player name.
      * @param playerName The player name
      */
     public void setPlayerName(String playerName) {
@@ -31,7 +35,7 @@ public class Player {
     }
 
     /**
-     *
+     * getter method to get the number of army/armies player possess
      * @return The number of army/armies player possess
      */
     public int getPlayerNumOfArmy() {
@@ -39,7 +43,7 @@ public class Player {
     }
 
     /**
-     *
+     * setter method to assign the number of army/armies player possess.
      * @param playerNumOfArmy The number of army/armies player possess
      */
     public void setPlayerNumOfArmy(int playerNumOfArmy) {
@@ -47,7 +51,7 @@ public class Player {
     }
 
     /**
-     *
+     * getter method to get the name of the player.
      * @return List of continent owned by player
      */
     public HashMap<String,Continent> getPlayerContinent() {
@@ -55,7 +59,7 @@ public class Player {
     }
 
     /**
-     *
+     * setter method to assign the list of continent owned by player.
      * @param playerContinent List of continent owned by player
      */
     public void setPlayerContinent(HashMap<String,Continent> playerContinent) {
@@ -63,7 +67,7 @@ public class Player {
     }
 
     /**
-     *
+     * getter method to get the list of countries owned by a player
      * @return ownedCountries List of countries owned by a player
      */
     public HashMap<String, Country> getOwnedCountries() {
@@ -71,8 +75,8 @@ public class Player {
     }
 
     /**
-     *
-     * @param ownedCountries List of countries owned by a player
+     * setter method to assign the list of countries owned by a player
+     * @param ownedCountries list of countries owned by a player
      */
     public void setOwnedCountries(HashMap<String, Country> ownedCountries) {
         this.ownedCountries = ownedCountries;
