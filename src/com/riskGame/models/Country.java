@@ -37,7 +37,6 @@ public class Country {
 		return countryName;
 	}
 
-
 	public void setCountryName(String countryName) {
 		this.countryName = countryName;
 	}

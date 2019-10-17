@@ -3,36 +3,17 @@ package com.riskGame.models;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * This class contains the data members for the player
- * @author Mudra-PC
- */
-
 public class Player {
 
     private String playerName;
     private int playerNumOfArmy;
-    private Map<String, Continent> playerContinent;
+    private HashMap<String, Continent> playerContinent;
     private HashMap<String,Country> ownedCountries;
     
     public Player(){
         playerContinent = new HashMap<String, Continent>();
         ownedCountries = new HashMap();
     }
-    
-    public HashMap<String, Country> getOwnedCountries() {
-		return ownedCountries;
-	}
-
-
-
-
-	public void setOwnedCountries(HashMap<String, Country> ownedCountries) {
-		this.ownedCountries = ownedCountries;
-	}
-
-
-
 
 	/**
      * @return The player name
@@ -69,7 +50,7 @@ public class Player {
      *
      * @return List of continent owned by player
      */
-    public Map<String,Continent> getPlayerContinent() {
+    public HashMap<String,Continent> getPlayerContinent() {
         return playerContinent;
     }
 
@@ -77,8 +58,23 @@ public class Player {
      *
      * @param playerContinent List of continent owned by player
      */
-    public void setPlayerContinent(Map<String,Continent> playerContinent) {
+    public void setPlayerContinent(HashMap<String,Continent> playerContinent) {
         this.playerContinent = playerContinent;
     }
 
+    /**
+     *
+     * @return ownedCountries List of countries owned by a player
+     */
+    public HashMap<String, Country> getOwnedCountries() {
+        return ownedCountries;
+    }
+
+    /**
+     *
+     * @param ownedCountries List of countries owned by a player
+     */
+    public void setOwnedCountries(HashMap<String, Country> ownedCountries) {
+        this.ownedCountries = ownedCountries;
+    }
 }

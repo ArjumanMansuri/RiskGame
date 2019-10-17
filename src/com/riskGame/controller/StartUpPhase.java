@@ -1,8 +1,13 @@
 package com.riskGame.controller;
 
 import com.riskGame.models.Player;
-import java.util.HashMap;
+import com.riskGame.models.Country;
+import com.riskGame.models.Map;
+import com.riskGame.controller.MapFileEdit;
+import com.riskGame.controller.MapFileParser;
 
+import java.io.File;
+import java.util.HashMap;
 import java.util.*;
 
 /**
@@ -16,22 +21,19 @@ public class StartUpPhase {
 		playersData = new HashMap<Integer,Player>();
 	}
 
-	public String placeArmy(int i,String abc){
-		return "abc";
-	}
-
-	public String placeAll(int i){
-		return "abc";
-	}
-
+	/**
+	 * It parses the input string
+	 * @param input the input from the console passed from the GameLaunch.java
+	 * @return the string whether the input is processed or not. "exit" if processed and "error" if not.
+	 */
 	public String parser(String input){
+		input = input.trim();
+		Map mapObject;
 
 		//Check if input is empty or blank
-		if(input.isEmpty() || input.trim().length()==0) {
+		if(input.isEmpty() || input.length()==0) {
 			return "error";
 		}
-
-		input = input.trim();
 
 		//check if the input is number of player or any other command
 		if(input.matches("\\d+")){
@@ -43,46 +45,94 @@ public class StartUpPhase {
 
 		//call the gameplayer function
 		if(thisInput.contains("gameplayer")){
-			System.out.println(noOfPlayers);
 			if(inputValidator(thisInput)==0) return "error";
 			else return gamePlayer(thisInput);
 		}
+		else if(thisInput.contains("loadmap")){
+			String[] stringParsed = thisInput.split(" ");
+			String filename= stringParsed[1];
+			if(stringParsed[0].equals("loadmap")){
+				File mapFileCheck = new File("maps/"+stringParsed[1]);
+				if(mapFileCheck.exists()) {
+					MapFileParser m = new MapFileParser();
+					mapObject = m.readFileData(filename);
+					return "mapLoaded";
+				}
+			}
+		}
 		else
-			return "final return";
+			return "exit";
+
+		return "exit";
 	}
 
+	//left
+	public String placeArmy(int i,String abc){
+		return "abc";
+	}
+
+	//left
+	public String placeAll(int i){
+		return "abc";
+	}
+
+	/**
+	 * The function to process the input and add the data to the HASHMAP accordingly.
+	 * @param thisInput the input to be parsed and based on which 'add' or 'remove' is calculated
+	 * @return the string whether the process is successful or not. "exit" if successful and "error" if not.
+	 */
 	String gamePlayer(String thisInput){
 
 		String[] parsedString = thisInput.split(" ");
-		int playerId=1,army[]={60,35,30,25,20};
+		int playerId;
+		if(playersData.size()==0)
+			playerId=1;
+		else
+			playerId=playersData.size()+1;
+
+		int army[]={60,35,30,25,20};
 
 		for(int i=1;i<parsedString.length;i++){
-			if(parsedString[i].equals("-add")){
-				Player p = new Player();
-				p.setPlayerName(parsedString[i+1]);
 
-				if(!playersData.containsValue(p)){
+			if(parsedString[i].equals("-add")){
+
+				if(!ifContains(playersData,parsedString[i+1])){
+					Player p = new Player();
+					p.setPlayerName(parsedString[i+1]);
 					p.setPlayerNumOfArmy(army[noOfPlayers-2]);
 					playersData.put(playerId,p);
+					System.out.println(playerId+" "+playersData.get(playerId).getPlayerName());
 					i++;
 					playerId++;
 				}
 				else i++;
 			}
+
 			else if(parsedString[i].equals("-remove")){
-				Player p = new Player();
-				System.out.println("Here 1");
-				p.setPlayerName(parsedString[i+1]);
-				System.out.println(p.getPlayerName());
-				if(playersData.containsValue(p)){
-					System.out.println("Here 2");
-					for(int x=1;i<=noOfPlayers;i++){
+
+				if(ifContains(playersData,parsedString[i+1])){
+					for(int x=1;x<=noOfPlayers;x++){
 						Player temp;
 						temp = playersData.get(x);
+
 						if(temp.getPlayerName().equals(parsedString[i+1])){
-							System.out.println("Here 3");
-							playersData.remove(x);
-							noOfPlayers--;
+							if(x==noOfPlayers){
+								playersData.remove(x);
+								noOfPlayers--;
+								i++;
+							}
+							else
+							{
+								for(int y=x; y<playersData.size();y++){
+									playersData.put(y,playersData.get(y+1));
+									i++;
+								}
+								playersData.remove(noOfPlayers);
+								noOfPlayers--;
+								x=noOfPlayers+1;
+							}
+							System.out.println(noOfPlayers+" "+x);
+
 						}
 					}
 				}
@@ -90,16 +140,19 @@ public class StartUpPhase {
 			}
 		}
 		System.out.println(playersData);
-		/*for(int a=1;a<playersData.size();a++){
-			System.out.println();
-		}*/
+
 		if(playersData.size()<noOfPlayers)
 			return "addmore";
 		else
 			return "exit";
 	}
 
-	//input validator
+	/**
+	 * To validate the input string
+	 * @param thisInput Input String
+	 * @return 1 if valid and 0 if invalid
+	 * @throws ArrayIndexOutOfBoundsException
+	 */
 	int inputValidator(String thisInput) throws ArrayIndexOutOfBoundsException{
 		String[] parsedString = thisInput.split(" ");
 		try{
@@ -124,23 +177,19 @@ public class StartUpPhase {
 
 	}
 
-	public static void main(String[] args){
-		Scanner sc = new Scanner(System.in);
-		StartUpPhase s = new StartUpPhase();
-		System.out.println(s.parser(sc.nextLine()));
-		System.out.println(s.parser(sc.nextLine()));
-		System.out.println(s.parser(sc.nextLine()));
+	/**
+	 *
+	 * @param temp Hashmap with the data
+	 * @param name String to be searched in temp
+	 * @return True if found and False if not
+	 */
+	Boolean ifContains(HashMap<Integer,Player> temp,String name){
+		for(int i=1;i<=temp.size();i++){
+			if(temp.get(i).getPlayerName().equals(name))
+				return true;
+		}
+		return false;
 	}
-
-	/*public String placeArmy(int i, String string) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public String placeAll(int i) {
-		// TODO Auto-generated method stub
-		return null;
-	}*/
 }
 
 

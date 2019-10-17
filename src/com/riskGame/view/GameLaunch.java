@@ -31,11 +31,15 @@ public class GameLaunch {
 			String response ="";
 			switch(optionMain) {
 			case 1:
-				System.out.println("Enter number of players ranging from 2 to 6:");
-				noOfPlayers = sc.nextLine().trim();
-
 				StartUpPhase startUpPhase = new StartUpPhase();
-				startUpPhase.parser(noOfPlayers);
+				do{
+					System.out.println("Enter number of players ranging from 2 to 6:");
+					noOfPlayers = sc.nextLine().trim();
+					response=startUpPhase.parser(noOfPlayers);
+					System.out.println(response);
+				}while(response.equals("error"));
+
+
 				// choose map phase
 				System.out.println("Choose Map :");
 				// List the map files to choose from from the maps folder in the project
