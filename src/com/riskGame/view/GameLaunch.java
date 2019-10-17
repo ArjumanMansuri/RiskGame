@@ -71,7 +71,7 @@ public class GameLaunch {
 				while(!response.equals("done")) {
 					for(int i=1;i<=Integer.parseInt(noOfPlayers);i++) {
 						System.out.println("Player : "+Game.getPlayersList().get(i).getPlayerName());
-						System.out.println("Selct your option");
+						System.out.println("Select your option");
 						System.out.println("1.Place armies individually");
 						System.out.println("2.Place All");
 						int armyOption = Integer.parseInt(sc.nextLine());

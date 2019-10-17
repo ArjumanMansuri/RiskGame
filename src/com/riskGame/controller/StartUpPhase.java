@@ -1,8 +1,10 @@
 package com.riskGame.controller;
 
+import com.riskGame.models.Continent;
 import com.riskGame.models.Player;
 import com.riskGame.models.Country;
 import com.riskGame.models.Map;
+import com.riskGame.models.Game;
 import com.riskGame.controller.MapFileEdit;
 import com.riskGame.controller.MapFileParser;
 
@@ -28,8 +30,8 @@ public class StartUpPhase {
 	 */
 	public String parser(String input){
 		input = input.trim();
-		Map mapObject;
-
+		Map mapObject = null;
+		System.out.println(input);
 		//Check if input is empty or blank
 		if(input.isEmpty() || input.length()==0) {
 			return "error";
@@ -40,29 +42,47 @@ public class StartUpPhase {
 			noOfPlayers = Integer.parseInt(input);
 			if(noOfPlayers<2 || noOfPlayers>6) return "error";
 		}
+		String thisInput;
+		thisInput = input;
 
-		String thisInput = input.toLowerCase();
+		if(!input.contains("loadmap")){
+			thisInput = input.toLowerCase();
+		}
 
+		System.out.println(thisInput);
 		//call the gameplayer function
+
 		if(thisInput.contains("gameplayer")){
 			if(inputValidator(thisInput)==0) return "error";
 			else return gamePlayer(thisInput);
 		}
 		else if(thisInput.contains("loadmap")){
 			String[] stringParsed = thisInput.split(" ");
-			String filename= stringParsed[1];
+			String fileName= stringParsed[1];
+
+			String[] fileNameParsed = fileName.split("\\.");
+			System.out.println(fileNameParsed[0]);
 			if(stringParsed[0].equals("loadmap")){
-				File mapFileCheck = new File("maps/"+stringParsed[1]);
+				System.out.println("Loading map");
+
+				File mapFileCheck = new File("maps/"+fileName);
+
 				if(mapFileCheck.exists()) {
 					MapFileParser m = new MapFileParser();
-					mapObject = m.readFileData(filename);
+					mapObject = m.readFileData(fileName);
+					Game.setMap(mapObject);
+					System.out.println("Here "+mapObject);
 					return "mapLoaded";
 				}
 			}
 		}
-		else
-			return "exit";
+		else if(thisInput.contains("populatecountries")) {
+			HashMap<String, Continent> continentHash = mapObject.getContinents();
+			/*String abc = String.valueOf(continentHash.keySet());
+			System.out.println(abc);*/
+		}
 
+		//Final return if nothing works
 		return "exit";
 	}
 
