@@ -1,13 +1,7 @@
 package com.riskGame.view;
 
-import java.security.KeyStore.Entry;
 import java.util.HashMap;
 import java.util.Scanner;
-
-/**
- * @author Mudra-PC
- */
-
 import com.riskGame.controller.FortificationPhase;
 import com.riskGame.controller.MapFileEdit;
 import com.riskGame.controller.ReinforcementPhase;
@@ -23,16 +17,15 @@ import com.riskGame.models.Game;
 public class GameLaunch {
 
 	/**
-     * This main method creates an instance to start the game.
-     * @param args arguments  to run main method.
-     * 
-     */
+	 * This main method creates an instance to start the game.
+	 * @param args arguments  to run main method.
+	 * 
+	 */
 	public static void main(String[] args) {
 
 		int optionMain;
 		String noOfPlayers;
 		do {
-
 			System.out.println("Welcome to the Game");
 			System.out.println("Select from the following options:");
 			System.out.println("1.Play Game");
@@ -51,7 +44,6 @@ public class GameLaunch {
 					response=startUpPhase.parser(noOfPlayers);
 					System.out.println(response);
 				}while(response.equals("error"));
-
 
 				// choose map phase
 				System.out.println("Choose Map :");
@@ -78,7 +70,10 @@ public class GameLaunch {
 				System.out.println("populatecountries - to assign countries to players");
 				startUpPhase.parser(sc.nextLine());
 				// Show what countries belong to which player
-
+				for(int i=1;i<=Integer.parseInt(noOfPlayers);i++) {
+					System.out.println("Country population for Player "+i);
+					GameLaunch.printPlayerInformation(i);
+				}
 				// Army assignment starts
 				System.out.println("Army assignment starts");
 				while(!response.equals("done")) {
@@ -90,7 +85,6 @@ public class GameLaunch {
 							System.out.println("2.Place All");
 							int armyOption = Integer.parseInt(sc.nextLine());
 							if(armyOption==1) {
-
 								do {
 									if(response.contains("Error")) {
 										System.out.println(response);
@@ -98,8 +92,6 @@ public class GameLaunch {
 									System.out.println("Enter command as : placearmy 'countryname'");
 									response = startUpPhase.placeArmy(i, sc.nextLine().toString());
 								}while(!response.equals("donePlaceArmy"));
-
-
 							}
 							else {
 								do {
@@ -110,11 +102,8 @@ public class GameLaunch {
 									String command = sc.nextLine().trim();
 
 									response = startUpPhase.placeAll(i,command);
-
-
 								}while(!response.equals("donePlaceall"));
 							}
-
 						}
 						else {
 							System.out.println("All your armies have been placed");
@@ -122,7 +111,7 @@ public class GameLaunch {
 					}
 					response = startUpPhase.allPlayerArmies();
 				}
-
+				
 				System.out.println("Initial army assignment is done");
 
 				// reinforcement phase starts
@@ -133,9 +122,10 @@ public class GameLaunch {
 				for(int i=1;i<=Integer.parseInt(noOfPlayers);i++) {
 					System.out.println("Player : "+Game.getPlayersList().get(i).getPlayerName());
 					System.out.println("Reinforcement phase starts");
-					
+
+					// calculating reinforcement armies
 					rp.calculateReinforcementArmies(i);
-					
+
 					while(Game.getPlayersList().get(i).getPlayerNumOfArmy()!=0) {
 						if(response.contains("Error")) {
 							System.out.println(response);
@@ -166,6 +156,9 @@ public class GameLaunch {
 
 						String command = sc.nextLine().trim();
 						response = fp.fortify(i,command);
+						if(response.equals("done")) {
+							GameLaunch.printPlayerInformation(i);
+						}
 
 					}
 					while(!response.equals("done"));
