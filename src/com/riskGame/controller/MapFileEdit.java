@@ -292,7 +292,11 @@ public class MapFileEdit {
 			} else if(operation.equals("-remove")) {
 				System.out.println("Removing");
 				for(String continentKey : editMapContinents.keySet()) {										
-					editMapContinents.get(continentKey).getTerritories().removeIf(country -> country.getCountryName().equals(countryName));				
+					editMapContinents.get(continentKey).getTerritories().removeIf(country -> country.getCountryName().equals(countryName));	
+					
+					editMapContinents.get(continentKey).getTerritories().forEach(neighborcountry -> {
+						neighborcountry.getNeighbours().removeIf(n -> n.getCountryName().equals(countryName));
+					});
 				}
 			}		
 		}
@@ -542,8 +546,9 @@ public class MapFileEdit {
 			return SAVE_MAP_COMMAND_ERROR;
 		}
 		
-		if(!validateMapOnLoadAndSave(MAP_FILE_DIR + commandInput[1])) {
-			return SAVE_MAP_INVALID;
+		if(!validateMap()) {				
+			printMapStatusMessage(false);
+			return SAVE_MAP_NO_CONTINENTS;
 		}
 		
 		if(Game.getEditMap().getContinents().isEmpty()) {
