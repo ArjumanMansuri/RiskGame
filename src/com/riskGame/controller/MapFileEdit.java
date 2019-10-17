@@ -47,15 +47,23 @@ public class MapFileEdit {
 		else {
 			File mapFileCheck = new File(MAP_FILE_DIR + commandInput[1]);
 			if(mapFileCheck.exists()) {
-				setEditMapFileName(MAP_FILE_DIR + commandInput[1] );
-				return "exists";
+				setEditMapFileName(MAP_FILE_DIR + commandInput[1]);
+				if(validateMapOnLoadAndSave(MAP_FILE_DIR + commandInput[1])) {
+					return "exists";					
+				} else {
+					return "error";
+				}				
 			}else {
 				// create Map file with the name
 				File file = new File(MAP_FILE_DIR + commandInput[1]);
 				try {
 					if(file.createNewFile()) {	
 						setEditMapFileName(MAP_FILE_DIR + commandInput[1]);
-						return commandInput[1];
+						if(validateMapOnLoadAndSave(MAP_FILE_DIR + commandInput[1])) {
+							return commandInput[1];
+						}else {
+							return "error";							
+						}						
 					}
 				} catch (IOException e) {
 					return "error" + e.getMessage();
@@ -63,6 +71,28 @@ public class MapFileEdit {
 			}
 			return "error";
 		}
+	}
+	
+	private boolean validateMapOnLoadAndSave(String fileName) {
+		MapFileParser mapParser = new MapFileParser();
+				
+		if(mapParser.validateValidMapFile(fileName)) {			
+			Map editMap = Game.getEditMap();			
+			editMap = mapParser.readFileData(fileName);
+			Game.setEditMapSet(true);
+			Game.setEditMap(editMap);
+			
+			if(!validateMap()) {				
+				printMapStatusMessage(false);
+				return false;
+			}else {				
+				printMapStatusMessage(true);
+				return true;
+			}			
+		}else {
+			printMapStatusMessage(false);
+			return false;
+		}		
 	}
 
 	/**
@@ -510,6 +540,10 @@ public class MapFileEdit {
 	public int saveMap(String[] commandInput) {		
 		if(commandInput.length != 2) {
 			return SAVE_MAP_COMMAND_ERROR;
+		}
+		
+		if(!validateMapOnLoadAndSave(MAP_FILE_DIR + commandInput[1])) {
+			return SAVE_MAP_INVALID;
 		}
 		
 		if(Game.getEditMap().getContinents().isEmpty()) {
