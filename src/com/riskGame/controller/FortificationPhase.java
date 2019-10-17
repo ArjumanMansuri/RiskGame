@@ -8,18 +8,22 @@ import com.riskGame.models.Country;
 import com.riskGame.models.Game;
 
 /**
+ * This class contains the business logic of the fortification phase
  * 
  * @author Arjuman Mansuri
- * This class has business logic of the fortification phase
+ * @author Mudra-PC
+ * 
  *
  */
 public class FortificationPhase {
 
 	/**
-	 * This method would help making the fortification move if it is valid
-	 * @param fromCountry
-	 * @param toCountry
-	 * @param num
+	 * This is the constructor method to check if fortification move is valid.
+	 * 
+	 * @param player player number.
+	 * @param command fortification command.
+	 * @return done is completed successfully or appropriate error code.
+	 * 
 	 */
 	public String fortify(int player,String command) {
 		if(command.isEmpty() || command.trim().length()==0) return "Error : Invalid Command";

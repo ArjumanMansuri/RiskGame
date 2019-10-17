@@ -14,7 +14,9 @@ import java.util.HashMap;
 import java.util.*;
 
 /**
- * This class controls the startup phase
+ * This class contains the business logic of the StartUpPhase
+ * @author	niralhlad
+ * 
  */
 public class StartUpPhase {
     private HashMap<Integer,Player> playersData;
@@ -25,8 +27,8 @@ public class StartUpPhase {
     }
 
     /**
-     * It parses the input string
-     * @param input the input from the console passed from the GameLaunch.java
+     * This method parses the input string.
+     * @param input the input from the console passed from the GameLaunch.java.
      * @return the string whether the input is processed or not. "exit" if processed and "error" if not.
      */
     public String parser(String input){
@@ -112,8 +114,14 @@ public class StartUpPhase {
         return "Error";
     }
 
-    //left
-    public String placeArmy(int i,String command){
+    /**
+     * This method is used to place army into countries one by one.
+     * @param playerNumber - current player. 
+     * @param command - command from user.
+     * @return string value.
+     * 
+     */
+    public String placeArmy(int playerNumber,String command){
     	if(command.isEmpty() || command.trim().length()==0) return "Error : Invalid Command";
 		
 		String[] commandComponents = command.split(" ");
@@ -123,7 +131,7 @@ public class StartUpPhase {
 			return "Error : Enter placearmy command";
 		}
 		String countryName = commandComponents[1];
-		Player p = Game.getPlayersList().get(i);
+		Player p = Game.getPlayersList().get(playerNumber);
 		
 		if(!p.getOwnedCountries().containsKey(countryName)) {
 			return "Error : Country not owned by the player";
@@ -140,12 +148,18 @@ public class StartUpPhase {
 		return "donePlaceArmy";
     }
 
-    //left
-    public String placeAll(int i,String command){
+    /**
+     * Thus method is used to placeall army into countries owned by the players. 
+     * @param playerNumber - current player.
+     * @param command - command from user input.
+     * @return string value.
+     * 
+     */
+    public String placeAll(int playerNumber,String command){
 		
 		if(command.isEmpty() || command.trim().length()==0 || !command.equals("placeall")) return "Error : Invalid Command";
 		
-		Player p = Game.getPlayersList().get(i);
+		Player p = Game.getPlayersList().get(playerNumber);
 		HashMap<String,Country> countries = p.getOwnedCountries();
 		
 		// get countries with zero armies
@@ -167,7 +181,11 @@ public class StartUpPhase {
 		}
 		return "donePlaceall";
 	}
-
+    /**
+     * This method checks if all armies for all the players are placed.
+     * @return string value.
+     * 
+     */
     public String allPlayerArmies() {
     	boolean allPlayerDone = true; 
     	HashMap<Integer, Player> playerList = Game.getPlayersList();
@@ -191,6 +209,7 @@ public class StartUpPhase {
      * The function to process the input and add the data to the HASHMAP accordingly.
      * @param thisInput the input to be parsed and based on which 'add' or 'remove' is calculated
      * @return the string whether the process is successful or not. "exit" if successful and "error" if not.
+     * 
      */
     String gamePlayer(String thisInput){
 
@@ -263,10 +282,11 @@ public class StartUpPhase {
     }
 
     /**
-     * To validate the input string
-     * @param thisInput Input String
-     * @return 1 if valid and 0 if invalid
-     * @throws ArrayIndexOutOfBoundsException
+     * To validate the input string.
+     * @param thisInput Input String.
+     * @return 1 if valid and 0 if invalid.
+     * @throws ArrayIndexOutOfBoundsException.
+     * 
      */
     int inputValidator(String thisInput) throws ArrayIndexOutOfBoundsException{
         String[] parsedString = thisInput.split(" ");
@@ -293,10 +313,11 @@ public class StartUpPhase {
     }
 
     /**
-     *
-     * @param temp Hashmap with the data
-     * @param name String to be searched in temp
-     * @return True if found and False if not
+     * This method checks if the hashmap contains the string or not.
+     * @param temp Hashmap with the data.
+     * @param name String to be searched in temp.
+     * @return True if found and False if not.
+     * 
      */
     Boolean ifContains(HashMap<Integer,Player> temp,String name){
         for(int i=1;i<=temp.size();i++){
