@@ -2,6 +2,12 @@ package com.riskGame.models;
 
 import java.util.HashMap;
 
+/**
+ * This is a model class for Player that holds the properties for a player.
+ * @author niralhlad
+ *
+ */
+
 public class Player {
 
     private String playerName;
