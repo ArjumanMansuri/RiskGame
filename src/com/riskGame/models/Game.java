@@ -18,14 +18,6 @@ public class Game {
 	private static HashMap<Integer,Player> playersList;
 	private static Map editMap = new Map();
 	private static boolean editMapSet = false;
-	
-	public static boolean isEditMapSet() {
-		return editMapSet;
-	}
-
-	public static void setEditMapSet(boolean editMapSet) {
-		Game.editMapSet = editMapSet;
-	}
 
 	public Game() {
 		playersList = new HashMap<Integer, Player>();
@@ -54,6 +46,14 @@ public class Game {
 
 	public static void setEditMap(Map editMap) {
 		Game.editMap = editMap;
+	}
+	
+	public static boolean isEditMapSet() {
+		return editMapSet;
+	}
+
+	public static void setEditMapSet(boolean editMapSet) {
+		Game.editMapSet = editMapSet;
 	}
 }
 
