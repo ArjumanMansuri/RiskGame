@@ -5,9 +5,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class Country {
-	
+
 	private static Set<String> listOfCountries = new TreeSet<String>();
-	
+
 	public static Set<String> getListOfCountries() {
 		return listOfCountries;
 	}
@@ -20,7 +20,7 @@ public class Country {
 	private ArrayList<Country> neighbours;
 	private String owner;
 	private String continent;
-	
+
 	public String getContinent() {
 		return continent;
 	}
@@ -32,7 +32,7 @@ public class Country {
 	public Country() {
 		neighbours = new ArrayList<Country>();
 	}
-	
+
 	public String getCountryName() {
 		return countryName;
 	}
@@ -60,5 +60,5 @@ public class Country {
 	public void setOwner(String owner) {
 		this.owner = owner;
 	}
-	
+
 }
