@@ -76,6 +76,7 @@ public class GameLaunch {
 				}
 				// Army assignment starts
 				System.out.println("Army assignment starts");
+				
 				while(!response.equals("done")) {
 					for(int i=1;i<=Integer.parseInt(noOfPlayers);i++) {
 						System.out.println("Player : "+Game.getPlayersList().get(i).getPlayerName());
@@ -118,7 +119,8 @@ public class GameLaunch {
 
 				ReinforcementPhase rp = new ReinforcementPhase();
 				FortificationPhase fp = new FortificationPhase();
-
+				char continueGame = 'y';
+				while(continueGame=='y') {
 				for(int i=1;i<=Integer.parseInt(noOfPlayers);i++) {
 					System.out.println("Player : "+Game.getPlayersList().get(i).getPlayerName());
 					System.out.println("Reinforcement phase starts");
@@ -163,6 +165,9 @@ public class GameLaunch {
 					}
 					while(!response.equals("done"));
 					System.out.println("Player "+i+"'s turn ends");
+				}
+				System.out.println("Do you want to continue the game? 'y' or 'n'");
+				continueGame = sc.nextLine().trim().charAt(0);
 				}
 				break;
 			case 2:				
