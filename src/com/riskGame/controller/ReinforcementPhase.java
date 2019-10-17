@@ -20,7 +20,7 @@ public class ReinforcementPhase {
 		// country validation
 		if(currentPlayer.getOwnedCountries().containsKey(countryName)) {
 			int currentArmies = currentPlayer.getOwnedCountries().get(countryName).getNumberOfArmies();
-			int newArmies =  currentPlayer.getOwnedCountries().size() /3;		
+			int newArmies = calculateReinforcementArmies(currentPlayer);		
 			
 			if(numberOfArmies <= newArmies) {
 				currentArmies += newArmies;
@@ -30,5 +30,10 @@ public class ReinforcementPhase {
 			}			
 		} 
 		return "error";				
+	}
+
+	public int calculateReinforcementArmies(Player currentPlayer) {
+		int reinformentArmies =  currentPlayer.getOwnedCountries().size() /3;
+		return reinformentArmies;
 	}
 }
