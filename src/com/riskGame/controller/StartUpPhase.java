@@ -43,6 +43,8 @@ public class StartUpPhase {
         if(input.matches("\\d+")){
             noOfPlayers = Integer.parseInt(input);
             if(noOfPlayers<2 || noOfPlayers>6) return "error";
+            else
+            	return "done";
         }
         String thisInput;
         thisInput = input;
@@ -107,19 +109,84 @@ public class StartUpPhase {
         }
 
         //Final return if nothing works
-        return "exit";
+        return "Error";
     }
 
     //left
-    public String placeArmy(int i,String abc){
-        return "abc";
+    public String placeArmy(int i,String command){
+    	if(command.isEmpty() || command.trim().length()==0) return "Error : Invalid Command";
+		
+		String[] commandComponents = command.split(" ");
+		String commandName = commandComponents[0];
+		
+		if(!commandName.equals("placearmy")) {
+			return "Error : Enter placearmy command";
+		}
+		String countryName = commandComponents[1];
+		Player p = Game.getPlayersList().get(i);
+		
+		if(!p.getOwnedCountries().containsKey(countryName)) {
+			return "Error : Country not owned by the player";
+		}
+		HashMap<String,Country> countries = p.getOwnedCountries();
+		if(countries.get(countryName).getNumberOfArmies()==1) {
+			for (Country country : countries.values()) {
+				if(country.getNumberOfArmies()==0) {
+					return "Error : Country "+ country.getCountryName()+" has 0 armies. Please put an army on it.";
+				}
+			}
+		}
+		p.getOwnedCountries().get(countryName).setNumberOfArmies(p.getOwnedCountries().get(countryName).getNumberOfArmies()+1);
+		return "donePlaceArmy";
     }
 
     //left
-    public String placeAll(int i){
-        return "abc";
-    }
+    public String placeAll(int i,String command){
+		
+		if(command.isEmpty() || command.trim().length()==0 || !command.equals("placeall")) return "Error : Invalid Command";
+		
+		Player p = Game.getPlayersList().get(i);
+		HashMap<String,Country> countries = p.getOwnedCountries();
+		
+		// get countries with zero armies
+		for (Country country : countries.values()) {
+			if(country.getNumberOfArmies()==0) {
+				countries.get(country.getCountryName()).setNumberOfArmies(1);
+				p.setPlayerNumOfArmy(p.getPlayerNumOfArmy()-1);
+			}
+		}
+		
+		while(p.getPlayerNumOfArmy()!=0) {
+		for (Country country : countries.values()) {
+			if(p.getPlayerNumOfArmy()==0) {
+				break;
+			}
+			p.getOwnedCountries().get(country.getCountryName()).setNumberOfArmies(p.getOwnedCountries().get(country.getCountryName()).getNumberOfArmies()+1);
+			p.setPlayerNumOfArmy(p.getPlayerNumOfArmy()-1);
+			}
+		}
+		return "donePlaceall";
+	}
 
+    public String allPlayerArmies() {
+    	boolean allPlayerDone = true; 
+    	HashMap<Integer, Player> playerList = Game.getPlayersList();
+    	for(int i=1;i<=playerList.size();i++) {
+    		if(playerList.get(i).getPlayerNumOfArmy()==0) {
+    			allPlayerDone = true && allPlayerDone;
+    		}
+    		else {
+    			allPlayerDone = false && allPlayerDone;
+    		}
+    	}
+    	if(allPlayerDone) {
+    		return "done";
+    	}
+    	else {
+    		return "";
+    	}
+    }
+    
     /**
      * The function to process the input and add the data to the HASHMAP accordingly.
      * @param thisInput the input to be parsed and based on which 'add' or 'remove' is calculated
