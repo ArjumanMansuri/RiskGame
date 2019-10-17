@@ -151,8 +151,8 @@ public class MapFileEdit {
 	}
 	
 	/**
-	 * 
-	 * @return
+	 * Get the map file content as continents, countries, their neighbors 
+	 * @return mapfilecontent
 	 */
 	public String showMap() {
 		String mapContent = "";
@@ -191,7 +191,11 @@ public class MapFileEdit {
 					for(String continentKey : editMapContinents.keySet()) {										
 						editMapContinents.get(continentKey).getTerritories().forEach(country -> {						
 							country.getNeighbours().removeIf(neighbor -> neighbor.getCountryName().equals(neighborCountryName));						
-						}); 					
+						}); 	
+						
+						editMapContinents.get(continentKey).getTerritories().forEach(country -> {
+							country.getNeighbours().removeIf(n -> n.getCountryName().equals(countryName));
+						});
 					}								
 				}
 			}			
@@ -244,8 +248,9 @@ public class MapFileEdit {
 					}	
 				}
 			} else if(operation.equals("-remove")) {
+				System.out.println("Removing");
 				for(String continentKey : editMapContinents.keySet()) {										
-					editMapContinents.get(continentKey).getTerritories().removeIf(country -> country.getCountryName().equals(countryName));					
+					editMapContinents.get(continentKey).getTerritories().removeIf(country -> country.getCountryName().equals(countryName));				
 				}
 			}		
 		}
@@ -553,11 +558,19 @@ public class MapFileEdit {
 		neighborCSV = neighborCSV.replaceAll(",$", "");
 		return neighborCSV;
 	}
-
+	
+	/**
+	 * Getter method
+	 * @return editMapFileName
+	 */
 	public String getEditMapFileName() {
 		return editMapFileName;
 	}
-
+	
+	/**
+	 * Setter method
+	 * @param editMapFileName
+	 */
 	public void setEditMapFileName(String editMapFileName) {
 		this.editMapFileName = editMapFileName;
 	}	

@@ -111,14 +111,5 @@ public class MapFileEditTest {
 		Country alaskaCountry = mapEdit.isCountryExists("Alaska");
 		assertNull(alaskaCountry);
 	}
-	
-	/**
-	 * This method is to test adding a neighbor is successful.
-	 */
-	@Test
-	public void testAddNeighbor() {
-		mapEdit.editCountry("editcountry -add TeamRisk Australia".split(" "));
-		mapEdit.editNeighbor("editneighbor -add Alaska TeamRisk".split(" "));				
-		System.out.println(mapEdit.showMap());				
-	}
+
 }
