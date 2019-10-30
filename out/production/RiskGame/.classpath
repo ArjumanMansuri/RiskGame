@@ -2,5 +2,28 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="lib/junit5/org.junit_4.12.0.v201504281640/junit.jar"/>
+	<classpathentry kind="lib" path="lib/junit5/org.apiguardian_1.0.0.v20180327-1502.jar"/>
+	<classpathentry kind="lib" path="lib/junit5/org.hamcrest.core_1.3.0.v20180420-1519.jar"/>
+	<classpathentry kind="lib" path="lib/junit5/org.junit.jupiter.api_5.1.0.v20180327-1502.jar"/>
+	<classpathentry kind="lib" path="lib/junit5/org.junit.jupiter.engine_5.1.0.v20180327-1502.jar"/>
+	<classpathentry kind="lib" path="lib/junit5/org.junit.jupiter.migrationsupport_5.1.0.v20180327-1502.jar"/>
+	<classpathentry kind="lib" path="lib/junit5/org.junit.jupiter.params_5.1.0.v20180327-1502.jar"/>
+	<classpathentry kind="lib" path="lib/junit5/org.junit.platform.commons_1.1.0.v20180327-1502.jar"/>
+	<classpathentry kind="lib" path="lib/junit5/org.junit.platform.engine_1.1.0.v20180327-1502.jar"/>
+	<classpathentry kind="lib" path="lib/junit5/org.junit.platform.launcher_1.1.0.v20180327-1502.jar"/>
+	<classpathentry kind="lib" path="lib/junit5/org.junit.platform.runner_1.1.0.v20180327-1502.jar"/>
+	<classpathentry kind="lib" path="lib/junit5/org.junit.platform.suite.api_1.1.0.v20180327-1502.jar"/>
+	<classpathentry kind="lib" path="lib/junit5/org.junit.vintage.engine_5.1.0.v20180327-1502.jar"/>
+	<classpathentry kind="lib" path="lib/junit5/org.opentest4j_1.0.0.v20180327-1502.jar"/>
+	<classpathentry kind="lib" path="lib/common-lang3.jar"/>
+	<classpathentry kind="lib" path="lib/jdk_logging.jar"/>
+	<classpathentry kind="lib" path="lib/log4j-1.2.17.jar"/>
+	<classpathentry kind="lib" path="lib/jUnitLib/org.junit.jupiter.api_5.0.0.v20170910-2246.jar"/>
+	<classpathentry kind="lib" path="lib/jUnitLib/org.junit.jupiter.engine_5.0.0.v20170910-2246.jar"/>
+	<classpathentry kind="lib" path="lib/jUnitLib/org.junit.jupiter.migrationsupport_5.0.0.v20170910-2246.jar"/>
+	<classpathentry kind="lib" path="lib/jUnitLib/org.junit.jupiter.params_5.0.0.v20170910-2246.jar"/>
+	<classpathentry kind="lib" path="lib/jUnitLib/org.junit.platform.runner_1.0.0.v20170910-2246.jar"/>
+	<classpathentry kind="lib" path="lib/jUnitLib/org.junit.platform.suite.api_1.0.0.v20170910-2246.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
