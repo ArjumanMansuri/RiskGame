@@ -7,34 +7,33 @@ import com.riskGame.models.Continent;
 import com.riskGame.models.Country;
 import com.riskGame.models.Game;
 
-/**
- * 
- * @author Arjuman Mansuri
- * This class has business logic of the fortification phase
- *
- */
-public class FortificationPhase {
-
+public class AttackPhase {
+	
+	private static int attackerDiceNum;
+	private static int defenderDiceNum;
+	private static String attackerCountry;
+	private static String defenderCountry;
+	
 	/**
 	 * This method would help making the fortification move if it is valid
 	 * @param fromCountry
 	 * @param toCountry
 	 * @param num
 	 */
-	public String fortify(int player,String command) {
+	public String attackSetup(int player,String command) {
 		if(command.isEmpty() || command.trim().length()==0) {
 			return "Error : Invalid Command";
 		}
 		
 		String[] commandComponents = command.split(" ");
 		
-		// check if it is a fortification command
+		// check if it is an attack command
 		
 		String commandName = commandComponents[0];
-		if(!commandName.equalsIgnoreCase("fortify")) {
-			return "Error : Please enter fortification command";
+		if(!commandName.equalsIgnoreCase("attack")) {
+			return "Error : Please enter attack command";
 		}
-		// fortify none
+		// attack none
 		if(commandComponents.length == 2) {
 			if(commandComponents[1].equalsIgnoreCase("none")) {
 				return "done";
@@ -44,12 +43,9 @@ public class FortificationPhase {
 		if(!(commandComponents.length == 4)) {
 			return "Error : Number of arguments does not match";
 		}
-		
-		// fortify 'fromcountry' 'tocountry' 'num'
 		else {
 			String fromCountry = commandComponents[1];
 			String toCountry = commandComponents[2];
-			int num = Integer.parseInt(commandComponents[3]);
 			
 			 HashMap<String,Continent> continentList =  Game.getMap().getContinents();
 	            ArrayList<String> countries = new ArrayList<>();
@@ -63,26 +59,67 @@ public class FortificationPhase {
 			if(!doCountriesExist(countries, fromCountry, toCountry)){
 				return "Error : Either one or both of the country names do not exist";
 			}
-			// check if they are owned by same player
+			// check if attacking country owned by player
 			ArrayList<String> ownedCountries = Game.getPlayersList().get(player).getOwnedCountries();
-			if(areCountriesNotOwnedByPlayer(ownedCountries,fromCountry,toCountry)) {
-				return "Error : Either one or both of the country names are not owned by you";
+			if(isCountryNotOwnedByPlayer(ownedCountries,fromCountry)) {
+				return "Error : Country from which you want to attack is not owned by you";
 			}
+			
+			// check if attacked country owned by player
+			if(!isCountryNotOwnedByPlayer(ownedCountries,toCountry)) {
+				return "Error : You cannot attack a country owned by you";
+			}
+			
 			// check if they are adjacent
 			if(!(areCountriesAdjacent(fromCountry, toCountry))){
 					return "Error : Given countries are not adjacent";
 			}
-			// check if sufficient armies to move
-			if(!areArmiesSufficientToMove(fromCountry, num)) {
-				int maxArmiesToBeMoved = Country.getListOfCountries().get(fromCountry).getNumberOfArmies()-1;
-				return "Error : Insufficient armies to move. Try moving "+maxArmiesToBeMoved+" armies";
+			
+			String numDice = commandComponents[3];
+			if(!numDice.matches("\\d") || Integer.parseInt(numDice) > 3) {
+				return "Error : Please enter a valid number of dice (1, 2 or 3) you want to roll";
 			}
-			// move armies
-			Country.getListOfCountries().get(fromCountry).setNumberOfArmies(Country.getListOfCountries().get(fromCountry).getNumberOfArmies()-num);
-			Country.getListOfCountries().get(toCountry).setNumberOfArmies(Country.getListOfCountries().get(toCountry).getNumberOfArmies()+num);
+			int diceNum = Integer.parseInt(numDice);
+			// check if sufficient armies to move
+			if(!areArmiesSufficientToAttack(fromCountry, diceNum)) {
+				int maxArmiesToBeMoved = Country.getListOfCountries().get(fromCountry).getNumberOfArmies()-1;
+				return "Error : Insufficient armies on "+fromCountry+" to roll "+ diceNum+" dice. Try rolling "+maxArmiesToBeMoved+" dice.";
+			}
+			AttackPhase.attackerDiceNum = diceNum;
+			AttackPhase.attackerCountry = fromCountry;
+			AttackPhase.defenderCountry = toCountry;
+			// get to know the defender player
+			int defenderPlayer = Country.getListOfCountries().get(toCountry).getOwner();
+			return "DefenderPlayer "+defenderPlayer;
 		}
-		return "done";
 	}
+	
+	public String setDefendDice(int player,String command) {
+		if(command.isEmpty() || command.trim().length()==0) {
+			return "Error : Invalid Command";
+		}
+		
+		String[] commandComponents = command.split(" ");
+		
+		// check if it is a defend command
+		String commandName = commandComponents[0];
+		if(!commandName.equalsIgnoreCase("defend")) {
+			return "Error : Please enter defend command";
+		}
+		// Arguments less than 2
+		if(commandComponents.length < 2) {
+			return "Error : Please include number of dice you want to roll in the command";
+		}
+		String numDice = commandComponents[1];
+		if(!numDice.matches("\\d") || Integer.parseInt(numDice)>2) {
+			return "Error : Please enter a valid number of dice (1 or 2) you want to roll";
+		}
+		AttackPhase.attackerDiceNum = Integer.parseInt(numDice);
+		return "done";
+	
+	}
+	
+	
 	/**
 	 * This method checks if the countries provided as parameters exist
 	 * @param countries List of countries present in the game
@@ -102,12 +139,13 @@ public class FortificationPhase {
 	 * @return true if the countries are adjacent else false
 	 */
 	private boolean areCountriesAdjacent(String fromCountry,String toCountry) {
-		if(!(Country.getListOfCountries().get(fromCountry).getNeighbours().containsKey(toCountry))){		
-			return false;
-		}
-		else {
-			return true;
-		}
+		
+			if(!(Country.getListOfCountries().get(fromCountry).getNeighbours().containsKey(toCountry))){
+				return false;
+			}
+			else {
+				return true;
+			}
 	}
 	
 	/**
@@ -117,8 +155,8 @@ public class FortificationPhase {
 	 * @param toCountry Name of the country to which player wants to move his army/armies
 	 * @return true if the countries are owned by the player else false
 	 */
-	private boolean areCountriesNotOwnedByPlayer(ArrayList<String> ownedCountries,String fromCountry,String toCountry) {
-		return !ownedCountries.contains(fromCountry) || !ownedCountries.contains(toCountry);
+	private boolean isCountryNotOwnedByPlayer(ArrayList<String> ownedCountries,String fromCountry) {
+		return !ownedCountries.contains(fromCountry);
 	}
 	
 	/**
@@ -128,7 +166,7 @@ public class FortificationPhase {
 	 * @param num number of armies to move
 	 * @return true if sufficient armies available else false
 	 */
-	private boolean areArmiesSufficientToMove(String fromCountry,int num) {
-		return Country.getListOfCountries().get(fromCountry).getNumberOfArmies()>num;
+	private boolean areArmiesSufficientToAttack(String fromCountry,int diceNum) {
+		return Country.getListOfCountries().get(fromCountry).getNumberOfArmies()>diceNum;
 	}
 }

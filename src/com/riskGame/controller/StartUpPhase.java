@@ -84,17 +84,16 @@ public class StartUpPhase {
 			}
 		}
 		else if(thisInput.contains("populatecountries")) {
-			HashMap<String,Continent> continentList =  Game.getMap().getContinents();
-			ArrayList<Country> countries = new ArrayList<>();
-			for (Continent continent: continentList.values()) {
-				for(Country country : continent.getTerritories()){
+			ArrayList<String> countries = new ArrayList<>();
+				for(String country : Country.getListOfCountries().keySet()){
 					countries.add(country);
 				}
-			}
+			
 			while(countries.size()>0){
 				for(int i=1;i<=noOfPlayers;i++){
 					if(countries.size()>0){
-						Game.getPlayersList().get(i).getOwnedCountries().put(countries.get(0).getCountryName(),countries.get(0));
+						Country.getListOfCountries().get(countries.get(0)).setOwner(i);
+						Game.getPlayersList().get(i).getOwnedCountries().add(countries.get(0));
 						countries.remove(0);
 					}
 				}
@@ -125,18 +124,18 @@ public class StartUpPhase {
 		String countryName = commandComponents[1];
 		Player p = Game.getPlayersList().get(playerNumber);
 
-		if(!p.getOwnedCountries().containsKey(countryName)) {
+		if(!p.getOwnedCountries().contains(countryName)) {
 			return "Error : Country not owned by the player";
 		}
-		HashMap<String,Country> countries = p.getOwnedCountries();
-		if(countries.get(countryName).getNumberOfArmies()==1) {
-			for (Country country : countries.values()) {
-				if(country.getNumberOfArmies()==0) {
-					return "Error : Country "+ country.getCountryName()+" has 0 armies. Please put an army on it.";
+		ArrayList<String> countries = p.getOwnedCountries();
+		if(Country.getListOfCountries().get(countryName).getNumberOfArmies()==1) {
+			for (String country : countries) {
+				if(Country.getListOfCountries().get(country).getNumberOfArmies()==0) {
+					return "Error : Country "+ country+" has 0 armies. Please put an army on it.";
 				}
 			}
 		}
-		p.getOwnedCountries().get(countryName).setNumberOfArmies(p.getOwnedCountries().get(countryName).getNumberOfArmies()+1);
+		Country.getListOfCountries().get(countryName).setNumberOfArmies(Country.getListOfCountries().get(countryName).getNumberOfArmies()+1);
 		return "donePlaceArmy";
 	}
 
@@ -152,21 +151,21 @@ public class StartUpPhase {
 		if(command.isEmpty() || command.trim().length()==0 || !command.equals("placeall")) return "Error : Invalid Command";
 
 		Player p = Game.getPlayersList().get(playerNumber);
-		HashMap<String,Country> countries = p.getOwnedCountries();
+		ArrayList<String> countries = p.getOwnedCountries();
 
 		// get countries with zero armies
-		for (Country country : countries.values()) {
-			if(country.getNumberOfArmies()==0) {
-				countries.get(country.getCountryName()).setNumberOfArmies(1);
+		for (String country : countries) {
+			if(Country.getListOfCountries().get(country).getNumberOfArmies()==0) {
+				Country.getListOfCountries().get(country).setNumberOfArmies(1);
 				p.setPlayerNumOfArmy(p.getPlayerNumOfArmy()-1);
 			}
 		}
 		while(p.getPlayerNumOfArmy()!=0) {
-			for (Country country : countries.values()) {
+			for (String country : countries) {
 				if(p.getPlayerNumOfArmy()==0) {
 					break;
 				}
-				p.getOwnedCountries().get(country.getCountryName()).setNumberOfArmies(p.getOwnedCountries().get(country.getCountryName()).getNumberOfArmies()+1);
+				Country.getListOfCountries().get(country).setNumberOfArmies(Country.getListOfCountries().get(country).getNumberOfArmies()+1);
 				p.setPlayerNumOfArmy(p.getPlayerNumOfArmy()-1);
 			}
 		}

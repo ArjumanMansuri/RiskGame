@@ -1,6 +1,7 @@
 package com.riskGame.controller;
 
 
+import com.riskGame.models.Country;
 import com.riskGame.models.Game;
 import com.riskGame.models.Player;
 
@@ -50,14 +51,14 @@ public class ReinforcementPhase {
 		
 		
 			Player p = Game.getPlayersList().get(player);
-			if(!p.getOwnedCountries().containsKey(countryName)) {
+			if(!p.getOwnedCountries().contains(countryName)) {
 				return "Error : Country not owned by "+p.getPlayerName()+" or invalid country ";
 			}
 			if(!(p.getPlayerNumOfArmy()>=num)) {
 				return "Error : Insufficient armies to move";
 			}
 			p.setPlayerNumOfArmy(p.getPlayerNumOfArmy()-num);
-			p.getOwnedCountries().get(countryName).setNumberOfArmies(p.getOwnedCountries().get(countryName).getNumberOfArmies()+num);
+			Country.getListOfCountries().get(countryName).setNumberOfArmies(Country.getListOfCountries().get(countryName).getNumberOfArmies()+num);
 		
 		
 		return "";			

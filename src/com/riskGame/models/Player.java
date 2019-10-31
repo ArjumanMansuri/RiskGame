@@ -1,6 +1,6 @@
 package com.riskGame.models;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
 /**
  * This is a model class for Player that holds the properties for a player.
@@ -12,16 +12,14 @@ public class Player {
 
     private String playerName;
     private int playerNumOfArmy;
-    private HashMap<String, Continent> playerContinent;
-    private HashMap<String,Country> ownedCountries;
+    private ArrayList<String> ownedCountries;
 
     /**
      * This is a default constructor which will create player object.
      *
      */
     public Player(){
-        playerContinent = new HashMap<String, Continent>();
-        ownedCountries = new HashMap();
+        ownedCountries = new ArrayList<String>();
     }
 
 	/**
@@ -57,34 +55,19 @@ public class Player {
     }
 
     /**
-     * getter method to get the name of the player.
-     * @return List of continent owned by player
-     */
-    public HashMap<String,Continent> getPlayerContinent() {
-        return playerContinent;
-    }
-
-    /**
-     * setter method to assign the list of continent owned by player.
-     * @param playerContinent List of continent owned by player
-     */
-    public void setPlayerContinent(HashMap<String,Continent> playerContinent) {
-        this.playerContinent = playerContinent;
-    }
-
-    /**
      * getter method to get the list of countries owned by a player
      * @return ownedCountries List of countries owned by a player
      */
-    public HashMap<String, Country> getOwnedCountries() {
-        return ownedCountries;
-    }
-
+    public ArrayList<String> getOwnedCountries() {
+		return ownedCountries;
+	}
+    
     /**
      * setter method to assign the list of countries owned by a player
      * @param ownedCountries list of countries owned by a player
      */
-    public void setOwnedCountries(HashMap<String, Country> ownedCountries) {
-        this.ownedCountries = ownedCountries;
-    }
+    public void setOwnedCountries(ArrayList<String> ownedCountries) {
+		this.ownedCountries = ownedCountries;
+	}
+
 }
