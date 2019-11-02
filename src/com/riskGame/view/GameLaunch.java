@@ -81,7 +81,7 @@ public class GameLaunch {
 				startUpPhase.parser(sc.nextLine());
 				// Show what countries belong to which player
 				for(int i=1;i<=Integer.parseInt(noOfPlayers);i++) {
-					System.out.println("Country population for Player "+i);
+					System.out.println("Country population :");
 					GameLaunch.printPlayerInformation(i);
 				}
 				// Army assignment starts
@@ -163,8 +163,6 @@ public class GameLaunch {
 							System.out.println(response);
 						}
 
-						System.out.println("Player : "+Game.getPlayersList().get(i).getPlayerName());
-
 						GameLaunch.printPlayerInformation(i);
 
 						System.out.println("Use command : attack 'countrynamefrom' 'countynameto' 'numdice'");
@@ -186,10 +184,25 @@ public class GameLaunch {
 						System.out.println("Enter number of dice, you want to roll using 'defend 'numdice'' command");
 						String command = sc.nextLine().trim();
 						response = ap.setDefendDice(defender,command);
-						
 					}
-					while(!response.equals("done"));
+					while(!response.contains("Conquer"));
 					
+					// If defender country lost and has zero armies on it
+					if(response.equalsIgnoreCase("canConquer")) {
+						System.out.println("You can conquer the defender country by moving armies to it.");
+						response = "";
+						do {
+							if(response.contains("Error")) {
+								System.out.println(response);
+							}
+							System.out.println("Move armies using the 'attackmove 'num'' command.");
+							String command = sc.nextLine().trim();
+							response = ap.moveArmies(i,command);
+						}
+						while(!response.contains("done"));
+					}
+					GameLaunch.printPlayerInformation(i);
+					GameLaunch.printPlayerInformation(defender);
 					// fortification phase starts
 					System.out.println("Fortification phase starts");
 					response = "";
@@ -197,8 +210,6 @@ public class GameLaunch {
 						if(response.contains("Error")) {
 							System.out.println(response);
 						}
-
-						System.out.println("Player : "+Game.getPlayersList().get(i).getPlayerName());
 
 						GameLaunch.printPlayerInformation(i);
 
@@ -261,6 +272,7 @@ public class GameLaunch {
 	 */
 	public static void printPlayerInformation(int player) {
 		// Printing players' countries with adjacent countries and number of armies
+		System.out.println("Player : "+Game.getPlayersList().get(player).getPlayerName());
 		ArrayList<String> countries = Game.getPlayersList().get(player).getOwnedCountries();
 		for(String k:countries) {
 			Country country = Country.getListOfCountries().get(k);

@@ -1,6 +1,7 @@
 package com.riskGame.controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 import com.riskGame.models.Continent;
@@ -13,6 +14,7 @@ public class AttackPhase {
 	private static int defenderDiceNum;
 	private static String attackerCountry;
 	private static String defenderCountry;
+	private static int defenderPlayer;
 	
 	/**
 	 * This method would help making the fortification move if it is valid
@@ -83,13 +85,19 @@ public class AttackPhase {
 			// check if sufficient armies to move
 			if(!areArmiesSufficientToAttack(fromCountry, diceNum)) {
 				int maxArmiesToBeMoved = Country.getListOfCountries().get(fromCountry).getNumberOfArmies()-1;
-				return "Error : Insufficient armies on "+fromCountry+" to roll "+ diceNum+" dice. Try rolling "+maxArmiesToBeMoved+" dice.";
+				if(maxArmiesToBeMoved!=0) {
+					return "Error : Insufficient armies on "+fromCountry+" to roll "+ diceNum+" dice. Try rolling "+maxArmiesToBeMoved+" dice.";
+				}
+				else {
+					return "Error : You cannot attack from "+fromCountry+" as it has 1 army. Try attacking from other country with more than 1 army";
+				}
 			}
 			AttackPhase.attackerDiceNum = diceNum;
 			AttackPhase.attackerCountry = fromCountry;
 			AttackPhase.defenderCountry = toCountry;
 			// get to know the defender player
 			int defenderPlayer = Country.getListOfCountries().get(toCountry).getOwner();
+			AttackPhase.defenderPlayer = defenderPlayer;
 			return "DefenderPlayer "+defenderPlayer;
 		}
 	}
@@ -114,11 +122,86 @@ public class AttackPhase {
 		if(!numDice.matches("\\d") || Integer.parseInt(numDice)>2) {
 			return "Error : Please enter a valid number of dice (1 or 2) you want to roll";
 		}
-		AttackPhase.attackerDiceNum = Integer.parseInt(numDice);
-		return "done";
-	
+		
+		if(Integer.parseInt(numDice) > Country.getListOfCountries().get(AttackPhase.defenderCountry).getNumberOfArmies()) {
+			return "Error: You can roll a maximum of "+Country.getListOfCountries().get(AttackPhase.defenderCountry).getNumberOfArmies()+" dice.";
+		}
+		AttackPhase.defenderDiceNum = Integer.parseInt(numDice);
+		
+		return attack();
 	}
 	
+	private String attack() {
+		ArrayList<Integer> attackerDiceRolls = new ArrayList<Integer>();
+		ArrayList<Integer> defenderDiceRolls = new ArrayList<Integer>();
+		
+		for(int i=0;i<AttackPhase.attackerDiceNum;i++) {
+			attackerDiceRolls.add(rollDice());
+		}
+		for(int i=0;i<AttackPhase.defenderDiceNum;i++) {
+			defenderDiceRolls.add(rollDice());
+		}
+		
+		while(attackerDiceRolls.size()!=0 && defenderDiceRolls.size()!=0){
+			// check if attacker wins
+			int attackerMax = Collections.max(attackerDiceRolls);
+			int defenderMax = Collections.max(defenderDiceRolls);
+			if(attackerMax > defenderMax) {
+				Country.getListOfCountries().get(AttackPhase.defenderCountry).setNumberOfArmies(Country.getListOfCountries().get(AttackPhase.defenderCountry).getNumberOfArmies()-1);
+			}
+			else {
+				Country.getListOfCountries().get(AttackPhase.attackerCountry).setNumberOfArmies(Country.getListOfCountries().get(AttackPhase.attackerCountry).getNumberOfArmies()-1);
+			}
+			attackerDiceRolls.remove((Integer)attackerMax);
+			defenderDiceRolls.remove((Integer)defenderMax);
+		}
+		if(Country.getListOfCountries().get(AttackPhase.defenderCountry).getNumberOfArmies()==0) {
+			return "canConquer";
+		}
+		else {
+			return "canNotConquer";
+		}
+		
+	}
+	
+	private int rollDice() {
+		return (int)(Math.random()*6)+1;
+	}
+	
+	public String moveArmies(int player,String command) {
+		if(command.isEmpty() || command.trim().length()==0) {
+			return "Error : Invalid Command";
+		}
+		
+		String[] commandComponents = command.split(" ");
+		
+		// check if it is a defend command
+		String commandName = commandComponents[0];
+		if(!commandName.equalsIgnoreCase("attackmove")) {
+			return "Error : Please enter attackmove command";
+		}
+		// Arguments less than 2
+		if(commandComponents.length < 2) {
+			return "Error : Please include number of armies you want to move";
+		}
+		String strNumOfArmies = commandComponents[1];
+		if(!strNumOfArmies.matches("\\d+")) {
+			return "Error : Please enter a valid number of armies";
+		}
+		int numOfArmies = Integer.parseInt(strNumOfArmies);
+		int numOfArmiesCanBeMoved = Country.getListOfCountries().get(AttackPhase.attackerCountry).getNumberOfArmies()-1;
+		if(numOfArmies > numOfArmiesCanBeMoved) {
+			return "Error : You should have at least 1 army on "+AttackPhase.attackerCountry+". Try moving "+numOfArmiesCanBeMoved+" armies";
+		}
+		Country.getListOfCountries().get(AttackPhase.attackerCountry).setNumberOfArmies(Country.getListOfCountries().get(AttackPhase.attackerCountry).getNumberOfArmies()-numOfArmies);
+		Country.getListOfCountries().get(AttackPhase.defenderCountry).setNumberOfArmies(Country.getListOfCountries().get(AttackPhase.defenderCountry).getNumberOfArmies()+numOfArmies);
+		// change ownership of defender country
+		Country.getListOfCountries().get(AttackPhase.defenderCountry).setOwner(player);
+		
+		Game.getPlayersList().get(player).getOwnedCountries().add(defenderCountry);
+		Game.getPlayersList().get(defenderPlayer).getOwnedCountries().remove(defenderCountry);
+		return "done";
+	}
 	
 	/**
 	 * This method checks if the countries provided as parameters exist
