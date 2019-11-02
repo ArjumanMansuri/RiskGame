@@ -114,6 +114,12 @@ public class AttackPhase {
 				return result +" "+AttackPhase.defenderPlayer;
 			}
 			else {
+				if(command.endsWith("reattack")) {
+					if(!AttackPhase.attackerCountry.equalsIgnoreCase(fromCountry)) {
+						return "Error : You cannot change attacking country during reattack";
+					}
+					numDice = numDice.replace("reattack", "");
+				}
 				if(!numDice.matches("\\d") || Integer.parseInt(numDice) > 3) {
 					return "Error : Please enter a valid number of dice (1, 2 or 3) you want to roll";
 				}
@@ -199,6 +205,14 @@ public class AttackPhase {
 			return "canNotConquer "+Country.getListOfCountries().get(AttackPhase.attackerCountry).getNumberOfArmies();
 		}
 		
+	}
+	
+	public boolean isAttackPossible() {
+		return Country.getListOfCountries().get(AttackPhase.attackerCountry).getNumberOfArmies() > 1;
+	}
+	
+	public boolean hasPlayerWon(int player) {
+		return Country.getListOfCountries().size() == Game.getPlayersList().get(player).getOwnedCountries().size();
 	}
 	
 	private int rollDice() {

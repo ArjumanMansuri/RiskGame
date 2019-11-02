@@ -136,7 +136,7 @@ public class GameLaunch {
 				ReinforcementPhase rp = new ReinforcementPhase();
 				FortificationPhase fp = new FortificationPhase();
 				char continueGame = 'y';
-				while(continueGame=='y') {
+				game:while(continueGame=='y') {
 				for(int i=1;i<=Integer.parseInt(noOfPlayers);i++) {
 					System.out.println("Player : "+Game.getPlayersList().get(i).getPlayerName());
 					System.out.println("Reinforcement phase starts");
@@ -159,61 +159,89 @@ public class GameLaunch {
 					AttackPhase ap = new AttackPhase();
 					response = "";
 					int defender = 0;
+					boolean reAttack = false;
 					do {
-						if(response.contains("Error")) {
-							System.out.println(response);
+						do {
+							if(response.contains("Error")) {
+								System.out.println(response);
+							}
+	
+							GameLaunch.printPlayerInformation(i);
+	
+							System.out.println("Use command : attack 'countrynamefrom' 'countynameto' 'numdice'");
+							if(!reAttack) {
+								System.out.println("Use command for allout mode : attack 'countrynamefrom' 'countynameto' allout");
+								System.out.println("Or to skip attack use command : attack noattack");
+							}
+							
+							String command = sc.nextLine().trim();
+							if(reAttack) {
+								command = command + "reattack";
+							}
+							response = ap.attackSetup(i,command);
+							if(response.contains("Conquer")) {
+								defender = Integer.parseInt(response.split(" ")[2]);
+								break;
+							}
+							else if(response.equalsIgnoreCase("done")) {
+								System.out.println("Attack phase skipped");
+								response = "noAttack";
+								break;
+							}
+						}while(!response.contains("DefenderPlayer"));
+						
+						if(response.contains("DefenderPlayer")) {
+							// get defender's numDice
+							defender = Integer.parseInt(response.split(" ")[1]);
+							System.out.println("Defender player is player : "+Game.getPlayersList().get(defender).getPlayerName());
+							response = "";
+							do {
+								if(response.contains("Error")) {
+									System.out.println(response);
+								}
+								System.out.println("Enter number of dice, you want to roll using 'defend 'numdice'' command");
+								String command = sc.nextLine().trim();
+								response = ap.setDefendDice(defender,command);
+							}while(!response.contains("Conquer"));
 						}
-
-						GameLaunch.printPlayerInformation(i);
-
-						System.out.println("Use command : attack 'countrynamefrom' 'countynameto' 'numdice'");
-						System.out.println("Use command for allout mode : attack 'countrynamefrom' 'countynameto' allout");
-						System.out.println("Or to skip attack use command : attack noattack");
-
-						String command = sc.nextLine().trim();
-						response = ap.attackSetup(i,command);
-						if(response.contains("Conquer")) {
-							defender = Integer.parseInt(response.split(" ")[2]);
-							break;
+						// If defender country lost and has zero armies on it
+						if(response.contains("canConquer")) {
+							if(ap.hasPlayerWon(i)) {
+								break game;
+							}
+							int noOfArmies = Integer.parseInt(response.split(" ")[1]);
+							System.out.println("You can conquer the defender country by moving armies to it. You have "+noOfArmies+" armies left.");
+							response = "";
+							do {
+								if(response.contains("Error")) {
+									System.out.println(response);
+								}
+								System.out.println("Move armies using the 'attackmove 'num'' command.");
+								String command = sc.nextLine().trim();
+								response = ap.moveArmies(i,command);
+								reAttack = false;
+							}while(!response.contains("done"));
 						}
-						else if(response.equalsIgnoreCase("done")) {
-							System.out.println("Attack phase skipped");
-							response = "noAttack";
-							break;
+						else{
+							if(!response.equalsIgnoreCase("noattack") && ap.isAttackPossible()) {
+								int noOfArmies = Integer.parseInt(response.split(" ")[1]);
+								System.out.println("You still have "+noOfArmies+" left. Do you want to attack again y or n.?");
+								if(sc.nextLine().equalsIgnoreCase("y")) {
+									reAttack = true;
+								}
+								else {
+									reAttack = false;
+									break;
+								}
+							}
+							else {
+								reAttack = false;
+							}
 						}
-					}while(!response.contains("DefenderPlayer"));
+					}while(reAttack==true);
 					
-					if(response.contains("DefenderPlayer")) {
-						// get defender's numDice
-						defender = Integer.parseInt(response.split(" ")[1]);
-						System.out.println("Defender player is player : "+Game.getPlayersList().get(defender).getPlayerName());
-						response = "";
-						do {
-							if(response.contains("Error")) {
-								System.out.println(response);
-							}
-							System.out.println("Enter number of dice, you want to roll using 'defend 'numdice'' command");
-							String command = sc.nextLine().trim();
-							response = ap.setDefendDice(defender,command);
-						}
-						while(!response.contains("Conquer"));
-					}
-					// If defender country lost and has zero armies on it
-					if(response.contains("canConquer")) {
-						int noOfArmies = Integer.parseInt(response.split(" ")[1]);
-						System.out.println("You can conquer the defender country by moving armies to it. You have "+noOfArmies+" armies left.");
-						response = "";
-						do {
-							if(response.contains("Error")) {
-								System.out.println(response);
-							}
-							System.out.println("Move armies using the 'attackmove 'num'' command.");
-							String command = sc.nextLine().trim();
-							response = ap.moveArmies(i,command);
-						}
-						while(!response.contains("done"));
-					}
 					if (!response.equalsIgnoreCase("noAttack")) {
+						System.out.println("Attack Phase ends");
 						GameLaunch.printPlayerInformation(i);
 						GameLaunch.printPlayerInformation(defender);
 					}
@@ -237,8 +265,7 @@ public class GameLaunch {
 							GameLaunch.printPlayerInformation(i);
 						}
 
-					}
-					while(!response.equals("done"));
+					}while(!response.equals("done"));
 					System.out.println("Player "+i+"'s turn ends");
 				}
 				System.out.println("Do you want to continue the game? 'y' or 'n'");
