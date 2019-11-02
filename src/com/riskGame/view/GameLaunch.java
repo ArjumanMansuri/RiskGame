@@ -158,6 +158,7 @@ public class GameLaunch {
 					System.out.println("Attack phase starts");
 					AttackPhase ap = new AttackPhase();
 					response = "";
+					int defender = 0;
 					do {
 						if(response.contains("Error")) {
 							System.out.println(response);
@@ -166,30 +167,41 @@ public class GameLaunch {
 						GameLaunch.printPlayerInformation(i);
 
 						System.out.println("Use command : attack 'countrynamefrom' 'countynameto' 'numdice'");
-						System.out.println("Or to skip attack use command : attack none");
+						System.out.println("Use command for allout mode : attack 'countrynamefrom' 'countynameto' allout");
+						System.out.println("Or to skip attack use command : attack noattack");
 
 						String command = sc.nextLine().trim();
 						response = ap.attackSetup(i,command);
-					}
-					while(!response.contains("DefenderPlayer"));
-
-					// get defender's numDice
-					int defender = Integer.parseInt(response.split(" ")[1]);
-					System.out.println("Defender player is player : "+Game.getPlayersList().get(defender).getPlayerName());
-					response = "";
-					do {
-						if(response.contains("Error")) {
-							System.out.println(response);
+						if(response.contains("Conquer")) {
+							defender = Integer.parseInt(response.split(" ")[2]);
+							break;
 						}
-						System.out.println("Enter number of dice, you want to roll using 'defend 'numdice'' command");
-						String command = sc.nextLine().trim();
-						response = ap.setDefendDice(defender,command);
-					}
-					while(!response.contains("Conquer"));
+						else if(response.equalsIgnoreCase("done")) {
+							System.out.println("Attack phase skipped");
+							response = "noAttack";
+							break;
+						}
+					}while(!response.contains("DefenderPlayer"));
 					
+					if(response.contains("DefenderPlayer")) {
+						// get defender's numDice
+						defender = Integer.parseInt(response.split(" ")[1]);
+						System.out.println("Defender player is player : "+Game.getPlayersList().get(defender).getPlayerName());
+						response = "";
+						do {
+							if(response.contains("Error")) {
+								System.out.println(response);
+							}
+							System.out.println("Enter number of dice, you want to roll using 'defend 'numdice'' command");
+							String command = sc.nextLine().trim();
+							response = ap.setDefendDice(defender,command);
+						}
+						while(!response.contains("Conquer"));
+					}
 					// If defender country lost and has zero armies on it
-					if(response.equalsIgnoreCase("canConquer")) {
-						System.out.println("You can conquer the defender country by moving armies to it.");
+					if(response.contains("canConquer")) {
+						int noOfArmies = Integer.parseInt(response.split(" ")[1]);
+						System.out.println("You can conquer the defender country by moving armies to it. You have "+noOfArmies+" armies left.");
 						response = "";
 						do {
 							if(response.contains("Error")) {
@@ -201,8 +213,10 @@ public class GameLaunch {
 						}
 						while(!response.contains("done"));
 					}
-					GameLaunch.printPlayerInformation(i);
-					GameLaunch.printPlayerInformation(defender);
+					if (!response.equalsIgnoreCase("noAttack")) {
+						GameLaunch.printPlayerInformation(i);
+						GameLaunch.printPlayerInformation(defender);
+					}
 					// fortification phase starts
 					System.out.println("Fortification phase starts");
 					response = "";

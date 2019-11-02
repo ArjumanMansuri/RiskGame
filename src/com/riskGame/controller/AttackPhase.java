@@ -35,9 +35,9 @@ public class AttackPhase {
 		if(!commandName.equalsIgnoreCase("attack")) {
 			return "Error : Please enter attack command";
 		}
-		// attack none
+		// attack noattack
 		if(commandComponents.length == 2) {
-			if(commandComponents[1].equalsIgnoreCase("none")) {
+			if(commandComponents[1].equalsIgnoreCase("noattack")) {
 				return "done";
 			}
 		}
@@ -78,27 +78,64 @@ public class AttackPhase {
 			}
 			
 			String numDice = commandComponents[3];
-			if(!numDice.matches("\\d") || Integer.parseInt(numDice) > 3) {
-				return "Error : Please enter a valid number of dice (1, 2 or 3) you want to roll";
-			}
-			int diceNum = Integer.parseInt(numDice);
-			// check if sufficient armies to move
-			if(!areArmiesSufficientToAttack(fromCountry, diceNum)) {
-				int maxArmiesToBeMoved = Country.getListOfCountries().get(fromCountry).getNumberOfArmies()-1;
-				if(maxArmiesToBeMoved!=0) {
-					return "Error : Insufficient armies on "+fromCountry+" to roll "+ diceNum+" dice. Try rolling "+maxArmiesToBeMoved+" dice.";
+			
+			if(numDice.equalsIgnoreCase("allout")) {
+				AttackPhase.attackerCountry = fromCountry;
+				AttackPhase.defenderCountry = toCountry;
+				int attackerArmies = Country.getListOfCountries().get(AttackPhase.attackerCountry).getNumberOfArmies();
+				if(attackerArmies == 1) {
+					return "Error : You should have more than 1 army on "+AttackPhase.attackerCountry+" to attack.";
 				}
-				else {
-					return "Error : You cannot attack from "+fromCountry+" as it has 1 army. Try attacking from other country with more than 1 army";
+				
+				int defenderArmies = Country.getListOfCountries().get(AttackPhase.defenderCountry).getNumberOfArmies();
+				if(defenderArmies == 0) {
+					return "Error : You should have at least 1 army on "+AttackPhase.defenderCountry+" to defend.";
 				}
+				String result = "";
+				int defenderPlayer = Country.getListOfCountries().get(toCountry).getOwner();
+				AttackPhase.defenderPlayer = defenderPlayer;
+				while(attackerArmies!=1 && defenderArmies!=0) {
+					if(attackerArmies > 3) {
+						AttackPhase.attackerDiceNum = 3;
+					}
+					else {
+						AttackPhase.attackerDiceNum = attackerArmies - 1;
+					}
+					if(defenderArmies > 1) {
+						AttackPhase.defenderDiceNum = 2;
+					}
+					else {
+						AttackPhase.defenderDiceNum = defenderArmies;
+					}
+					result = attack();
+					attackerArmies = Country.getListOfCountries().get(AttackPhase.attackerCountry).getNumberOfArmies();
+					defenderArmies = Country.getListOfCountries().get(AttackPhase.defenderCountry).getNumberOfArmies();
+				}
+				return result +" "+AttackPhase.defenderPlayer;
 			}
-			AttackPhase.attackerDiceNum = diceNum;
-			AttackPhase.attackerCountry = fromCountry;
-			AttackPhase.defenderCountry = toCountry;
-			// get to know the defender player
-			int defenderPlayer = Country.getListOfCountries().get(toCountry).getOwner();
-			AttackPhase.defenderPlayer = defenderPlayer;
-			return "DefenderPlayer "+defenderPlayer;
+			else {
+				if(!numDice.matches("\\d") || Integer.parseInt(numDice) > 3) {
+					return "Error : Please enter a valid number of dice (1, 2 or 3) you want to roll";
+				}
+				int diceNum = Integer.parseInt(numDice);
+				// check if sufficient armies to move
+				if(!areArmiesSufficientToAttack(fromCountry, diceNum)) {
+					int maxArmiesToBeMoved = Country.getListOfCountries().get(fromCountry).getNumberOfArmies()-1;
+					if(maxArmiesToBeMoved!=0) {
+						return "Error : Insufficient armies on "+fromCountry+" to roll "+ diceNum+" dice. Try rolling "+maxArmiesToBeMoved+" dice.";
+					}
+					else {
+						return "Error : You cannot attack from "+fromCountry+" as it has 1 army. Try attacking from other country with more than 1 army";
+					}
+				}
+				AttackPhase.attackerDiceNum = diceNum;
+				AttackPhase.attackerCountry = fromCountry;
+				AttackPhase.defenderCountry = toCountry;
+				// get to know the defender player
+				int defenderPlayer = Country.getListOfCountries().get(toCountry).getOwner();
+				AttackPhase.defenderPlayer = defenderPlayer;
+				return "DefenderPlayer "+defenderPlayer;
+			}
 		}
 	}
 	
@@ -156,10 +193,10 @@ public class AttackPhase {
 			defenderDiceRolls.remove((Integer)defenderMax);
 		}
 		if(Country.getListOfCountries().get(AttackPhase.defenderCountry).getNumberOfArmies()==0) {
-			return "canConquer";
+			return "canConquer "+Country.getListOfCountries().get(AttackPhase.attackerCountry).getNumberOfArmies();
 		}
 		else {
-			return "canNotConquer";
+			return "canNotConquer "+Country.getListOfCountries().get(AttackPhase.attackerCountry).getNumberOfArmies();
 		}
 		
 	}
