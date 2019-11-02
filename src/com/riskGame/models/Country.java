@@ -1,26 +1,25 @@
 package com.riskGame.models;
 
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.HashMap;
 
 public class Country {
 
-	private static Set<String> listOfCountries = new TreeSet<String>();
+	private static HashMap<String,Country> listOfCountries = new HashMap<>();
 
-	public static Set<String> getListOfCountries() {
+	private String countryName;
+	private int numberOfArmies;
+	private HashMap<String, Country> neighbours;
+	private int owner;
+	private String continent;
+
+	public static HashMap<String, Country> getListOfCountries() {
 		return listOfCountries;
 	}
 
-	public static void setListOfCountries(Set<String> listOfCountries) {
+	public static void setListOfCountries(HashMap<String, Country> listOfCountries) {
 		Country.listOfCountries = listOfCountries;
 	}
-	private String countryName;
-	private int numberOfArmies;
-	private ArrayList<Country> neighbours;
-	private String owner;
-	private String continent;
-
+	
 	public String getContinent() {
 		return continent;
 	}
@@ -30,7 +29,7 @@ public class Country {
 	}
 
 	public Country() {
-		neighbours = new ArrayList<Country>();
+		neighbours = new HashMap();
 	}
 
 	public String getCountryName() {
@@ -48,17 +47,23 @@ public class Country {
 	public void setNumberOfArmies(int numberOfArmies) {
 		this.numberOfArmies = numberOfArmies;
 	}
-	public ArrayList<Country> getNeighbours() {
+	
+
+	public HashMap<String, Country> getNeighbours() {
 		return neighbours;
 	}
-	public void setNeighbours(ArrayList<Country> neighbours) {
+
+	public void setNeighbours(HashMap<String, Country> neighbours) {
 		this.neighbours = neighbours;
 	}
-	public String getOwner() {
+
+	public int getOwner() {
 		return owner;
 	}
-	public void setOwner(String owner) {
+
+	public void setOwner(int owner) {
 		this.owner = owner;
 	}
+	
 
 }

@@ -30,7 +30,7 @@ public class MapFileParser {
 	}
 	
 	/**
-	 * Thi method reads the map file data and create Map object.  	
+	 * This method reads the map file data and create Map object.  	
 	 * @return map - Map object containing territories and continents.
 	 * 
 	 */
@@ -79,9 +79,11 @@ public class MapFileParser {
 			    		Country currentCountry = new Country(); // create new territory for the continent 
 			    		currentCountry.setCountryName(territoryLine[0]); 
 			    		currentCountry.setNeighbours(convertToTerritories(territoryLine));			    		
-			    		
+			    		currentCountry.setContinent(territoryContinent);
 			    		Continent continentToUpdate = continents.get(territoryContinent);
 			    		continentToUpdate.pushTerritory(currentCountry);
+			    		// Add country to static map in Country
+			    		Country.getListOfCountries().put(currentCountry.getCountryName(), currentCountry);
 			    	}
 			    }			   
 			}	
@@ -136,12 +138,12 @@ public class MapFileParser {
 	 * @return territories List of territories.
 	 * 
 	 */
-	private ArrayList<Country> convertToTerritories(String[] territoryLine) {
-		ArrayList<Country> countries = new ArrayList<Country>();		
+	private HashMap<String,Country> convertToTerritories(String[] territoryLine) {
+		HashMap<String,Country> countries = new HashMap<String, Country>();		
 		for(int territoryLineIndex = 4;territoryLineIndex < territoryLine.length;territoryLineIndex++) {
 			Country currentTerritory = new Country();
 			currentTerritory.setCountryName(territoryLine[territoryLineIndex]);			
-			countries.add(currentTerritory);
+			countries.put(currentTerritory.getCountryName(), currentTerritory);
 		}		
 		return countries;		
 	}

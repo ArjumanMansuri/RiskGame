@@ -1,7 +1,10 @@
 package com.riskGame.view;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
+
+import com.riskGame.controller.AttackPhase;
 import com.riskGame.controller.FortificationPhase;
 import com.riskGame.controller.MapFileEdit;
 import com.riskGame.controller.ReinforcementPhase;
@@ -78,7 +81,7 @@ public class GameLaunch {
 				startUpPhase.parser(sc.nextLine());
 				// Show what countries belong to which player
 				for(int i=1;i<=Integer.parseInt(noOfPlayers);i++) {
-					System.out.println("Country population for Player "+i);
+					System.out.println("Country population :");
 					GameLaunch.printPlayerInformation(i);
 				}
 				// Army assignment starts
@@ -150,8 +153,70 @@ public class GameLaunch {
 						System.out.println("Number of reinforcement armies available : "+Game.getPlayersList().get(i).getPlayerNumOfArmy());
 						response = rp.reinforce(i,sc.nextLine());
 					}
-					System.out.println("Attack Phase for now is skipped.");
+					
+					// Attack Phase starts
+					System.out.println("Attack phase starts");
+					AttackPhase ap = new AttackPhase();
+					response = "";
+					int defender = 0;
+					do {
+						if(response.contains("Error")) {
+							System.out.println(response);
+						}
 
+						GameLaunch.printPlayerInformation(i);
+
+						System.out.println("Use command : attack 'countrynamefrom' 'countynameto' 'numdice'");
+						System.out.println("Use command for allout mode : attack 'countrynamefrom' 'countynameto' allout");
+						System.out.println("Or to skip attack use command : attack noattack");
+
+						String command = sc.nextLine().trim();
+						response = ap.attackSetup(i,command);
+						if(response.contains("Conquer")) {
+							defender = Integer.parseInt(response.split(" ")[2]);
+							break;
+						}
+						else if(response.equalsIgnoreCase("done")) {
+							System.out.println("Attack phase skipped");
+							response = "noAttack";
+							break;
+						}
+					}while(!response.contains("DefenderPlayer"));
+					
+					if(response.contains("DefenderPlayer")) {
+						// get defender's numDice
+						defender = Integer.parseInt(response.split(" ")[1]);
+						System.out.println("Defender player is player : "+Game.getPlayersList().get(defender).getPlayerName());
+						response = "";
+						do {
+							if(response.contains("Error")) {
+								System.out.println(response);
+							}
+							System.out.println("Enter number of dice, you want to roll using 'defend 'numdice'' command");
+							String command = sc.nextLine().trim();
+							response = ap.setDefendDice(defender,command);
+						}
+						while(!response.contains("Conquer"));
+					}
+					// If defender country lost and has zero armies on it
+					if(response.contains("canConquer")) {
+						int noOfArmies = Integer.parseInt(response.split(" ")[1]);
+						System.out.println("You can conquer the defender country by moving armies to it. You have "+noOfArmies+" armies left.");
+						response = "";
+						do {
+							if(response.contains("Error")) {
+								System.out.println(response);
+							}
+							System.out.println("Move armies using the 'attackmove 'num'' command.");
+							String command = sc.nextLine().trim();
+							response = ap.moveArmies(i,command);
+						}
+						while(!response.contains("done"));
+					}
+					if (!response.equalsIgnoreCase("noAttack")) {
+						GameLaunch.printPlayerInformation(i);
+						GameLaunch.printPlayerInformation(defender);
+					}
 					// fortification phase starts
 					System.out.println("Fortification phase starts");
 					response = "";
@@ -159,8 +224,6 @@ public class GameLaunch {
 						if(response.contains("Error")) {
 							System.out.println(response);
 						}
-
-						System.out.println("Player : "+Game.getPlayersList().get(i).getPlayerName());
 
 						GameLaunch.printPlayerInformation(i);
 
@@ -221,13 +284,15 @@ public class GameLaunch {
 	 * along with number of armies in each countries. 
 	 * @param numofPlayers number of players.
 	 */
-	public static void printPlayerInformation(int numofPlayers) {
+	public static void printPlayerInformation(int player) {
 		// Printing players' countries with adjacent countries and number of armies
-		HashMap<String, Country> countries = Game.getPlayersList().get(numofPlayers).getOwnedCountries();
-		for(java.util.Map.Entry<String, Country> k:countries.entrySet()) {
-			System.out.print(k.getKey() +" : "+ k.getValue().getNumberOfArmies() + " : ");
-			for(Country country : k.getValue().getNeighbours()) {
-				System.out.print(country.getCountryName()+" ");
+		System.out.println("Player : "+Game.getPlayersList().get(player).getPlayerName());
+		ArrayList<String> countries = Game.getPlayersList().get(player).getOwnedCountries();
+		for(String k:countries) {
+			Country country = Country.getListOfCountries().get(k);
+			System.out.print(country.getCountryName() +" : "+ country.getNumberOfArmies() + " : ");
+			for(String c : country.getNeighbours().keySet()) {
+				System.out.print(c+" ");
 			}
 			System.out.println();
 		}

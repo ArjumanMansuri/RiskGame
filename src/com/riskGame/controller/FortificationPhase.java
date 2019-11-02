@@ -35,7 +35,7 @@ public class FortificationPhase {
 			return "Error : Please enter fortification command";
 		}
 		// fortify none
-		if(commandComponents.length==2) {
+		if(commandComponents.length == 2) {
 			if(commandComponents[1].equalsIgnoreCase("none")) {
 				return "done";
 			}
@@ -60,29 +60,75 @@ public class FortificationPhase {
 	            }
 			
 			// check if those countries exist
-			if(!(countries.contains(fromCountry)) || !(countries.contains(toCountry))){
+			if(!doCountriesExist(countries, fromCountry, toCountry)){
 				return "Error : Either one or both of the country names do not exist";
 			}
 			// check if they are owned by same player
-			HashMap<String,Country> ownedCountries = Game.getPlayersList().get(player).getOwnedCountries();
-			if(ownedCountries.get(fromCountry)==null || ownedCountries.get(toCountry)==null) {
+			ArrayList<String> ownedCountries = Game.getPlayersList().get(player).getOwnedCountries();
+			if(areCountriesNotOwnedByPlayer(ownedCountries,fromCountry,toCountry)) {
 				return "Error : Either one or both of the country names are not owned by you";
 			}
 			// check if they are adjacent
-			ArrayList<String> adjacentCountries = new ArrayList<String>();
-			for(Country country : ownedCountries.get(fromCountry).getNeighbours()) {
-				adjacentCountries.add(country.getCountryName());
-			}
-				if(!(adjacentCountries.contains(toCountry))){
+			if(!(areCountriesAdjacent(fromCountry, toCountry))){
 					return "Error : Given countries are not adjacent";
 			}
-			// move armies
-			if(!(ownedCountries.get(fromCountry).getNumberOfArmies()>num)) {
-				return "Error : Insufficient armies to move";
+			// check if sufficient armies to move
+			if(!areArmiesSufficientToMove(fromCountry, num)) {
+				int maxArmiesToBeMoved = Country.getListOfCountries().get(fromCountry).getNumberOfArmies()-1;
+				return "Error : Insufficient armies to move. Try moving "+maxArmiesToBeMoved+" armies";
 			}
-			ownedCountries.get(fromCountry).setNumberOfArmies(ownedCountries.get(fromCountry).getNumberOfArmies()-num);
-			ownedCountries.get(toCountry).setNumberOfArmies(ownedCountries.get(toCountry).getNumberOfArmies()+num);
+			// move armies
+			Country.getListOfCountries().get(fromCountry).setNumberOfArmies(Country.getListOfCountries().get(fromCountry).getNumberOfArmies()-num);
+			Country.getListOfCountries().get(toCountry).setNumberOfArmies(Country.getListOfCountries().get(toCountry).getNumberOfArmies()+num);
 		}
 		return "done";
+	}
+	/**
+	 * This method checks if the countries provided as parameters exist
+	 * @param countries List of countries present in the game
+	 * @param fromCountry Name of the country from which player wants to move his army/armies
+	 * @param toCountry Name of the country to which player wants to move his army/armies
+	 * @return true if the countries exist else false
+	 */
+	private boolean doCountriesExist(ArrayList<String> countries,String fromCountry,String toCountry) {
+		return (countries.contains(fromCountry)) && (countries.contains(toCountry));
+	}
+	
+	/**
+	 * This method checks if the countries provided as parameters are adjacent
+	 * @param ownedCountries List of countries owned by the player
+	 * @param fromCountry Name of the country from which player wants to move his army/armies
+	 * @param toCountry Name of the country to which player wants to move his army/armies
+	 * @return true if the countries are adjacent else false
+	 */
+	private boolean areCountriesAdjacent(String fromCountry,String toCountry) {
+		if(!(Country.getListOfCountries().get(fromCountry).getNeighbours().containsKey(toCountry))){		
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
+	
+	/**
+	 * This method checks if the countries provided as parameters are owned by the player
+	 * @param ownedCountries List of countries owned by the player
+	 * @param fromCountry Name of the country from which player wants to move his army/armies
+	 * @param toCountry Name of the country to which player wants to move his army/armies
+	 * @return true if the countries are owned by the player else false
+	 */
+	private boolean areCountriesNotOwnedByPlayer(ArrayList<String> ownedCountries,String fromCountry,String toCountry) {
+		return !ownedCountries.contains(fromCountry) || !ownedCountries.contains(toCountry);
+	}
+	
+	/**
+	 * This method checks if the 'fromCountry' has sufficient armies to move
+	 * @param ownedCountries List of countries owned by the player
+	 * @param fromCountry Name of the country from which player wants to move his army/armies
+	 * @param num number of armies to move
+	 * @return true if sufficient armies available else false
+	 */
+	private boolean areArmiesSufficientToMove(String fromCountry,int num) {
+		return Country.getListOfCountries().get(fromCountry).getNumberOfArmies()>num;
 	}
 }
