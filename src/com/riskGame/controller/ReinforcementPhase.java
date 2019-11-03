@@ -4,13 +4,23 @@ package com.riskGame.controller;
 import com.riskGame.models.Country;
 import com.riskGame.models.Game;
 import com.riskGame.models.Player;
+import com.riskGame.observer.FortificationPhaseObserver;
+import com.riskGame.observer.PhaseViewObserver;
+import com.riskGame.observer.PhaseViewPublisher;
+import com.riskGame.observer.ReinforcementPhaseObserver;
 
 /**
  * This class contains the business logic of the Reinforcement Phase.
  * @author goumis
  *
  */
-public class ReinforcementPhase {
+public class ReinforcementPhase implements PhaseViewPublisher{
+	
+	private PhaseViewObserver newObserver;
+	
+	public ReinforcementPhase() {
+		newObserver = new ReinforcementPhaseObserver();
+	}
 	
 	/**
 	 * This method is used to  calculate the number of Reinforcement armies and set to access globally.
@@ -19,7 +29,9 @@ public class ReinforcementPhase {
 	 */
 	public void calculateReinforcementArmies(int playerNumber) {
 		Player p = Game.getPlayersList().get(playerNumber);
+		this.notifyObserver("Calculating Reinforcement armies for the player " + p.getPlayerName());
 		int newArmies =  p.getOwnedCountries().size() /3;
+		this.notifyObserver("Number of new armies is " + newArmies + " for player " + p.getPlayerName());
 		p.setPlayerNumOfArmy(newArmies);
 	}
 	
@@ -58,8 +70,9 @@ public class ReinforcementPhase {
 				return "Error : Insufficient armies to move";
 			}
 			p.setPlayerNumOfArmy(p.getPlayerNumOfArmy()-num);
+			this.notifyObserver("Calculating Reinforcement armies for the player " + p.getPlayerName());
 			Country.getListOfCountries().get(countryName).setNumberOfArmies(Country.getListOfCountries().get(countryName).getNumberOfArmies()+num);
-		
+			this.notifyObserver("New armies for thr country " + countryName + " is " + Country.getListOfCountries().get(countryName).getNumberOfArmies()+num);
 		
 		return "";			
 	}
@@ -72,5 +85,11 @@ public class ReinforcementPhase {
 	public int calculateReinforcementArmies(Player currentPlayer) {
 		int reinformentArmies =  currentPlayer.getOwnedCountries().size() /3;
 		return reinformentArmies;
+	}
+
+	@Override
+	public void notifyObserver(String action) {
+		this.newObserver.update(action);
+		
 	}
 }
