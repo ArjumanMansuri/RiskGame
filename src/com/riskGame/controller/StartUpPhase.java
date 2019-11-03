@@ -2,6 +2,9 @@ package com.riskGame.controller;
 
 import com.riskGame.models.Continent;
 import com.riskGame.models.Player;
+import com.riskGame.observer.PhaseViewObserver;
+import com.riskGame.observer.PhaseViewPublisher;
+import com.riskGame.observer.StartupPhaseObserver;
 import com.riskGame.models.Country;
 import com.riskGame.models.Map;
 import com.riskGame.models.Game;
@@ -15,12 +18,14 @@ import java.util.*;
  * @author	niralhlad
  * 
  */
-public class StartUpPhase {
+public class StartUpPhase implements PhaseViewPublisher{
 	private HashMap<Integer,Player> playersData;
 	private int noOfPlayers;
-
+	private PhaseViewObserver newObserver;
+	
 	public StartUpPhase(){
 		playersData = new HashMap<Integer,Player>();
+		newObserver = new StartupPhaseObserver();
 	}
 
 	/**
@@ -65,12 +70,14 @@ public class StartUpPhase {
 		}
 
 		else if(thisInput.contains("loadmap")){
+			
 			String[] stringParsed = thisInput.split(" ");
 			String fileName= stringParsed[1];
 
 			String[] fileNameParsed = fileName.split("\\.");
 
 			if(stringParsed[0].equals("loadmap")){
+				this.notifyObserver(fileName + " Map is been loaded...");
 				File mapFileCheck = new File("maps/"+fileName);
 				if(mapFileCheck.exists()) {
 					MapFileParser m = new MapFileParser();
@@ -84,6 +91,7 @@ public class StartUpPhase {
 			}
 		}
 		else if(thisInput.contains("populatecountries")) {
+			this.notifyObserver("Populating countries...");
 			ArrayList<String> countries = new ArrayList<>();
 				for(String country : Country.getListOfCountries().keySet()){
 					countries.add(country);
@@ -111,6 +119,7 @@ public class StartUpPhase {
 	 * 
 	 */
 	public String placeArmy(int playerNumber,String command){
+		this.notifyObserver("Starting to place the armies for each countries of all players...");
 		if(command.isEmpty() || command.trim().length()==0) {
 			return "Error : Invalid Command";
 		}
@@ -136,6 +145,7 @@ public class StartUpPhase {
 			}
 		}
 		Country.getListOfCountries().get(countryName).setNumberOfArmies(Country.getListOfCountries().get(countryName).getNumberOfArmies()+1);
+		this.notifyObserver("Added " + countryName + "to" + p.getPlayerName());
 		return "donePlaceArmy";
 	}
 
@@ -153,11 +163,13 @@ public class StartUpPhase {
 		Player p = Game.getPlayersList().get(playerNumber);
 		ArrayList<String> countries = p.getOwnedCountries();
 
+		this.notifyObserver("Starting to PlaceAll armies for " + p.getPlayerName());
 		// get countries with zero armies
 		for (String country : countries) {
 			if(Country.getListOfCountries().get(country).getNumberOfArmies()==0) {
 				Country.getListOfCountries().get(country).setNumberOfArmies(1);
 				p.setPlayerNumOfArmy(p.getPlayerNumOfArmy()-1);
+				this.notifyObserver("Placed 1 army to the country " + country + "for " + p.getPlayerName());
 			}
 		}
 		while(p.getPlayerNumOfArmy()!=0) {
@@ -166,7 +178,9 @@ public class StartUpPhase {
 					break;
 				}
 				Country.getListOfCountries().get(country).setNumberOfArmies(Country.getListOfCountries().get(country).getNumberOfArmies()+1);
+				this.notifyObserver("Placed 1 army to the country " + country + "for " + p.getPlayerName());
 				p.setPlayerNumOfArmy(p.getPlayerNumOfArmy()-1);
+				this.notifyObserver("Total number of armies for " + p.getPlayerName() + "is increased to " + p.getPlayerNumOfArmy());
 			}
 		}
 		return "donePlaceall";
@@ -188,6 +202,7 @@ public class StartUpPhase {
 			}
 		}
 		if(allPlayerDone) {
+			this.notifyObserver("All armies for all the players has been placed");
 			return "done";
 		}
 		else {
@@ -312,6 +327,17 @@ public class StartUpPhase {
 		}
 		return false;
 	}
+
+
+	
+
+	@Override
+	public void notifyObserver(String action) {
+		this.newObserver.update(action);
+		
+	}
+
+	
 }
 
 
