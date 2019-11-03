@@ -158,10 +158,10 @@ public class GameLaunch {
 					// Attack Phase starts
 					System.out.println("Attack phase starts");
 					AttackPhase ap = new AttackPhase();
+					ap.notifyObserver("Initiating attack phase for " + Game.getPlayersList().get(i).getPlayerName());
 					response = "";
 					int defender = 0;
 					boolean reAttack = false;
-					do {
 						do {
 							if(response.contains("Error")) {
 								System.out.println(response);
