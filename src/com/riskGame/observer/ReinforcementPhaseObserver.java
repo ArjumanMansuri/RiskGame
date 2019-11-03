@@ -2,10 +2,17 @@ package com.riskGame.observer;
 
 public class ReinforcementPhaseObserver extends PhaseViewObserver{
 
+	public ReinforcementPhaseObserver() {
+		super();
+		this.gamePhaseName = "REINFORCEMENT PHASE";
+	}
+
 	@Override
 	public void update(String action) {
-		this.actions.add(action);
-		
+		if(! (action == null))
+			this.actions.add(action);
+		else
+			this.actions.clear();
 	}
 
 	@Override
