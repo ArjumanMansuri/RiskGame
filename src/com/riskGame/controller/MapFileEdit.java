@@ -212,40 +212,54 @@ public class MapFileEdit {
 	 * @param commandInput - input command from the user.
 	 * 
 	 */
-	public void editNeighbor(String[] commandInput) {
+	public void editNeighbor(String[] commandInput) {		
 		if(commandInput.length >= 4) {
-			String operation = commandInput[1]; // add or remove
-			String countryName = commandInput[2]; 
-			String neighborCountryName = commandInput[3]; 
+			List<String> processArgs = checkNeighborCommandArgs(commandInput);			
 			HashMap<String, Continent> editMapContinents= Game.getEditMap().getContinents();
 			
-			Country neighbourCountry;
-			if((neighbourCountry = isCountryExists(neighborCountryName)) != null) {						
-				if(operation.equals("-add")) {			
-					Country addCountry = new Country();
-					addCountry.setCountryName(neighborCountryName);
-					
-					//  Add neighbor country to main country if the main country exists  
-					Country country = isCountryExists(countryName);
-					if(country != null) {
-						country.getNeighbours().put(neighborCountryName, addCountry);
-						neighbourCountry.getNeighbours().put(countryName, country);
-					}					
-				} else if(operation.equals("-remove")) {
-					for(String continentKey : editMapContinents.keySet()) {										
-						editMapContinents.get(continentKey).getTerritories().forEach(country -> {						
-							country.getNeighbours().entrySet().removeIf(neighbor ->  neighbor.getKey().equals(neighborCountryName));						
-						}); 	
+			for(String arg : processArgs) {
+				String[] argSplit = arg.split("\\$"); // Split using $ symbol				
+				String countryName = argSplit[1];
+				String neighborCountryName = argSplit[2];				
+				Country neighbourCountry;
+				
+				if((neighbourCountry = isCountryExists(neighborCountryName)) != null) {						
+					if(argSplit[0].equals("-add")) {			
+						Country addCountry = new Country();
+						addCountry.setCountryName(neighborCountryName);
 						
-						editMapContinents.get(continentKey).getTerritories().forEach(country -> {
-							country.getNeighbours().entrySet().removeIf(n -> n.getKey().equals(countryName));
-						});
-					}								
-				}
+						//  Add neighbor country to main country if the main country exists  
+						Country country = isCountryExists(countryName);
+						if(country != null) {
+							country.getNeighbours().put(neighborCountryName, addCountry);
+							neighbourCountry.getNeighbours().put(countryName, country);
+						}					
+					} else if(argSplit[0].equals("-remove")) {
+						for(String continentKey : editMapContinents.keySet()) {										
+							editMapContinents.get(continentKey).getTerritories().forEach(country -> {						
+								country.getNeighbours().entrySet().removeIf(neighbor ->  neighbor.getKey().equals(neighborCountryName));						
+							}); 	
+							
+							editMapContinents.get(continentKey).getTerritories().forEach(country -> {
+								country.getNeighbours().entrySet().removeIf(n -> n.getKey().equals(countryName));
+							});
+						}								
+					}
+				}						
 			}			
 		}
 	}
 	
+	/**
+	 * Parse the editneighbor command and get the command args as list elements.
+	 * @param commandInput
+	 * @return List with Commands - imploded by $ symbol.  
+	 */	
+	private List<String> checkNeighborCommandArgs(String[] commandInput) {
+		return checkCommandArgs(commandInput, true);
+	}
+	
+
 	/**
 	 * Check if a given country exists in the map.
 	 * @param countryName - name of the country to check existence.
@@ -322,13 +336,13 @@ public class MapFileEdit {
 		return false;
 	}
 	
-	/***
+	/**
 	 * Parse the editcountry command and get the command args as list elements.
 	 * @param commandInput
 	 * @return List with Commands - imploded by $ symbol.  
 	 */
 	private List<String> checkCountryCommandArgs(String[] commandInput) {
-		return checkCommandArgs(commandInput);		
+		return checkCommandArgs(commandInput,false);		
 	}
 
 	/**
@@ -370,7 +384,7 @@ public class MapFileEdit {
 	 * @return List with Commands - imploded by $ symbol. 
 	 */
 	private List<String> checkContinentCommandArgs(String[] commandInput) {		
-		return checkCommandArgs(commandInput);
+		return checkCommandArgs(commandInput,false);
 	}
 
 	/**
@@ -704,7 +718,7 @@ public class MapFileEdit {
 	 * @param commandInput
 	 * @return List - command parsed and imploded by $ 
 	 */
-	private List<String> checkCommandArgs(String[] commandInput) {
+	private List<String> checkCommandArgs(String[] commandInput, boolean isNeighborCheck) {
 		List<String> commandList = new ArrayList<String>(Arrays.asList(commandInput));
 		List<String> processArgList = new ArrayList<String>();
 		int addFrequency = Collections.frequency(commandList, "-add");
@@ -726,9 +740,18 @@ public class MapFileEdit {
 			for (int i = 0; i < removeFrequency; i++) {
 				try {
 					int removeIndex = commandList.indexOf("-remove");
-					processArgList.add(commandList.get(removeIndex) + "$" + commandList.get(removeIndex + 1));
-					commandList.remove(removeIndex);
-					commandList.remove(removeIndex);
+					
+					// If the check and parsing is for editneighbor command - the commandlist processing is different, needs to consider 3 indexes as done below 
+					if(isNeighborCheck) {						
+						processArgList.add(commandList.get(removeIndex) + "$" + commandList.get(removeIndex + 1) + "$" + commandList.get(removeIndex + 2));
+						commandList.remove(removeIndex);
+						commandList.remove(removeIndex);
+						commandList.remove(removeIndex);
+					} else {
+						processArgList.add(commandList.get(removeIndex) + "$" + commandList.get(removeIndex + 1));
+						commandList.remove(removeIndex);
+						commandList.remove(removeIndex);
+					}
 				} catch(IndexOutOfBoundsException e) {
 					return null;
 				}
@@ -736,5 +759,5 @@ public class MapFileEdit {
 		}
 		return processArgList;
 	}	
-	
+		
 }
