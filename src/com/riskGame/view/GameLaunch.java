@@ -158,6 +158,7 @@ public class GameLaunch {
 					// Attack Phase starts
 					System.out.println("Attack phase starts");
 					AttackPhase ap = new AttackPhase();
+					ap.notifyObserver("Initiating attack phase for " + Game.getPlayersList().get(i).getPlayerName());
 					response = "";
 					int defender = 0;
 					do {
@@ -178,7 +179,7 @@ public class GameLaunch {
 							break;
 						}
 						else if(response.equalsIgnoreCase("done")) {
-							System.out.println("Attack phase skipped");
+							System.out.println("Attack phase skipped for " + Game.getPlayersList().get(i).getPlayerName());
 							response = "noAttack";
 							break;
 						}
