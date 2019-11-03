@@ -249,6 +249,7 @@ public class GameLaunch {
 					}
 					// fortification phase starts
 					System.out.println("Fortification phase starts");
+					fp.notifyObserver("Initiating fortification phase for " + Game.getPlayersList().get(i).getPlayerName());
 					response = "";
 					do {
 						if(response.contains("Error")) {

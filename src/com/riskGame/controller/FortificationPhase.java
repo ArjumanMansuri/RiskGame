@@ -6,6 +6,10 @@ import java.util.HashMap;
 import com.riskGame.models.Continent;
 import com.riskGame.models.Country;
 import com.riskGame.models.Game;
+import com.riskGame.observer.AttackPhaseObserver;
+import com.riskGame.observer.FortificationPhaseObserver;
+import com.riskGame.observer.PhaseViewObserver;
+import com.riskGame.observer.PhaseViewPublisher;
 
 /**
  * 
@@ -13,8 +17,14 @@ import com.riskGame.models.Game;
  * This class has business logic of the fortification phase
  *
  */
-public class FortificationPhase {
+public class FortificationPhase implements PhaseViewPublisher{
 
+	private PhaseViewObserver newObserver;
+	
+	public FortificationPhase() {
+		newObserver = new FortificationPhaseObserver();
+	}
+	
 	/**
 	 * This method would help making the fortification move if it is valid
 	 * @param fromCountry
@@ -29,7 +39,7 @@ public class FortificationPhase {
 		String[] commandComponents = command.split(" ");
 		
 		// check if it is a fortification command
-		
+		this.notifyObserver("Checking for valid fortification command");
 		String commandName = commandComponents[0];
 		if(!commandName.equalsIgnoreCase("fortify")) {
 			return "Error : Please enter fortification command";
@@ -58,26 +68,31 @@ public class FortificationPhase {
 	                    countries.add(country.getCountryName());
 	                }
 	            }
-			
+			this.notifyObserver("Checking for valid countries");
 			// check if those countries exist
 			if(!doCountriesExist(countries, fromCountry, toCountry)){
 				return "Error : Either one or both of the country names do not exist";
 			}
 			// check if they are owned by same player
+			this.notifyObserver("Checking for countries owned by same player");
 			ArrayList<String> ownedCountries = Game.getPlayersList().get(player).getOwnedCountries();
 			if(areCountriesNotOwnedByPlayer(ownedCountries,fromCountry,toCountry)) {
 				return "Error : Either one or both of the country names are not owned by you";
 			}
 			// check if they are adjacent
+			this.notifyObserver("Checking if countries are adjacent");
 			if(!(areCountriesAdjacent(fromCountry, toCountry))){
 					return "Error : Given countries are not adjacent";
 			}
 			// check if sufficient armies to move
+			this.notifyObserver("Checking if sufficient armies are present to move");
 			if(!areArmiesSufficientToMove(fromCountry, num)) {
 				int maxArmiesToBeMoved = Country.getListOfCountries().get(fromCountry).getNumberOfArmies()-1;
 				return "Error : Insufficient armies to move. Try moving "+maxArmiesToBeMoved+" armies";
 			}
 			// move armies
+			this.notifyObserver("Moving armies...");
+			this.notifyObserver(num + "armies from country" + fromCountry +" to country " + toCountry);
 			Country.getListOfCountries().get(fromCountry).setNumberOfArmies(Country.getListOfCountries().get(fromCountry).getNumberOfArmies()-num);
 			Country.getListOfCountries().get(toCountry).setNumberOfArmies(Country.getListOfCountries().get(toCountry).getNumberOfArmies()+num);
 		}
@@ -130,5 +145,11 @@ public class FortificationPhase {
 	 */
 	private boolean areArmiesSufficientToMove(String fromCountry,int num) {
 		return Country.getListOfCountries().get(fromCountry).getNumberOfArmies()>num;
+	}
+	
+	@Override
+	public void notifyObserver(String action) {
+		this.newObserver.update(action);
+		
 	}
 }
