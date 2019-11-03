@@ -162,6 +162,7 @@ public class GameLaunch {
 					response = "";
 					int defender = 0;
 					boolean reAttack = false;
+					do {
 						do {
 							if(response.contains("Error")) {
 								System.out.println(response);
