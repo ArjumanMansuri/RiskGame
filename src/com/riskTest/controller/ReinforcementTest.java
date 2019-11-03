@@ -2,7 +2,7 @@ package com.riskTest.controller;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
 import org.junit.*;
 
@@ -26,12 +26,10 @@ public class ReinforcementTest {
 	public void before() {
 		
 	myPlayer = new Player();
-	HashMap<String, Country> ownedCountries = new HashMap<String, Country>();
+	ArrayList<String> ownedCountries = new ArrayList();
 	String[] countries = {"Iran", "Japan", "canada","Germany", "France", "Asia", "Siberia", "China", "Afghanistan", "Ukraine", "Yatusk", "Kamchatka", "Mongolia", "Egypt", "Indonesia"};
 	for(String countryName: countries) {
-		Country newCountry = new Country();
-		newCountry.setCountryName(countryName);
-		ownedCountries.put(countryName, newCountry);
+		ownedCountries.add(countryName);
 	}
 	myPlayer.setOwnedCountries(ownedCountries);
 		
