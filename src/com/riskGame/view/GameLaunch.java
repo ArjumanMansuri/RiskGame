@@ -141,10 +141,10 @@ public class GameLaunch {
 				for(int i=1;i<=Integer.parseInt(noOfPlayers);i++) {
 					System.out.println("Player : "+Game.getPlayersList().get(i).getPlayerName());
 					System.out.println("Reinforcement phase starts");
-
+					rp.notifyObserver("Initiating reinforcement phase...");
 					// calculating reinforcement armies
 					rp.calculateReinforcementArmies(i);
-
+				
 					while(Game.getPlayersList().get(i).getPlayerNumOfArmy()!=0) {
 						if(response.contains("Error")) {
 							System.out.println(response);
