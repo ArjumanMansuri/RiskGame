@@ -45,6 +45,7 @@ public class GameLaunch {
 			switch(optionMain) {
 			case 1:
 				StartUpPhase startUpPhase = new StartUpPhase();
+				startUpPhase.notifyObserver("StartUp Phase started...");
 				do{
 					System.out.println("Enter number of players ranging from 2 to 6:");
 					noOfPlayers = sc.nextLine().trim();
