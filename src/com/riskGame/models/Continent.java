@@ -84,4 +84,13 @@ public class Continent {
 	public void pushTerritory(Country territory) {
 		this.territories.add(territory);
 	}
+	
+	public boolean checkOwnership(Player player) {
+		for(Country c : territories) {
+			if(Game.getPlayersList().get(c.getOwner()) != player) {
+				return false;
+			}
+		}
+		return true;
+	}
 }
