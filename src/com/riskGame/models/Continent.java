@@ -85,6 +85,11 @@ public class Continent {
 		this.territories.add(territory);
 	}
 	
+	/**
+	 * This method checks whether the continent is owned by a player or not
+	 * @param player name of the player
+	 * @return true if the player owns the continent
+	 */
 	public boolean checkOwnership(Player player) {
 		for(Country c : territories) {
 			if(Game.getPlayersList().get(c.getOwner()) != player) {
