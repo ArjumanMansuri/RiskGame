@@ -110,9 +110,10 @@ public class Game {
         	}
         	Game.playersList.get(key).addObserver(cardExView);
         }
+        
         /*
          * For Testing
-         */
+        
         if(Game.playersList.size() > 1) {
         	// Bug the playerlist is not correct. First player is null. Second is the one u pass as first
 	        Game.gameCards.get(0).changeOwner(Game.playersList.get(1));
@@ -126,7 +127,7 @@ public class Game {
 	        //ReinforcementPhase rp = new ReinforcementPhase();
 	        //rp.reinforce(1, "exchangecards -none");
 	        //rp.reinforce(1, "reinforce ");
-			
+		 */
         }
     }
 
