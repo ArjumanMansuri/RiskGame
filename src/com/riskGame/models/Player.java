@@ -180,7 +180,7 @@ public class Player extends Observable implements Observer {
 			tempString =  tempString + rollNum + " ";
 		}
 
-		String attackerDiceRollsString = tempString;
+		AttackPhase.setAttackerDiceRollsString(tempString);
 		tempString="";
 
 		for(int i=0;i<AttackPhase.getDefenderDiceNum();i++) {
@@ -189,7 +189,7 @@ public class Player extends Observable implements Observer {
 			tempString =  tempString + rollNum + " ";
 		}
 
-		String defenderDiceRollsString = tempString;
+		AttackPhase.setDefenderDiceRollsString(tempString);
 		
 
 		while(attackerDiceRolls.size()!=0 && defenderDiceRolls.size()!=0){
