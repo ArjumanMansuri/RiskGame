@@ -41,4 +41,11 @@ public class StartUpTest {
     public void testParser(){
         assertEquals("error",st.parser(""));
     }
+    
+    @Test
+    public void testNumberOfPlayers() {
+    	st.setNoOfPlayers(6);
+    	assertEquals("done", st.parser("5"));
+    }
+    
 }
