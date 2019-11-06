@@ -7,45 +7,60 @@ import org.junit.*;
 import com.riskGame.controller.*;
 import com.riskGame.models.*;
 
-
+/**
+ * {@link StartUpTest} Test Class
+ */
 public class StartUpTest {
-    StartUpPhase st =  new StartUpPhase();
-    HashMap<Integer,Player> temp =  new HashMap<Integer, Player>();
-    Player playerTest = new Player();
+	StartUpPhase st =  new StartUpPhase();
+	HashMap<Integer,Player> temp =  new HashMap<Integer, Player>();
+	Player playerTest = new Player();
 
-    @Test
-    public void testIfContains(){
-        playerTest.setPlayerName("Abc");
-        temp.put(1,playerTest);
+	/**
+	 * This method is to check the name of Player is correct
+	 */
+	@Test
+	public void testIfContains(){
+		playerTest.setPlayerName("Abc");
+		temp.put(1,playerTest);
 
-        assertEquals(true, st.ifContains(temp,"Abc"));
-    }
+		assertEquals(true, st.ifContains(temp,"Abc"));
+	}
 
-    @Test
-    public void testInputValidator(){
-        assertEquals(1, st.inputValidator("gameplayer -add a -add b"));
-    }
+	/**
+	 * This method is to check if the input command works correctly.
+	 */
+	@Test
+	public void testInputValidator(){
+		assertEquals(1, st.inputValidator("gameplayer -add a -add b"));
+	}
+	/**
+	 * This method tests if the player gets the armies assigned correctly.
+	 */
+	@Test
+	public void testAllPlayerArmies(){
+		playerTest.setPlayerName("abc");
+		Player p2 = new Player();
+		p2.setPlayerName("def");
+		temp.put(1,playerTest);
+		temp.put(2,p2);
 
-    @Test
-    public void testAllPlayerArmies(){
-        playerTest.setPlayerName("abc");
-        Player p2 = new Player();
-        p2.setPlayerName("def");
-        temp.put(1,playerTest);
-        temp.put(2,p2);
+		assertEquals("done",st.allPlayerArmies());
+	}
 
-        assertEquals("done",st.allPlayerArmies());
-    }
+	/**
+	 * This method is to test the correct working of the parser.
+	 */
+	@Test
+	public void testParser(){
+		assertEquals("error",st.parser(""));
+	}
+	/**
+	 * This method is to test the number of players passed in the parser.
+	 */
+	@Test
+	public void testNumberOfPlayers() {
+		st.setNoOfPlayers(6);
+		assertEquals("done", st.parser("5"));
+	}
 
-    @Test
-    public void testParser(){
-        assertEquals("error",st.parser(""));
-    }
-    
-    @Test
-    public void testNumberOfPlayers() {
-    	st.setNoOfPlayers(6);
-    	assertEquals("done", st.parser("5"));
-    }
-    
 }
