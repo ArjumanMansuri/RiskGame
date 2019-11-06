@@ -156,7 +156,7 @@ public class GameLaunch {
 						System.out.println("Use command : reinforce 'countryname' 'num'");
 						GameLaunch.printPlayerInformation(i);
 						System.out.println("Number of reinforcement armies available : "+Game.getPlayersList().get(i).getPlayerNumOfArmy());
-						response = rp.reinforce(i,sc.nextLine());
+						response = Game.getPlayersList().get(i).reinforce(i,sc.nextLine());
 					}
 					rp.notifyObserver("End of reinforcement phase for the player : " + Game.getPlayersList().get(i).getPlayerName());
 					rp.notifyObserver(null);
@@ -281,7 +281,7 @@ public class GameLaunch {
 
 
 						String command = sc.nextLine().trim();
-						response = fp.fortify(i,command);
+						response = Game.getPlayersList().get(i).fortify(i,command);
 						if(response.equals("done")) {
 							GameLaunch.printPlayerInformation(i);
 						}
