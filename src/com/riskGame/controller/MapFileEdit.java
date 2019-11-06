@@ -6,8 +6,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
+
 import com.riskGame.models.Continent;
 import com.riskGame.models.Country;
 import com.riskGame.models.Game;
@@ -25,11 +29,11 @@ public class MapFileEdit {
 	public static final String ANSI_RESET = "\u001B[0m";	
 	public static final String ANSI_GREEN = "\u001B[32m";
 	private static final int SAVE_MAP_COMMAND_ERROR = 0;
-	private static final int SAVE_MAP_NO_CONTINENTS = 1;
+	private static final int SAVE_MAP_NO_CONTINENTS = 1;	
 	private static final int SAVE_MAP_INVALID = 2;
 	private static final int SAVE_MAP_SUCCESS = 3;
 	private String editMapFileName;
-	
+		
 	/**
 	 * Check if the given map file exists.
 	 * @param command - command to edit map file.
@@ -75,7 +79,7 @@ public class MapFileEdit {
 	
 	private boolean validateMapOnLoadAndSave(String fileName) {
 		MapFileParser mapParser = new MapFileParser();
-				
+		
 		if(mapParser.validateValidMapFile(fileName)) {			
 			Map editMap = Game.getEditMap();			
 			editMap = mapParser.readFileData(fileName);
@@ -208,47 +212,61 @@ public class MapFileEdit {
 	 * @param commandInput - input command from the user.
 	 * 
 	 */
-	public void editNeighbor(String[] commandInput) {
+	public void editNeighbor(String[] commandInput) {		
 		if(commandInput.length >= 4) {
-			String operation = commandInput[1]; // add or remove
-			String countryName = commandInput[2]; 
-			String neighborCountryName = commandInput[3]; 
+			List<String> processArgs = checkNeighborCommandArgs(commandInput);			
 			HashMap<String, Continent> editMapContinents= Game.getEditMap().getContinents();
 			
-			Country neighbourCountry;
-			if((neighbourCountry = isCountryExists(neighborCountryName)) != null) {						
-				if(operation.equals("-add")) {			
-					Country addCountry = new Country();
-					addCountry.setCountryName(neighborCountryName);
-					
-					//  Add neighbor country to main country if the main country exists  
-					Country country = isCountryExists(countryName);
-					if(country != null) {
-						country.getNeighbours().add(addCountry);
-						neighbourCountry.getNeighbours().add(country);
-					}					
-				} else if(operation.equals("-remove")) {
-					for(String continentKey : editMapContinents.keySet()) {										
-						editMapContinents.get(continentKey).getTerritories().forEach(country -> {						
-							country.getNeighbours().removeIf(neighbor -> neighbor.getCountryName().equals(neighborCountryName));						
-						}); 	
+			for(String arg : processArgs) {
+				String[] argSplit = arg.split("\\$"); // Split using $ symbol				
+				String countryName = argSplit[1];
+				String neighborCountryName = argSplit[2];				
+				Country neighbourCountry;
+				
+				if((neighbourCountry = isCountryExists(neighborCountryName)) != null) {						
+					if(argSplit[0].equals("-add")) {			
+						Country addCountry = new Country();
+						addCountry.setCountryName(neighborCountryName);
 						
-						editMapContinents.get(continentKey).getTerritories().forEach(country -> {
-							country.getNeighbours().removeIf(n -> n.getCountryName().equals(countryName));
-						});
-					}								
-				}
+						//  Add neighbor country to main country if the main country exists  
+						Country country = isCountryExists(countryName);
+						if(country != null) {
+							country.getNeighbours().put(neighborCountryName, addCountry);
+							neighbourCountry.getNeighbours().put(countryName, country);
+						}					
+					} else if(argSplit[0].equals("-remove")) {
+						for(String continentKey : editMapContinents.keySet()) {										
+							editMapContinents.get(continentKey).getTerritories().forEach(country -> {						
+								country.getNeighbours().entrySet().removeIf(neighbor ->  neighbor.getKey().equals(neighborCountryName));						
+							}); 	
+							
+							editMapContinents.get(continentKey).getTerritories().forEach(country -> {
+								country.getNeighbours().entrySet().removeIf(n -> n.getKey().equals(countryName));
+							});
+						}								
+					}
+				}						
 			}			
 		}
 	}
 	
+	/**
+	 * Parse the editneighbor command and get the command args as list elements.
+	 * @param commandInput
+	 * @return List with Commands - imploded by $ symbol.  
+	 */	
+	private List<String> checkNeighborCommandArgs(String[] commandInput) {
+		return checkCommandArgs(commandInput, true);
+	}
+	
+
 	/**
 	 * Check if a given country exists in the map.
 	 * @param countryName - name of the country to check existence.
 	 * @return Country object.
 	 * 
 	 */
-	public Country isCountryExists(String countryName){
+	public static Country isCountryExists(String countryName){
 		HashMap<String, Continent> editMapContinents= Game.getEditMap().getContinents();
 		Country countryFound = null;
 		
@@ -272,34 +290,59 @@ public class MapFileEdit {
 	 * @param commandInput - command from the user.
 	 * 
 	 */
-	public void editCountry(String[] commandInput) {
+	public boolean editCountry(String[] commandInput) {
 		if(commandInput.length > 2) {
-			String operation = commandInput[1]; // add or remove
-			String countryName = commandInput[2]; // country Name value		 
+			List<String> processArgs = checkCountryCommandArgs(commandInput);			
+			if(processArgs == null) {
+				return false;
+			}
 			HashMap<String, Continent> editMapContinents= Game.getEditMap().getContinents();		
-	
-			if(operation.equals("-add")) {
-				if(commandInput.length == 4) {			
-					String continentName = commandInput[3]; // continent Name value				
-					// check if the continent exists to add the given country 
-					if(editMapContinents.containsKey(continentName)) {  
-						Country addCountry = new Country();
-						addCountry.setContinent(continentName);
-						addCountry.setCountryName(countryName);						
-						editMapContinents.get(continentName).getTerritories().add(addCountry);						
-					}	
+			
+			for(String arg : processArgs) {
+				String[] argSplit = arg.split("\\$"); // Split using $ symbol
+				
+				if(argSplit[0].equals("-add")) {
+					if(argSplit.length >= 3) {			
+						String continentName = argSplit[2]; // Continent Name Value
+						String countryName = argSplit[1]; // country Name Value
+						
+						if(editMapContinents.containsKey(continentName)) {  
+							// Check if the continent exists to add the given country and check if the given country already exists
+							if(isCountryExists(countryName) == null) {
+								Country addCountry = new Country();
+								addCountry.setContinent(continentName);
+								addCountry.setCountryName(countryName);						
+								editMapContinents.get(continentName).getTerritories().add(addCountry);
+							}													
+						}	
+					} else {
+						return false;
+					}
+				} else if(argSplit[0].equals("-remove")) {		
+					String countryName = argSplit[1]; // country Name Value
+					for(String continentKey : editMapContinents.keySet()) {										
+						editMapContinents.get(continentKey).getTerritories().removeIf(country -> country.getCountryName().equals(countryName));	
+							
+						// Remove country from neighbors list of other countries
+						editMapContinents.get(continentKey).getTerritories().forEach(neighborcountry -> {
+							neighborcountry.getNeighbours().entrySet().removeIf(n -> n.getKey().equals(countryName));
+						});
+					}
 				}
-			} else if(operation.equals("-remove")) {
-				System.out.println("Removing");
-				for(String continentKey : editMapContinents.keySet()) {										
-					editMapContinents.get(continentKey).getTerritories().removeIf(country -> country.getCountryName().equals(countryName));	
-					
-					editMapContinents.get(continentKey).getTerritories().forEach(neighborcountry -> {
-						neighborcountry.getNeighbours().removeIf(n -> n.getCountryName().equals(countryName));
-					});
-				}
-			}		
+				
+			}			
+			return true;
 		}
+		return false;
+	}
+	
+	/**
+	 * Parse the editcountry command and get the command args as list elements.
+	 * @param commandInput
+	 * @return List with Commands - imploded by $ symbol.  
+	 */
+	private List<String> checkCountryCommandArgs(String[] commandInput) {
+		return checkCommandArgs(commandInput,false);		
 	}
 
 	/**
@@ -307,29 +350,44 @@ public class MapFileEdit {
 	 * @param editMap map object to be edited.
 	 * @param commandInput Full command entered by the user.
 	 */
-	public void editContinent(String[] commandInput) {		
-		String operation = commandInput[1]; // add or remove
-		String name = commandInput[2]; // continent Name value		
-		HashMap<String, Continent> editMapContinents= Game.getEditMap().getContinents();		
+	public boolean editContinent(String[] commandInput) {		
+		List<String> processArgs = checkContinentCommandArgs(commandInput);		
+		if(processArgs == null) {
+			return false;
+		}		
+		HashMap<String, Continent> editMapContinents = Game.getEditMap().getContinents();		
 		
-		if(operation.equals("-add")) {
-			int value = Integer.parseInt(commandInput[3]); // continent control value
-			Continent addContinent = new Continent();
-			addContinent.setContinentName(name);
-			addContinent.setControlValue(value);
-			if(!editMapContinents.containsKey(name)) {
-				editMapContinents.put(name, addContinent);
-			}						
-		} else if(operation.equals("-remove")){			
-			if(editMapContinents.containsKey(name)) {
-				editMapContinents.remove(name);
-			}
-		}			
+		for(String arg : processArgs) {
+			String[] argSplit = arg.split("\\$"); // Split using $ symbol			
+			String name = argSplit[1]; // continent name 
+			
+			if(argSplit[0].equals("-add")) {
+				int value = Integer.parseInt(argSplit[2]); // continent control value 				
+				Continent addContinent = new Continent();
+				addContinent.setContinentName(name);
+				addContinent.setControlValue(value);
+				if(!editMapContinents.containsKey(name)) {
+					editMapContinents.put(name, addContinent);
+				}						
+			} else if(argSplit[0].equals("-remove")){			
+				if(editMapContinents.containsKey(name)) {
+					editMapContinents.remove(name);
+				}
+			}				
+		}		
+		return true;
+	}
+		
+	/**
+	 * Parse the editcontinent command and get the command args as list elements.
+	 * @param commandInput
+	 * @return List with Commands - imploded by $ symbol. 
+	 */
+	private List<String> checkContinentCommandArgs(String[] commandInput) {		
+		return checkCommandArgs(commandInput,false);
 	}
 
 	/**
-	 * This method edits a continent in a map file. Add or remove continent.
-	 * @param editMap  - map object to be edited.
 	 * @param commandInput - Full command entered by the user.
 	 * 
 	 */
@@ -351,9 +409,21 @@ public class MapFileEdit {
 			return false;
 		}
 		
-		boolean validContinents = validateContinentConnections();
-		boolean validCountries  = validateCountryConnections();
+		// Make countries hashmap 
+		HashMap<String, Country> countries = new HashMap<String, Country>();
+		for(Continent continent : Game.getEditMap().getContinents().values()) {						
+			for(Country currentCountry : continent.getTerritories()) {	
+				countries.put(currentCountry.getCountryName(), currentCountry);	
+			}			
+		}		
+		
 		boolean validNeighbors  = validateNeighbors();
+		
+		MapConnected continentsConnected = new MapConnected(Game.getEditMap().getContinents(),countries);	
+		boolean validContinents = continentsConnected.checkConnectedContinents();
+		
+		MapConnected countriesConnected = new MapConnected(countries);
+		boolean validCountries  = countriesConnected.checkConnectedCountries();
 		
 		if(validContinents && validCountries && validNeighbors) {
 			return true;
@@ -386,21 +456,20 @@ public class MapFileEdit {
 	 *This method checks if the neighbor countries have the given country as their neighbors.
 	 * @param country
 	 * @param neighbours
-	 * @return true/false
-	 * 
+	 * @return true/false 
 	 */
-	public boolean checkNeighborsHasCountry(Country country, ArrayList<Country> neighbours) {
+	public boolean checkNeighborsHasCountry(Country country, HashMap<String,Country> neighbours) {
 		int neighbourCount = 0;
 		
 		// neighborCountry doesn't have neighbors set in the object. 
-		for(Country neighborCountry: neighbours) {
-			neighborCountry	= isCountryExists(neighborCountry.getCountryName());
+		for(String neighborCountryName: neighbours.keySet()) {
+			Country neighborCountry	= isCountryExists(neighborCountryName);
 			if(neighborCountry == null) {				
 				break;
 			}
 			
-			for(Country neighborOfNeighbor : neighborCountry.getNeighbours()) {	
-				neighborOfNeighbor	= isCountryExists(neighborOfNeighbor.getCountryName());
+			for(String neighborOfNeighborName : neighborCountry.getNeighbours().keySet()) {	
+				Country neighborOfNeighbor	= isCountryExists(neighborOfNeighborName);
 				if(neighborOfNeighbor.getCountryName() == country.getCountryName()) {					
 					neighbourCount++;
 				}
@@ -451,10 +520,10 @@ public class MapFileEdit {
 	 * @return neighbourFromCountryFound true if neighbor is found from same continent.
 	 * 
 	 */
-	private boolean countrySameContinentNeighbor(ArrayList<Country> neighbors, String[] countriesInContinent) {
+	private boolean countrySameContinentNeighbor(HashMap<String,Country> neighbors, String[] countriesInContinent) {
 		boolean neighbourFromCountryFound = false;
-		for(Country neighbor : neighbors) {
-			if(Arrays.asList(countriesInContinent).contains(neighbor.getCountryName())) {
+		for(String neighborCountryName : neighbors.keySet()) {
+			if(Arrays.asList(countriesInContinent).contains(neighborCountryName)) {
 				neighbourFromCountryFound = true;
 				break;
 			}
@@ -463,7 +532,7 @@ public class MapFileEdit {
 	}	
 	
 	/**
-	 * ter method to get country names from Country array list
+	 * Method to get country names from Country array list
 	 * @param continentCountries
 	 * @return countryNames
 	 * 
@@ -508,7 +577,7 @@ public class MapFileEdit {
 	}
 
 	/**
-	 * this method checks if the given checkCountry exists in all other continent's country's
+	 * This method checks if the given checkCountry exists in all other continent's country's
 	 * neighbor list.
 	 * @param ignoreContinentKey - Ignores this continent while checking for the country check.
 	 * @param checkCountry - Checks this country in all other continents excepts the ignoreContinentKey.
@@ -523,7 +592,8 @@ public class MapFileEdit {
 			Continent otherContinent = Game.getEditMap().getContinents().get(otherContinentKey);			
 			if(!otherContinentKey.equals(ignoreContinentKey)) {
 				for(Country otherContinentCountry : otherContinent.getTerritories()) {
-					for(Country neighbor : otherContinentCountry.getNeighbours()) {
+					for(String neighborCountryName : otherContinentCountry.getNeighbours().keySet()) {
+						Country neighbor = isCountryExists(neighborCountryName);
 						if(neighbor.getCountryName().equals(checkCountry.getCountryName())) {
 							countryExists = true;
 							break;
@@ -536,7 +606,7 @@ public class MapFileEdit {
 	}	
 	
 	/**
-	 * this method saves the map object to the filename.
+	 * This method saves the map object to the filename.
 	 * @param commandInput - command fro the user.
 	 * @return int value for the correct message.
 	 * 
@@ -611,15 +681,15 @@ public class MapFileEdit {
 	}
 	
 	/**
-	 * getter method to get a Comma Separated String of neighbor list.
+	 * Getter method to get a Comma Separated String of neighbor list.
 	 * @param neighbours.
 	 * @return CSV list.
 	 * 
 	 */
-	private String getNeighborCSV(ArrayList<Country> neighbours) {
+	private String getNeighborCSV(HashMap<String,Country> neighbours) {
 		String neighborCSV = "";
-		for(Country neighbor : neighbours) {
-			neighborCSV += neighbor.getCountryName() + ",";
+		for(String neighbor : neighbours.keySet()) {
+			neighborCSV += neighbor + ",";
 		}
 		neighborCSV = neighborCSV.replaceAll(",$", "");
 		return neighborCSV;
@@ -641,5 +711,53 @@ public class MapFileEdit {
 	 */
 	public void setEditMapFileName(String editMapFileName) {
 		this.editMapFileName = editMapFileName;
+	}
+		
+	/**
+	 * Method for checking command args for editcontinent and editcountry
+	 * @param commandInput
+	 * @return List - command parsed and imploded by $ 
+	 */
+	private List<String> checkCommandArgs(String[] commandInput, boolean isNeighborCheck) {
+		List<String> commandList = new ArrayList<String>(Arrays.asList(commandInput));
+		List<String> processArgList = new ArrayList<String>();
+		int addFrequency = Collections.frequency(commandList, "-add");
+		int removeFrequency = Collections.frequency(commandList, "-remove");
+		if (addFrequency > 0) {
+			for (int i = 0; i < addFrequency; i++) {
+				int addIndex = commandList.indexOf("-add");
+				try {
+					processArgList.add(commandList.get(addIndex) + "$" + commandList.get(addIndex + 1) + "$" + commandList.get(addIndex + 2));
+					commandList.remove(addIndex);
+					commandList.remove(addIndex);
+					commandList.remove(addIndex);	
+				} catch(IndexOutOfBoundsException e) {
+					return null;
+				}
+			}
+		}
+		if (removeFrequency > 0) {
+			for (int i = 0; i < removeFrequency; i++) {
+				try {
+					int removeIndex = commandList.indexOf("-remove");
+					
+					// If the check and parsing is for editneighbor command - the commandlist processing is different, needs to consider 3 indexes as done below 
+					if(isNeighborCheck) {						
+						processArgList.add(commandList.get(removeIndex) + "$" + commandList.get(removeIndex + 1) + "$" + commandList.get(removeIndex + 2));
+						commandList.remove(removeIndex);
+						commandList.remove(removeIndex);
+						commandList.remove(removeIndex);
+					} else {
+						processArgList.add(commandList.get(removeIndex) + "$" + commandList.get(removeIndex + 1));
+						commandList.remove(removeIndex);
+						commandList.remove(removeIndex);
+					}
+				} catch(IndexOutOfBoundsException e) {
+					return null;
+				}
+			}
+		}
+		return processArgList;
 	}	
+		
 }

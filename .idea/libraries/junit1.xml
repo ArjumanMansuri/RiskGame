@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="junit1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/junit5/org.junit_4.12.0.v201504281640/junit.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

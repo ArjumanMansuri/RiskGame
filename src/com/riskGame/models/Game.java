@@ -1,5 +1,6 @@
 package com.riskGame.models;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -14,7 +15,8 @@ public class Game {
     private static HashMap<Integer,Player> playersList = new HashMap<>();
     private static Map editMap = new Map();
     private static boolean editMapSet = false;
-
+    private static ArrayList<Card> gameCards;
+    
     /**
      * This is a default constructor that creates game object.
      *
@@ -22,6 +24,22 @@ public class Game {
     public Game() {
         playersList = new HashMap<Integer, Player>();
         map = new Map();
+    }
+    
+    public void initCards() {
+    	gameCards = new ArrayList<Card>();
+    	
+    	for(int i = 0; i < 14; i++) {
+    		gameCards.add(new Card(Card.ARTILLARY));
+    	}
+    	
+    	for(int i = 0; i < 14; i++) {
+    		gameCards.add(new Card(Card.CAVALRY));
+    	}
+    	
+    	for(int i = 0; i < 14; i++) {
+    		gameCards.add(new Card(Card.INFANTRY));
+    	}
     }
 
     /**

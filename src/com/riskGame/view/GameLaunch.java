@@ -45,6 +45,7 @@ public class GameLaunch {
 			switch(optionMain) {
 			case 1:
 				StartUpPhase startUpPhase = new StartUpPhase();
+				startUpPhase.notifyObserver("StartUp Phase started...");
 				do{
 					System.out.println("Enter number of players ranging from 2 to 6:");
 					noOfPlayers = sc.nextLine().trim();
@@ -130,7 +131,8 @@ public class GameLaunch {
 				}
 				
 				System.out.println("Initial army assignment is done");
-
+				startUpPhase.notifyObserver("StartUp Phase has ended...");
+				startUpPhase.notifyObserver(null);
 				// reinforcement phase starts
 
 				ReinforcementPhase rp = new ReinforcementPhase();
@@ -140,10 +142,10 @@ public class GameLaunch {
 				for(int i=1;i<=Integer.parseInt(noOfPlayers);i++) {
 					System.out.println("Player : "+Game.getPlayersList().get(i).getPlayerName());
 					System.out.println("Reinforcement phase starts");
-
+					rp.notifyObserver("Initiating reinforcement phase...");
 					// calculating reinforcement armies
 					rp.calculateReinforcementArmies(i);
-
+				
 					while(Game.getPlayersList().get(i).getPlayerNumOfArmy()!=0) {
 						if(response.contains("Error")) {
 							System.out.println(response);
@@ -153,10 +155,12 @@ public class GameLaunch {
 						System.out.println("Number of reinforcement armies available : "+Game.getPlayersList().get(i).getPlayerNumOfArmy());
 						response = rp.reinforce(i,sc.nextLine());
 					}
-					
+					rp.notifyObserver("End of reinforcement phase for the player : " + Game.getPlayersList().get(i).getPlayerName());
+					rp.notifyObserver(null);
 					// Attack Phase starts
-					System.out.println("Attack phase starts");
+					System.out.println("Attack phase starts...");
 					AttackPhase ap = new AttackPhase();
+					ap.notifyObserver("Initiating attack phase for " + Game.getPlayersList().get(i).getPlayerName());
 					response = "";
 					int defender = 0;
 					boolean reAttack = false;
@@ -245,8 +249,11 @@ public class GameLaunch {
 						GameLaunch.printPlayerInformation(i);
 						GameLaunch.printPlayerInformation(defender);
 					}
+					ap.notifyObserver("End of Attack phase for the player : " + Game.getPlayersList().get(i).getPlayerName());
+					ap.notifyObserver(null);
 					// fortification phase starts
 					System.out.println("Fortification phase starts");
+					fp.notifyObserver("Initiating fortification phase for " + Game.getPlayersList().get(i).getPlayerName());
 					response = "";
 					do {
 						if(response.contains("Error")) {
@@ -266,6 +273,8 @@ public class GameLaunch {
 						}
 
 					}while(!response.equals("done"));
+					fp.notifyObserver("End of fortification phase for " + Game.getPlayersList().get(i).getPlayerName());
+					fp.notifyObserver(null);
 					System.out.println("Player "+i+"'s turn ends");
 				}
 				System.out.println("Do you want to continue the game? 'y' or 'n'");
