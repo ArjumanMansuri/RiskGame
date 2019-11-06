@@ -235,14 +235,22 @@ public class MapFileEdit {
 							neighbourCountry.getNeighbours().put(countryName, country);
 						}					
 					} else if(argSplit[0].equals("-remove")) {
-						for(String continentKey : editMapContinents.keySet()) {										
-							editMapContinents.get(continentKey).getTerritories().forEach(country -> {						
-								country.getNeighbours().entrySet().removeIf(neighbor ->  neighbor.getKey().equals(neighborCountryName));						
-							}); 	
+						for(String continentKey : editMapContinents.keySet()) {
 							
-							editMapContinents.get(continentKey).getTerritories().forEach(country -> {
-								country.getNeighbours().entrySet().removeIf(n -> n.getKey().equals(countryName));
-							});
+							for(Country country : editMapContinents.get(continentKey).getTerritories()) {
+								if(country.getCountryName().equalsIgnoreCase(countryName)) {
+									country = isCountryExists(country.getCountryName());								
+									country.getNeighbours().entrySet().removeIf(neighbor -> neighbor.getKey().equals(neighborCountryName));
+								}								
+							}
+							
+							for(Country country1 : editMapContinents.get(continentKey).getTerritories()) {
+								if(country1.getCountryName().equalsIgnoreCase(neighborCountryName.trim())) {
+									country1 = isCountryExists(country1.getCountryName());
+									country1.getNeighbours().entrySet().removeIf(n -> n.getKey().equals(countryName));
+								}
+							}																	
+							
 						}								
 					}
 				}						
