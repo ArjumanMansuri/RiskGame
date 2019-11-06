@@ -11,12 +11,12 @@ import com.riskGame.models.Country;
  * Class to validate country and continent connections. 
  */
 public class MapConnected {
-		
+
 	private HashMap<String, Boolean> countriesVisited;
 	private HashMap<String, Boolean> continentsVisited;	
 	private HashMap<String,Country> countries;
 	private HashMap<String,Continent> continents;
-	
+
 	/**
 	 * Constructor for connected country check.
 	 * @param countries
@@ -25,12 +25,12 @@ public class MapConnected {
 		super();
 		this.countries = countries;
 		this.countriesVisited = new HashMap<>();
-		
+
 		for(Entry<String, Country> country : countries.entrySet()) {			
 			this.countriesVisited.put(country.getValue().getCountryName(), false);			
 		}		
 	}
-	
+
 	/**
 	 * Constructor for connected continents. 
 	 * @param continents
@@ -42,17 +42,17 @@ public class MapConnected {
 		this.countries = countries;
 		this.continentsVisited = new HashMap<>();
 		this.countriesVisited = new HashMap<>();
-		
+
 		for(Entry<String, Continent> continent : continents.entrySet()) {			
 			this.continentsVisited.put(continent.getValue().getContinentName(), false);			
 		}		
-		
+
 		for(Entry<String, Country> country : countries.entrySet()) {			
 			this.countriesVisited.put(country.getValue().getCountryName(), false);			
 		}	
 	}
 
-	
+
 	/**
 	 * Validate the countries for their connection inside a continent.
 	 * @return true if all countries are connected.
@@ -66,7 +66,7 @@ public class MapConnected {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Validate if the continents are connected. 
 	 * @return true if all the continents are connected.
@@ -96,7 +96,7 @@ public class MapConnected {
 			}
 		}		
 	}	
-	
+
 	/**
 	 * Iterate over all the continents and mark their visit.
 	 * @param iterateCountry

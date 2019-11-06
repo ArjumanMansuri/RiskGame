@@ -14,13 +14,14 @@ import com.riskGame.models.Game;
 import com.riskGame.models.Map;
 import com.riskGame.models.Player;
 
+
 /**
  * This class holds the method that gives the menu option to start game and edit map.
  * @author Mudra-PC
  *
  */
 public class GameLaunch {
-
+	
 	/**
 	 * This main method creates an instance to start the game.
 	 * @param args arguments  to run main method.
@@ -50,7 +51,7 @@ public class GameLaunch {
 					System.out.println("Enter number of players ranging from 2 to 6:");
 					noOfPlayers = sc.nextLine().trim();
 					response=startUpPhase.parser(noOfPlayers);
-					System.out.println(response);
+					//System.out.println(response);
 				}while(response.equals("error"));
 
 				// choose map phase
@@ -105,6 +106,7 @@ public class GameLaunch {
 									response = startUpPhase.placeArmy(i, sc.nextLine().toString());
 									if(response.equals("donePlaceArmy")) {
 										GameLaunch.printPlayerInformation(i);
+										startUpPhase.notifyDominationObserver(Game.getPlayersList().get(i).computeDominationViewData());
 									}
 								}while(!response.equals("donePlaceArmy"));
 							}
@@ -119,6 +121,7 @@ public class GameLaunch {
 									response = startUpPhase.placeAll(i,command);
 									if(response.equals("donePlaceall")) {
 										GameLaunch.printPlayerInformation(i);
+										startUpPhase.notifyDominationObserver(Game.getPlayersList().get(i).computeDominationViewData());
 									}
 								}while(!response.equals("donePlaceall"));
 							}
@@ -157,6 +160,7 @@ public class GameLaunch {
 					}
 					rp.notifyObserver("End of reinforcement phase for the player : " + Game.getPlayersList().get(i).getPlayerName());
 					rp.notifyObserver(null);
+					rp.notifyDominationObserver(Game.getPlayersList().get(i).computeDominationViewData());
 					// Attack Phase starts
 					System.out.println("Attack phase starts...");
 					AttackPhase ap = new AttackPhase();
@@ -206,6 +210,15 @@ public class GameLaunch {
 								System.out.println("Enter number of dice, you want to roll using 'defend 'numdice'' command");
 								String command = sc.nextLine().trim();
 								response = ap.setDefendDice(defender,command);
+
+								//changesNiral<---
+								String attackerRolls = AttackPhase.getAttackerDiceRollsString();
+								String defenderRolls = AttackPhase.getDefenderDiceRollsString();
+								if(!response.contains("Error")) {
+									System.out.println("Attacker Dice Rolls: "+attackerRolls+"\n"+"Defender Dice Rolls: "+defenderRolls);
+								}
+								//--->
+
 							}while(!response.contains("Conquer"));
 						}
 						// If defender country lost and has zero armies on it
@@ -229,7 +242,7 @@ public class GameLaunch {
 						else{
 							if(!response.equalsIgnoreCase("noattack") && ap.isAttackPossible()) {
 								int noOfArmies = Integer.parseInt(response.split(" ")[1]);
-								System.out.println("You still have "+noOfArmies+" left. Do you want to attack again y or n.?");
+								System.out.println("Attacker still have "+noOfArmies+" left. Do you want to attack again y or n.?");
 								if(sc.nextLine().equalsIgnoreCase("y")) {
 									reAttack = true;
 								}
@@ -251,6 +264,7 @@ public class GameLaunch {
 					}
 					ap.notifyObserver("End of Attack phase for the player : " + Game.getPlayersList().get(i).getPlayerName());
 					ap.notifyObserver(null);
+					ap.notifyDominationObserver(Game.getPlayersList().get(i).computeDominationViewData());
 					// fortification phase starts
 					System.out.println("Fortification phase starts");
 					fp.notifyObserver("Initiating fortification phase for " + Game.getPlayersList().get(i).getPlayerName());
@@ -315,10 +329,11 @@ public class GameLaunch {
 			}
 		}while(optionMain!=3);
 	}
+
 	/**
 	 * This method prints the countries and the neighboring countries 
 	 * along with number of armies in each countries. 
-	 * @param numofPlayers number of players.
+	 * @param player number of players.
 	 */
 	public static void printPlayerInformation(int player) {
 		// Printing players' countries with adjacent countries and number of armies

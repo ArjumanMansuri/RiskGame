@@ -4,6 +4,8 @@ import com.riskGame.models.Continent;
 import com.riskGame.models.Player;
 import com.riskGame.observer.PhaseViewObserver;
 import com.riskGame.observer.PhaseViewPublisher;
+import com.riskGame.observer.PlayerDominationViewObserver;
+import com.riskGame.observer.PlayerDominationViewPublisher;
 import com.riskGame.observer.StartupPhaseObserver;
 import com.riskGame.models.Country;
 import com.riskGame.models.Map;
@@ -18,14 +20,27 @@ import java.util.*;
  * @author	niralhlad
  * 
  */
-public class StartUpPhase implements PhaseViewPublisher{
+public class StartUpPhase implements PhaseViewPublisher, PlayerDominationViewPublisher{
 	private HashMap<Integer,Player> playersData;
 	private int noOfPlayers;
+	
+
+
 	private PhaseViewObserver newObserver;
+	private PlayerDominationViewObserver newDomiantionObserver;
 	
 	public StartUpPhase(){
 		playersData = new HashMap<Integer,Player>();
 		newObserver = new StartupPhaseObserver();
+		newDomiantionObserver = new PlayerDominationViewObserver();
+	}
+	
+	public int getNoOfPlayers() {
+		return noOfPlayers;
+	}
+
+	public void setNoOfPlayers(int noOfPlayers) {
+		this.noOfPlayers = noOfPlayers;
 	}
 
 	/**
@@ -126,6 +141,11 @@ public class StartUpPhase implements PhaseViewPublisher{
 
 		String[] commandComponents = command.split(" ");
 		String commandName = commandComponents[0];
+		
+		if(commandName.equalsIgnoreCase("showmap")) {
+			MapFileEdit.gamePlayShowMap();
+			return "";
+		}
 
 		if(!commandName.equals("placearmy")) {
 			return "Error : Enter placearmy command";
@@ -183,6 +203,7 @@ public class StartUpPhase implements PhaseViewPublisher{
 				this.notifyObserver("Total number of armies for " + p.getPlayerName() + "is increased to " + p.getPlayerNumOfArmy());
 			}
 		}
+		this.notifyDominationObserver(p.computeDominationViewData());
 		return "donePlaceall";
 	}
 	/**
@@ -280,7 +301,6 @@ public class StartUpPhase implements PhaseViewPublisher{
 			Game.setPlayersList(playersData);
 			return "exit";
 		}
-
 	}
 
 	/**
@@ -290,7 +310,7 @@ public class StartUpPhase implements PhaseViewPublisher{
 	 * @throws ArrayIndexOutOfBoundsException
 	 * 
 	 */
-	int inputValidator(String thisInput) throws ArrayIndexOutOfBoundsException{
+	public int inputValidator(String thisInput) throws ArrayIndexOutOfBoundsException{
 		String[] parsedString = thisInput.split(" ");
 		try{
 			if(parsedString[0].equals("gameplayer")){
@@ -320,7 +340,7 @@ public class StartUpPhase implements PhaseViewPublisher{
 	 * @return True if found and False if not.
 	 * 
 	 */
-	Boolean ifContains(HashMap<Integer,Player> temp,String name){
+	public Boolean ifContains(HashMap<Integer,Player> temp,String name){
 		for(int i=1;i<=temp.size();i++){
 			if(temp.get(i).getPlayerName().equals(name))
 				return true;
@@ -338,6 +358,9 @@ public class StartUpPhase implements PhaseViewPublisher{
 	}
 
 	
+	public void notifyDominationObserver(String action) {
+		this.newDomiantionObserver.updateDomination(action);
+	}
 }
 
 

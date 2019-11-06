@@ -25,7 +25,10 @@ public class FortificationPhaseObserver extends PhaseViewObserver{
 	@Override
 	public void update(String action) {
 		if(! (action == null))
+		{
+			System.out.println(action);
 			this.actions.add(action);
+		}	
 		else
 			this.actions.clear();
 		

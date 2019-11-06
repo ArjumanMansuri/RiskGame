@@ -16,6 +16,9 @@ public class Player extends Observable implements Observer {
     private int playerNumOfArmy;
     private ArrayList<String> ownedCountries;
     private ArrayList<Card> cards;
+    private ArrayList<String> ownedContinents;
+    
+    
 
     /**
      * This is a default constructor which will create player object.
@@ -24,8 +27,25 @@ public class Player extends Observable implements Observer {
     public Player(){
         ownedCountries = new ArrayList<String>();
         cards = new ArrayList<Card>();
+        ownedContinents = new ArrayList<>();
     }
 
+    /**
+     * getter method to get the list of continents owned by a player
+     * @return ownedCountries List of continents owned by a player
+     */
+    public ArrayList<String> getOwnedContinents() {
+		return ownedContinents;
+	}
+    
+    /**
+     * setter method to assign the list of continents owned by a player
+     * @param ownedCountries list of continents owned by a player
+     */
+	public void setOwnedContinents(ArrayList<String> ownedContinents) {
+		this.ownedContinents = ownedContinents;
+	}
+    
 	/**
      * getter method to get the name of the player.
      * @return The player name
@@ -90,5 +110,19 @@ public class Player extends Observable implements Observer {
 	
 	public ArrayList<Card> getCards() {
 		return this.cards;
+	}
+	
+	public String computeDominationViewData() {
+		int percentage = this.getOwnedCountries().size() * 100 / Country.getListOfCountries().size();
+		String finalStr = "World Domination View of player: " +this.getPlayerName()+"\n";
+		finalStr = finalStr + "Percentage of world controlled : "+percentage+"%\n";
+		finalStr = finalStr + "Continents owned : "+this.getOwnedContinents()+"\n";
+		
+		int totalArmy = 0;
+		for(String countryName:this.getOwnedCountries()) {
+			totalArmy = totalArmy + Country.getListOfCountries().get(countryName).getNumberOfArmies();
+		}
+		finalStr = finalStr + "Total number of armies owned : "+totalArmy+"\n";
+		return finalStr;
 	}
 }

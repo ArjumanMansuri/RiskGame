@@ -15,6 +15,15 @@ import com.riskGame.models.Game;
  */
 public class FortificationPhase {
 
+	private PhaseViewObserver newObserver;
+
+	/**
+	 * Default Constructor which will create new observer object
+	 */
+	public FortificationPhase() {
+		newObserver = new FortificationPhaseObserver();
+	}
+
 	/**
 	 * This method would help making the fortification move if it is valid
 	 * @param fromCountry
@@ -25,9 +34,20 @@ public class FortificationPhase {
 		if(command.isEmpty() || command.trim().length()==0) {
 			return "Error : Invalid Command";
 		}
-		
+
 		String[] commandComponents = command.split(" ");
+
+		// Call card exchange
+		if(commandComponents[0].equalsIgnoreCase("exchangecards")) {
+			ReinforcementPhase rp = new ReinforcementPhase();
+			return rp.reinforce(player, command);
+		}
 		
+		if(commandComponents[0].equalsIgnoreCase("showmap")) {
+			MapFileEdit.gamePlayShowMap();
+			return "";
+		}
+
 		// check if it is a fortification command
 		
 		String commandName = commandComponents[0];
@@ -40,11 +60,11 @@ public class FortificationPhase {
 				return "done";
 			}
 		}
-		
+
 		if(!(commandComponents.length == 4)) {
 			return "Error : Number of arguments does not match";
 		}
-		
+
 		// fortify 'fromcountry' 'tocountry' 'num'
 		else {
 			String fromCountry = commandComponents[1];
@@ -56,6 +76,9 @@ public class FortificationPhase {
             ArrayList<String> countries = new ArrayList<String>(countriesMap.keySet());
 			
 			// check if those countries exist
+			this.notifyObserver("Checking for valid countries");
+					// check if those countries exist
+
 			if(!doCountriesExist(countries, fromCountry, toCountry)){
 				return "Error : Either one or both of the country names do not exist";
 			}
@@ -66,7 +89,7 @@ public class FortificationPhase {
 			}
 			// check if they are adjacent
 			if(!(areCountriesAdjacent(fromCountry, toCountry))){
-					return "Error : Given countries are not adjacent";
+				return "Error : Given countries are not adjacent";
 			}
 			// check if sufficient armies to move
 			if(!areArmiesSufficientToMove(fromCountry, num)) {
@@ -89,7 +112,7 @@ public class FortificationPhase {
 	private boolean doCountriesExist(ArrayList<String> countries,String fromCountry,String toCountry) {
 		return (countries.contains(fromCountry)) && (countries.contains(toCountry));
 	}
-	
+
 	/**
 	 * This method checks if the countries provided as parameters are adjacent
 	 * @param ownedCountries List of countries owned by the player
@@ -105,7 +128,7 @@ public class FortificationPhase {
 			return true;
 		}
 	}
-	
+
 	/**
 	 * This method checks if the countries provided as parameters are owned by the player
 	 * @param ownedCountries List of countries owned by the player
@@ -116,7 +139,7 @@ public class FortificationPhase {
 	private boolean areCountriesNotOwnedByPlayer(ArrayList<String> ownedCountries,String fromCountry,String toCountry) {
 		return !ownedCountries.contains(fromCountry) || !ownedCountries.contains(toCountry);
 	}
-	
+
 	/**
 	 * This method checks if the 'fromCountry' has sufficient armies to move
 	 * @param ownedCountries List of countries owned by the player
@@ -126,5 +149,15 @@ public class FortificationPhase {
 	 */
 	private boolean areArmiesSufficientToMove(String fromCountry,int num) {
 		return Country.getListOfCountries().get(fromCountry).getNumberOfArmies()>num;
+	}
+
+	/**
+	 * This method is to notify the observer pattern
+	 * @param action string to notify the observer 
+	 */
+	@Override
+	public void notifyObserver(String action) {
+		this.newObserver.update(action);
+
 	}
 }
