@@ -1,9 +1,12 @@
 package com.riskGame.observer;
 
+import java.util.ArrayList;
+
 public class FortificationPhaseObserver extends PhaseViewObserver{
 
 	public FortificationPhaseObserver() {
 		super();
+		this.actions = new ArrayList<String>();
 		this.gamePhaseName = "FORTIFICATION PHASE";
 	}
 
