@@ -30,7 +30,30 @@ public class AttackPhase implements PhaseViewPublisher{
 	private static String defenderCountry;
 	private static int defenderPlayer;
 	private PhaseViewObserver newObserver;
-	
+
+	//changesNiral <---
+	private static String attackerDiceRollsString;
+	private static String defenderDiceRollsString;
+
+	public static String getAttackerDiceRollsString() {
+		return attackerDiceRollsString;
+	}
+
+	public static void setAttackerDiceRollsString(String attackerDiceRollsString) {
+		attackerDiceRollsString = attackerDiceRollsString;
+	}
+
+	public static String getDefenderDiceRollsString() {
+		return defenderDiceRollsString;
+	}
+
+	public static void setDefenderDiceRollsString(String defenderDiceRollsString) {
+		defenderDiceRollsString = defenderDiceRollsString;
+	}
+	///--->
+
+
+
 	public AttackPhase() {
 		newObserver = new AttackPhaseObserver();
 	}
@@ -333,13 +356,31 @@ public class AttackPhase implements PhaseViewPublisher{
 	private String attack() {
 		ArrayList<Integer> attackerDiceRolls = new ArrayList<Integer>();
 		ArrayList<Integer> defenderDiceRolls = new ArrayList<Integer>();
-		
+
+		//<---changesNiral
+		String tempString = "";
+		///->>>
+
 		for(int i=0;i<AttackPhase.attackerDiceNum;i++) {
-			attackerDiceRolls.add(rollDice());
+			int rollNum = rollDice();
+			attackerDiceRolls.add(rollNum);
+			tempString =  tempString + rollNum + " ";
 		}
+
+		//changesNiral<---
+		attackerDiceRollsString = tempString;
+		tempString="";
+		//--->
+
 		for(int i=0;i<AttackPhase.defenderDiceNum;i++) {
-			defenderDiceRolls.add(rollDice());
+			int rollNum = rollDice();
+			defenderDiceRolls.add(rollNum);
+			tempString =  tempString + rollNum + " ";
 		}
+
+		//changesNiral<---
+		defenderDiceRollsString = tempString;
+		//--->
 		
 		while(attackerDiceRolls.size()!=0 && defenderDiceRolls.size()!=0){
 			// check if attacker wins
@@ -450,7 +491,6 @@ public class AttackPhase implements PhaseViewPublisher{
 	
 	/**
 	 * This method checks if the countries provided as parameters are adjacent
-	 * @param ownedCountries List of countries owned by the player
 	 * @param fromCountry Name of the country from which player wants to move his army/armies
 	 * @param toCountry Name of the country to which player wants to move his army/armies
 	 * @return true if the countries are adjacent else false
@@ -471,7 +511,6 @@ public class AttackPhase implements PhaseViewPublisher{
 	 * This method checks if the countries provided as parameters are not owned by the player
 	 * @param ownedCountries List of countries owned by the player
 	 * @param fromCountry Name of the country from which player wants to move his army/armies
-	 * @param toCountry Name of the country to which player wants to move his army/armies
 	 * @return true if the countries are owned by the player else false
 	 */
 	public boolean isCountryNotOwnedByPlayer(ArrayList<String> ownedCountries,String fromCountry) {
@@ -480,9 +519,8 @@ public class AttackPhase implements PhaseViewPublisher{
 	
 	/**
 	 * This method checks if the 'fromCountry' has sufficient armies to attack
-	 * @param ownedCountries List of countries owned by the player
 	 * @param fromCountry Name of the country from which player wants to move his army/armies
-	 * @param num number of armies to move
+	 * @param diceNum number of armies to move
 	 * @return true if sufficient armies available else false
 	 */
 	public boolean areArmiesSufficientToAttack(String fromCountry,int diceNum) {
