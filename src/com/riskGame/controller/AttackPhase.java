@@ -325,10 +325,6 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 				this.notifyObserver("Attacker country name is " + fromCountry);
 				this.notifyObserver("Defender country name is " + toCountry);
 
-				// get to know the defender player
-				int defenderPlayer = Country.getListOfCountries().get(toCountry).getOwner();
-				AttackPhase.defenderPlayer = defenderPlayer;
-
 				return "DefenderPlayer "+defenderPlayer;
 			}
 		}

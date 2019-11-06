@@ -3,9 +3,11 @@ package com.riskGame.controller;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.riskGame.models.Continent;
 import com.riskGame.models.Country;
 import com.riskGame.models.Game;
+import com.riskGame.observer.FortificationPhaseObserver;
+import com.riskGame.observer.PhaseViewObserver;
+import com.riskGame.observer.PhaseViewPublisher;
 
 /**
  * 
@@ -13,7 +15,7 @@ import com.riskGame.models.Game;
  * This class has business logic of the fortification phase
  *
  */
-public class FortificationPhase {
+public class FortificationPhase implements PhaseViewPublisher {
 
 	private PhaseViewObserver newObserver;
 
