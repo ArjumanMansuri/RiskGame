@@ -6,10 +6,6 @@ import java.util.HashMap;
 import com.riskGame.models.Continent;
 import com.riskGame.models.Country;
 import com.riskGame.models.Game;
-import com.riskGame.observer.AttackPhaseObserver;
-import com.riskGame.observer.FortificationPhaseObserver;
-import com.riskGame.observer.PhaseViewObserver;
-import com.riskGame.observer.PhaseViewPublisher;
 
 /**
  * 
@@ -17,14 +13,8 @@ import com.riskGame.observer.PhaseViewPublisher;
  * This class has business logic of the fortification phase
  *
  */
-public class FortificationPhase implements PhaseViewPublisher{
+public class FortificationPhase {
 
-	private PhaseViewObserver newObserver;
-	
-	public FortificationPhase() {
-		newObserver = new FortificationPhaseObserver();
-	}
-	
 	/**
 	 * This method would help making the fortification move if it is valid
 	 * @param fromCountry
@@ -39,7 +29,7 @@ public class FortificationPhase implements PhaseViewPublisher{
 		String[] commandComponents = command.split(" ");
 		
 		// check if it is a fortification command
-		this.notifyObserver("Checking for valid fortification command");
+		
 		String commandName = commandComponents[0];
 		if(!commandName.equalsIgnoreCase("fortify")) {
 			return "Error : Please enter fortification command";
@@ -61,38 +51,29 @@ public class FortificationPhase implements PhaseViewPublisher{
 			String toCountry = commandComponents[2];
 			int num = Integer.parseInt(commandComponents[3]);
 			
-			 HashMap<String,Continent> continentList =  Game.getMap().getContinents();
-	            ArrayList<String> countries = new ArrayList<>();
-	            for (Continent continent: continentList.values()) {
-	                for(Country country : continent.getTerritories()){
-	                    countries.add(country.getCountryName());
-	                }
-	            }
-			this.notifyObserver("Checking for valid countries");
+			HashMap<String,Country> countriesMap = new HashMap<>();
+            countriesMap = Country.getListOfCountries();
+            ArrayList<String> countries = new ArrayList<String>(countriesMap.keySet());
+			
 			// check if those countries exist
 			if(!doCountriesExist(countries, fromCountry, toCountry)){
 				return "Error : Either one or both of the country names do not exist";
 			}
 			// check if they are owned by same player
-			this.notifyObserver("Checking for countries owned by same player");
 			ArrayList<String> ownedCountries = Game.getPlayersList().get(player).getOwnedCountries();
 			if(areCountriesNotOwnedByPlayer(ownedCountries,fromCountry,toCountry)) {
 				return "Error : Either one or both of the country names are not owned by you";
 			}
 			// check if they are adjacent
-			this.notifyObserver("Checking if countries are adjacent");
 			if(!(areCountriesAdjacent(fromCountry, toCountry))){
 					return "Error : Given countries are not adjacent";
 			}
 			// check if sufficient armies to move
-			this.notifyObserver("Checking if sufficient armies are present to move");
 			if(!areArmiesSufficientToMove(fromCountry, num)) {
 				int maxArmiesToBeMoved = Country.getListOfCountries().get(fromCountry).getNumberOfArmies()-1;
 				return "Error : Insufficient armies to move. Try moving "+maxArmiesToBeMoved+" armies";
 			}
 			// move armies
-			this.notifyObserver("Moving armies...");
-			this.notifyObserver(num + "armies from country" + fromCountry +" to country " + toCountry);
 			Country.getListOfCountries().get(fromCountry).setNumberOfArmies(Country.getListOfCountries().get(fromCountry).getNumberOfArmies()-num);
 			Country.getListOfCountries().get(toCountry).setNumberOfArmies(Country.getListOfCountries().get(toCountry).getNumberOfArmies()+num);
 		}
@@ -145,11 +126,5 @@ public class FortificationPhase implements PhaseViewPublisher{
 	 */
 	private boolean areArmiesSufficientToMove(String fromCountry,int num) {
 		return Country.getListOfCountries().get(fromCountry).getNumberOfArmies()>num;
-	}
-	
-	@Override
-	public void notifyObserver(String action) {
-		this.newObserver.update(action);
-		
 	}
 }
