@@ -1,11 +1,12 @@
 package com.riskGame.observer;
 
-
 /**
  * This is a Observable class for Fortification phase that is extended from PhaseViewObserver abstract class.
  * @author GouthamG
  *
  */
+import java.util.ArrayList;
+
 
 public class FortificationPhaseObserver extends PhaseViewObserver{
 
@@ -14,6 +15,7 @@ public class FortificationPhaseObserver extends PhaseViewObserver{
 	 */
 	public FortificationPhaseObserver() {
 		super();
+		this.actions = new ArrayList<String>();
 		this.gamePhaseName = "FORTIFICATION PHASE";
 	}
 

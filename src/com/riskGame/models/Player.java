@@ -1,6 +1,8 @@
 package com.riskGame.models;
 
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * This is a model class for Player that holds the properties for a player.
@@ -8,11 +10,12 @@ import java.util.ArrayList;
  *
  */
 
-public class Player {
+public class Player extends Observable implements Observer {
 
     private String playerName;
     private int playerNumOfArmy;
     private ArrayList<String> ownedCountries;
+    private ArrayList<Card> cards;
 
     /**
      * This is a default constructor which will create player object.
@@ -20,6 +23,7 @@ public class Player {
      */
     public Player(){
         ownedCountries = new ArrayList<String>();
+        cards = new ArrayList<Card>();
     }
 
 	/**
@@ -70,4 +74,21 @@ public class Player {
 		this.ownedCountries = ownedCountries;
 	}
 
+	@Override
+	public void update(Observable o, Object arg) {
+		if(((String)arg).equals("success")) {
+			cards.add((Card)o);
+			setChanged();
+			notifyObservers("added");
+		}
+		else if(((String)arg).equals("removed")) {
+			cards.remove((Card)o);
+			setChanged();
+			notifyObservers("removed");
+		}
+	}
+	
+	public ArrayList<Card> getCards() {
+		return this.cards;
+	}
 }

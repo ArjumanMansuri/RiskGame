@@ -1,5 +1,7 @@
 package com.riskGame.observer;
 
+import java.util.ArrayList;
+
 /**
  * This is a StartupPhase class for Reinforcement phase that is extended from PhaseViewObserver abstract class.
  * @author GouthamG
@@ -12,6 +14,7 @@ public class StartupPhaseObserver extends PhaseViewObserver{
 	 */
 	public StartupPhaseObserver() {
 		super();
+		this.actions = new ArrayList<String>();
 		this.gamePhaseName = "STARTUP PHASE";
 	}
 

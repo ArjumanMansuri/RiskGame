@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="jUnitLib">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/jUnitLib/org.junit.jupiter.params_5.0.0.v20170910-2246.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jUnitLib/org.junit.jupiter.api_5.0.0.v20170910-2246.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jUnitLib/org.junit.jupiter.engine_5.0.0.v20170910-2246.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jUnitLib/org.junit.platform.runner_1.0.0.v20170910-2246.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jUnitLib/org.junit.platform.suite.api_1.0.0.v20170910-2246.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jUnitLib/org.junit.jupiter.migrationsupport_5.0.0.v20170910-2246.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
