@@ -206,6 +206,15 @@ public class GameLaunch {
 								System.out.println("Enter number of dice, you want to roll using 'defend 'numdice'' command");
 								String command = sc.nextLine().trim();
 								response = ap.setDefendDice(defender,command);
+
+								//changesNiral<---
+								String attackerRolls = AttackPhase.getAttackerDiceRollsString();
+								String defenderRolls = AttackPhase.getDefenderDiceRollsString();
+								if(!response.contains("Error")) {
+									System.out.println("Attacker Dice Rolls: "+attackerRolls+"\n"+"Defender Dice Rolls: "+defenderRolls);
+								}
+								//--->
+
 							}while(!response.contains("Conquer"));
 						}
 						// If defender country lost and has zero armies on it
@@ -229,7 +238,7 @@ public class GameLaunch {
 						else{
 							if(!response.equalsIgnoreCase("noattack") && ap.isAttackPossible()) {
 								int noOfArmies = Integer.parseInt(response.split(" ")[1]);
-								System.out.println("You still have "+noOfArmies+" left. Do you want to attack again y or n.?");
+								System.out.println("Attacker still have "+noOfArmies+" left. Do you want to attack again y or n.?");
 								if(sc.nextLine().equalsIgnoreCase("y")) {
 									reAttack = true;
 								}
@@ -318,7 +327,7 @@ public class GameLaunch {
 	/**
 	 * This method prints the countries and the neighboring countries 
 	 * along with number of armies in each countries. 
-	 * @param numofPlayers number of players.
+	 * @param player number of players.
 	 */
 	public static void printPlayerInformation(int player) {
 		// Printing players' countries with adjacent countries and number of armies
