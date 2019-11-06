@@ -127,8 +127,8 @@ public class Game {
 	        //ReinforcementPhase rp = new ReinforcementPhase();
 	        //rp.reinforce(1, "exchangecards -none");
 	        //rp.reinforce(1, "reinforce ");
-		 */
-        }
+		 
+        }*/
     }
 
     /**
