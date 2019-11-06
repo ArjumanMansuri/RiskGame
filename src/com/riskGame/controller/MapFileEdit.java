@@ -768,7 +768,7 @@ public class MapFileEdit {
 	public static void gamePlayShowMap() {
 		// Print all the continents
 		System.out.println("------------------------------------------------\n");
-		System.out.println("Continents : \n");
+		System.out.println("Continents : \n--------------");
 		for(Continent showContinent : Game.getMap().getContinents().values()) {
 			System.out.println(showContinent.getContinentName() + " = " + showContinent.getControlValue());
 		}
@@ -777,12 +777,13 @@ public class MapFileEdit {
 		for(Country showCountry : Country.getListOfCountries().values()) {
 			System.out.println("Country Name : " + showCountry.getCountryName());
 			System.out.println("Armies 	: " + showCountry.getNumberOfArmies());
+			String ownerName = "Owner   : N/A";
 			try {
-				System.out.println("Owner  	: " + Game.getPlayersList().get(showCountry.getOwner()).getPlayerName());
+				ownerName = "Owner  	: " + Game.getPlayersList().get(showCountry.getOwner()).getPlayerName();
 			} catch(Exception e) {
 				// 
-			} finally {
-				System.out.println("Owner   : N/A");
+			} finally {				
+				System.out.println(ownerName);
 			}
 			
 			System.out.println("-------------- \n Neighbors : \n--------------");			
