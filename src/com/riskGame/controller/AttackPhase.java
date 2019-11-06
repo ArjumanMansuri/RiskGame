@@ -7,10 +7,13 @@ import java.util.HashMap;
 import com.riskGame.models.Continent;
 import com.riskGame.models.Country;
 import com.riskGame.models.Game;
+import com.riskGame.models.Map;
 import com.riskGame.models.Player;
 import com.riskGame.observer.AttackPhaseObserver;
 import com.riskGame.observer.PhaseViewObserver;
 import com.riskGame.observer.PhaseViewPublisher;
+import com.riskGame.observer.PlayerDominationViewObserver;
+import com.riskGame.observer.PlayerDominationViewPublisher;
 import com.riskGame.observer.StartupPhaseObserver;
 
 
@@ -20,13 +23,33 @@ import com.riskGame.observer.StartupPhaseObserver;
  * This class has business logic of the attack phase
  *
  */
-public class AttackPhase implements PhaseViewPublisher{
+public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPublisher{
 
 	private static int attackerDiceNum;
 	private static int defenderDiceNum;
 	private static String attackerCountry;
 	private static String defenderCountry;
 	private static int defenderPlayer;
+	private static int attackerPlayer;
+	private PlayerDominationViewObserver newDomiantionObserver;
+	/**
+	 * getter method to get the attacker player number.
+	 * @return defenderPlayer attacker player number.
+	 *
+	 */
+	public static int getAttackerPlayer() {
+		return attackerPlayer;
+	}
+
+	/**
+	 * setter method to assign the defender player number.
+	 * @param defenderPlayer defender player number.
+	 *
+	 */
+	public static void setAttackerPlayer(int attackerPlayer) {
+		AttackPhase.attackerPlayer = attackerPlayer;
+	}
+
 	private PhaseViewObserver newObserver;
 
 	//changesNiral <---
@@ -56,6 +79,7 @@ public class AttackPhase implements PhaseViewPublisher{
 
 	public AttackPhase() {
 		newObserver = new AttackPhaseObserver();
+		newDomiantionObserver = new PlayerDominationViewObserver();
 	}
 
 	/**
@@ -216,7 +240,7 @@ public class AttackPhase implements PhaseViewPublisher{
 				return "Error : Given countries are not adjacent";
 			}
 
-			this.notifyObserver(fromCountry + " and " + toCountry + "exist in countries list which are owned by neighbouring country players" );
+			this.notifyObserver(fromCountry + " and " + toCountry + " exist in countries list which are owned by neighbouring country players" );
 
 			String numDice = commandComponents[3];
 
@@ -245,6 +269,8 @@ public class AttackPhase implements PhaseViewPublisher{
 				this.notifyObserver("Defender " + Game.getPlayersList().get(defenderPlayer).getPlayerName()+ " has " +defenderArmies+  " armies");
 
 				AttackPhase.defenderPlayer = defenderPlayer;
+				AttackPhase.attackerPlayer = player;
+				
 				while(attackerArmies!=1 && defenderArmies!=0) {
 					if(attackerArmies > 3) {
 						AttackPhase.attackerDiceNum = 3;
@@ -297,8 +323,8 @@ public class AttackPhase implements PhaseViewPublisher{
 				AttackPhase.attackerCountry = fromCountry;
 				AttackPhase.defenderCountry = toCountry;
 
-				this.notifyObserver("Attacker is" + Game.getPlayersList().get(player).getPlayerName());
-				this.notifyObserver("Defender " + Game.getPlayersList().get(Country.getListOfCountries().get(toCountry).getOwner()).getPlayerName());
+				this.notifyObserver("Attacker is player : " + Game.getPlayersList().get(player).getPlayerName());
+				this.notifyObserver("Defender is player : " + Game.getPlayersList().get(Country.getListOfCountries().get(toCountry).getOwner()).getPlayerName());
 				this.notifyObserver("Attacker country name is " + fromCountry);
 				this.notifyObserver("Defender country name is " + toCountry);
 
@@ -389,11 +415,11 @@ public class AttackPhase implements PhaseViewPublisher{
 			int attackerMax = Collections.max(attackerDiceRolls);
 			int defenderMax = Collections.max(defenderDiceRolls);
 			if(attackerMax > defenderMax) {
-				this.notifyObserver("Attacker has max DiceRolls");
+				this.notifyObserver("Defender lost 1 army !!");
 				Country.getListOfCountries().get(AttackPhase.defenderCountry).setNumberOfArmies(Country.getListOfCountries().get(AttackPhase.defenderCountry).getNumberOfArmies()-1);
 			}
 			else {
-				this.notifyObserver("Defender has max DiceRolls");
+				this.notifyObserver("Attacker1 lost 1 army !!");
 				Country.getListOfCountries().get(AttackPhase.attackerCountry).setNumberOfArmies(Country.getListOfCountries().get(AttackPhase.attackerCountry).getNumberOfArmies()-1);
 			}
 			attackerDiceRolls.remove((Integer)attackerMax);
@@ -402,6 +428,19 @@ public class AttackPhase implements PhaseViewPublisher{
 		if(Country.getListOfCountries().get(AttackPhase.defenderCountry).getNumberOfArmies()==0) {
 			Player p = Game.getPlayersList().get(Country.getListOfCountries().get(AttackPhase.attackerCountry).getOwner());
 			Game.assignRandomCard(p);
+			boolean controlsContinent = true;
+			String continentOfConqueredCountry = Country.getListOfCountries().get(AttackPhase.getAttackerCountry()).getContinent();
+			ArrayList<Country> countries = (ArrayList<Country>) Game.getMap().getContinents().get(continentOfConqueredCountry).getTerritories();
+			for(Country country : countries) {
+				if(!p.getOwnedCountries().contains(country)) {
+					controlsContinent = false;
+					break;
+				}
+			}
+			if(controlsContinent) {
+				p.getOwnedContinents().add(continentOfConqueredCountry);
+			}
+			
 			return "canConquer "+Country.getListOfCountries().get(AttackPhase.attackerCountry).getNumberOfArmies();
 		}
 		else {
@@ -537,5 +576,9 @@ public class AttackPhase implements PhaseViewPublisher{
 	public void notifyObserver(String action) {
 		this.newObserver.update(action);
 
+	}
+	
+	public void notifyDominationObserver(String action) {
+		this.newDomiantionObserver.updateDomination(action);
 	}
 }

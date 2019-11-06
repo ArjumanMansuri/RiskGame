@@ -50,7 +50,7 @@ public class GameLaunch {
 					System.out.println("Enter number of players ranging from 2 to 6:");
 					noOfPlayers = sc.nextLine().trim();
 					response=startUpPhase.parser(noOfPlayers);
-					System.out.println(response);
+					//System.out.println(response);
 				}while(response.equals("error"));
 
 				// choose map phase
@@ -105,6 +105,7 @@ public class GameLaunch {
 									response = startUpPhase.placeArmy(i, sc.nextLine().toString());
 									if(response.equals("donePlaceArmy")) {
 										GameLaunch.printPlayerInformation(i);
+										startUpPhase.notifyDominationObserver(Game.getPlayersList().get(i).computeDominationViewData());
 									}
 								}while(!response.equals("donePlaceArmy"));
 							}
@@ -119,6 +120,7 @@ public class GameLaunch {
 									response = startUpPhase.placeAll(i,command);
 									if(response.equals("donePlaceall")) {
 										GameLaunch.printPlayerInformation(i);
+										startUpPhase.notifyDominationObserver(Game.getPlayersList().get(i).computeDominationViewData());
 									}
 								}while(!response.equals("donePlaceall"));
 							}
@@ -157,6 +159,7 @@ public class GameLaunch {
 					}
 					rp.notifyObserver("End of reinforcement phase for the player : " + Game.getPlayersList().get(i).getPlayerName());
 					rp.notifyObserver(null);
+					rp.notifyDominationObserver(Game.getPlayersList().get(i).computeDominationViewData());
 					// Attack Phase starts
 					System.out.println("Attack phase starts...");
 					AttackPhase ap = new AttackPhase();
@@ -260,6 +263,7 @@ public class GameLaunch {
 					}
 					ap.notifyObserver("End of Attack phase for the player : " + Game.getPlayersList().get(i).getPlayerName());
 					ap.notifyObserver(null);
+					ap.notifyDominationObserver(Game.getPlayersList().get(i).computeDominationViewData());
 					// fortification phase starts
 					System.out.println("Fortification phase starts");
 					fp.notifyObserver("Initiating fortification phase for " + Game.getPlayersList().get(i).getPlayerName());
