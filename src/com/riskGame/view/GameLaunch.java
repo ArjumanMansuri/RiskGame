@@ -14,13 +14,14 @@ import com.riskGame.models.Game;
 import com.riskGame.models.Map;
 import com.riskGame.models.Player;
 
+
 /**
  * This class holds the method that gives the menu option to start game and edit map.
  * @author Mudra-PC
  *
  */
 public class GameLaunch {
-
+	
 	/**
 	 * This main method creates an instance to start the game.
 	 * @param args arguments  to run main method.
@@ -328,6 +329,7 @@ public class GameLaunch {
 			}
 		}while(optionMain!=3);
 	}
+
 	/**
 	 * This method prints the countries and the neighboring countries 
 	 * along with number of armies in each countries. 
