@@ -767,7 +767,8 @@ public class MapFileEdit {
 	 */
 	public static void gamePlayShowMap() {
 		// Print all the continents
-		System.out.println("------------------------------------------------\n");		
+		System.out.println("------------------------------------------------\n");
+		System.out.println("Continents : \n");
 		for(Continent showContinent : Game.getMap().getContinents().values()) {
 			System.out.println(showContinent.getContinentName() + " = " + showContinent.getControlValue());
 		}

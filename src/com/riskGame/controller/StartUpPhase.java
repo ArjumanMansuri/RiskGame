@@ -130,6 +130,11 @@ public class StartUpPhase implements PhaseViewPublisher, PlayerDominationViewPub
 
 		String[] commandComponents = command.split(" ");
 		String commandName = commandComponents[0];
+		
+		if(commandName.equalsIgnoreCase("showmap")) {
+			MapFileEdit.gamePlayShowMap();
+			return "";
+		}
 
 		if(!commandName.equals("placearmy")) {
 			return "Error : Enter placearmy command";
