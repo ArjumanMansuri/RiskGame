@@ -55,7 +55,6 @@ public class FortificationTest {
 	 */
 	@Test
 	public void testFortification() {
-		System.out.println(fp.fortify(1, "fortify Iran Japan 3"));
-		assertEquals(true,fp.fortify(1, "fortify Iran Japan 3").contains("done"));	
+		assertEquals(true,p1.fortify(1, "fortify Iran Japan 3").contains("done"));	
 	}
 }

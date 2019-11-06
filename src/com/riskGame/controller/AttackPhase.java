@@ -86,7 +86,7 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 	 *
 	 */
 	public static int getAttackerDiceNum() {
-		return attackerDiceNum;
+		return AttackPhase.attackerDiceNum;
 	}
 
 	/**
@@ -104,7 +104,7 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 	 *
 	 */
 	public static int getDefenderDiceNum() {
-		return defenderDiceNum;
+		return AttackPhase.defenderDiceNum;
 	}
 
 	/**
@@ -122,7 +122,7 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 	 *
 	 */
 	public static String getAttackerCountry() {
-		return attackerCountry;
+		return AttackPhase.attackerCountry;
 	}
 
 	/**
@@ -140,7 +140,7 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 	 *
 	 */
 	public static String getDefenderCountry() {
-		return defenderCountry;
+		return AttackPhase.defenderCountry;
 	}
 
 	/**
@@ -158,7 +158,7 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 	 *
 	 */
 	public static int getDefenderPlayer() {
-		return defenderPlayer;
+		return AttackPhase.defenderPlayer;
 	}
 
 	/**
@@ -187,7 +187,7 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 		// Call card exchange
 		if(commandComponents[0].equalsIgnoreCase("exchangecards")) {
 			ReinforcementPhase rp = new ReinforcementPhase();
-			return rp.reinforce(player, command);
+			return Game.getPlayersList().get(player).reinforce(player, command);
 		}
 		
 		if(commandComponents[0].equalsIgnoreCase("showmap")) {
@@ -244,7 +244,7 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 
 
 			String numDice = commandComponents[3];
-
+			AttackPhase.attackerPlayer = player;
 			if(numDice.equalsIgnoreCase("allout")) {
 				AttackPhase.attackerCountry = fromCountry;
 				AttackPhase.defenderCountry = toCountry;
@@ -268,7 +268,7 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 				this.notifyObserver("Defender " + Game.getPlayersList().get(defenderPlayer).getPlayerName()+ " has " +defenderArmies+  " armies");
 
 				AttackPhase.defenderPlayer = defenderPlayer;
-				AttackPhase.attackerPlayer = player;
+				
 				
 				while(attackerArmies!=1 && defenderArmies!=0) {
 					if(attackerArmies > 3) {
@@ -283,7 +283,7 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 					else {
 						AttackPhase.defenderDiceNum = defenderArmies;
 					}
-					result = attack();
+					result = Game.getPlayersList().get(AttackPhase.attackerPlayer).attack();
 					attackerArmies = Country.getListOfCountries().get(AttackPhase.attackerCountry).getNumberOfArmies();
 					defenderArmies = Country.getListOfCountries().get(AttackPhase.defenderCountry).getNumberOfArmies();
 				}
@@ -318,7 +318,6 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 				// get to know the defender player
 				int defenderPlayer = Country.getListOfCountries().get(toCountry).getOwner();
 				AttackPhase.defenderPlayer = defenderPlayer;
-
 
 				this.notifyObserver("Attacker is player : " + Game.getPlayersList().get(player).getPlayerName());
 				this.notifyObserver("Defender is player : " + Game.getPlayersList().get(Country.getListOfCountries().get(toCountry).getOwner()).getPlayerName());
@@ -363,76 +362,7 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 		}
 		AttackPhase.defenderDiceNum = Integer.parseInt(numDice);
 		
-		return attack();
-	}
-
-	/**
-	 * This method implements the real attack between the attacker and the defender countries
-	 * @return canConquer if the attacker wins or else canNotConquer
-	 * 
-	 */
-	public String attack() {
-		ArrayList<Integer> attackerDiceRolls = new ArrayList<Integer>();
-		ArrayList<Integer> defenderDiceRolls = new ArrayList<Integer>();
-    
-		String tempString = "";
-	
-  for(int i=0;i<AttackPhase.attackerDiceNum;i++) {
-			int rollNum = rollDice();
-			attackerDiceRolls.add(rollNum);
-			tempString =  tempString + rollNum + " ";
-		}
-
-		attackerDiceRollsString = tempString;
-		tempString="";
-
-		for(int i=0;i<AttackPhase.defenderDiceNum;i++) {
-			int rollNum = rollDice();
-			defenderDiceRolls.add(rollNum);
-			tempString =  tempString + rollNum + " ";
-		}
-
-		defenderDiceRollsString = tempString;
-		
-
-		while(attackerDiceRolls.size()!=0 && defenderDiceRolls.size()!=0){
-			// check if attacker wins
-			int attackerMax = Collections.max(attackerDiceRolls);
-			int defenderMax = Collections.max(defenderDiceRolls);
-			if(attackerMax > defenderMax) {
-
-				this.notifyObserver("Defender lost 1 army !!");
-				Country.getListOfCountries().get(AttackPhase.defenderCountry).setNumberOfArmies(Country.getListOfCountries().get(AttackPhase.defenderCountry).getNumberOfArmies()-1);
-			}
-			else {
-				this.notifyObserver("Attacker1 lost 1 army !!");
-				Country.getListOfCountries().get(AttackPhase.attackerCountry).setNumberOfArmies(Country.getListOfCountries().get(AttackPhase.attackerCountry).getNumberOfArmies()-1);
-			}
-			attackerDiceRolls.remove((Integer)attackerMax);
-			defenderDiceRolls.remove((Integer)defenderMax);
-		}
-		if(Country.getListOfCountries().get(AttackPhase.defenderCountry).getNumberOfArmies()==0) {
-			Player p = Game.getPlayersList().get(Country.getListOfCountries().get(AttackPhase.attackerCountry).getOwner());
-			Game.assignRandomCard(p);
-			boolean controlsContinent = true;
-			String continentOfConqueredCountry = Country.getListOfCountries().get(AttackPhase.getAttackerCountry()).getContinent();
-			ArrayList<Country> countries = (ArrayList<Country>) Game.getMap().getContinents().get(continentOfConqueredCountry).getTerritories();
-			for(Country country : countries) {
-				if(!p.getOwnedCountries().contains(country)) {
-					controlsContinent = false;
-					break;
-				}
-			}
-			if(controlsContinent) {
-				p.getOwnedContinents().add(continentOfConqueredCountry);
-			}
-			
-			return "canConquer "+Country.getListOfCountries().get(AttackPhase.attackerCountry).getNumberOfArmies();
-		}
-		else {
-			return "canNotConquer "+Country.getListOfCountries().get(AttackPhase.attackerCountry).getNumberOfArmies();
-		}
-
+		return Game.getPlayersList().get(AttackPhase.getAttackerPlayer()).attack();
 	}
 
 
