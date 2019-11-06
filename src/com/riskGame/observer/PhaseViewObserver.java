@@ -8,6 +8,9 @@ public abstract class PhaseViewObserver {
 	String currentPlayerName;
 	ArrayList<String> actions;
 	
+	public PhaseViewObserver() {
+		actions = new ArrayList<String>();
+	}
 
 	public abstract void update(String action);
 	

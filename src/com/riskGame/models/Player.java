@@ -91,4 +91,5 @@ public class Player extends Observable implements Observer {
 	public ArrayList<Card> getCards() {
 		return this.cards;
 	}
+	
 }

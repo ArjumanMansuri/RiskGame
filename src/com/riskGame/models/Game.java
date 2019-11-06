@@ -1,7 +1,12 @@
 package com.riskGame.models;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+
+import com.riskGame.controller.ReinforcementPhase;
+import com.riskGame.view.CardExchange;
 
 /**
  *
@@ -16,6 +21,8 @@ public class Game {
     private static Map editMap = new Map();
     private static boolean editMapSet = false;
     private static ArrayList<Card> gameCards;
+    private static CardExchange cardExView = new CardExchange();
+    public static int exchanges_made = 0;
     
     /**
      * This is a default constructor that creates game object.
@@ -26,19 +33,38 @@ public class Game {
         map = new Map();
     }
     
-    public void initCards() {
+    public static void initCards() {
     	gameCards = new ArrayList<Card>();
     	
     	for(int i = 0; i < 14; i++) {
-    		gameCards.add(new Card(Card.ARTILLARY));
+    		Card c = new Card(Card.ARTILLARY);
+    		gameCards.add(c);
     	}
     	
     	for(int i = 0; i < 14; i++) {
-    		gameCards.add(new Card(Card.CAVALRY));
+    		Card c = new Card(Card.CAVALRY);
+    		gameCards.add(c);
     	}
     	
     	for(int i = 0; i < 14; i++) {
-    		gameCards.add(new Card(Card.INFANTRY));
+    		Card c = new Card(Card.INFANTRY);
+    		gameCards.add(c);
+    	}
+    }
+    
+    public static ArrayList<Card> getCards() {
+    	return gameCards;
+    }
+    
+    public static void assignRandomCard(Player p) {
+    	if(gameCards != null) {
+        	Collections.shuffle(gameCards);    		
+    	}
+    	for(Card c : gameCards) {
+    		if(c.getOwner() == null) {
+    			c.changeOwner(p);
+    			return;
+    		}
     	}
     }
 
@@ -76,6 +102,32 @@ public class Game {
      */
     public static void setPlayersList(HashMap<Integer, Player> playersList) {
         Game.playersList = playersList;
+        
+        initCards();
+        for(Integer key : Game.playersList.keySet()) {
+        	if(cardExView == null) {
+        		System.out.println("EX VIEW IS NULL");
+        	}
+        	Game.playersList.get(key).addObserver(cardExView);
+        }
+        /*
+         * For Testing
+         */
+        if(Game.playersList.size() > 1) {
+        	// Bug the playerlist is not correct. First player is null. Second is the one u pass as first
+	        Game.gameCards.get(0).changeOwner(Game.playersList.get(1));
+	        Game.gameCards.get(15).changeOwner(Game.playersList.get(1));
+	        Game.gameCards.get(30).changeOwner(Game.playersList.get(1));
+	        
+	        Game.gameCards.get(3).changeOwner(Game.playersList.get(2));
+	        Game.gameCards.get(4).changeOwner(Game.playersList.get(2));
+	        Game.gameCards.get(5).changeOwner(Game.playersList.get(2));
+	        
+	        //ReinforcementPhase rp = new ReinforcementPhase();
+	        //rp.reinforce(1, "exchangecards -none");
+	        //rp.reinforce(1, "reinforce ");
+			
+        }
     }
 
     /**

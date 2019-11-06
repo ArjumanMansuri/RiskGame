@@ -7,6 +7,7 @@ import java.util.HashMap;
 import com.riskGame.models.Continent;
 import com.riskGame.models.Country;
 import com.riskGame.models.Game;
+import com.riskGame.models.Player;
 import com.riskGame.observer.AttackPhaseObserver;
 import com.riskGame.observer.PhaseViewObserver;
 import com.riskGame.observer.PhaseViewPublisher;
@@ -38,6 +39,12 @@ public class AttackPhase implements PhaseViewPublisher{
 		
 		String[] commandComponents = command.split(" ");
 		
+		// Call card exchange
+		if(commandComponents[0].equalsIgnoreCase("exchangecards")) {
+			ReinforcementPhase rp = new ReinforcementPhase();
+			return rp.reinforce(player, command);
+		}
+				
 		// check if it is an attack command
 		
 		String commandName = commandComponents[0];
@@ -238,6 +245,8 @@ public class AttackPhase implements PhaseViewPublisher{
 			defenderDiceRolls.remove((Integer)defenderMax);
 		}
 		if(Country.getListOfCountries().get(AttackPhase.defenderCountry).getNumberOfArmies()==0) {
+			Player p = Game.getPlayersList().get(Country.getListOfCountries().get(AttackPhase.attackerCountry).getOwner());
+			Game.assignRandomCard(p);
 			return "canConquer "+Country.getListOfCountries().get(AttackPhase.attackerCountry).getNumberOfArmies();
 		}
 		else {

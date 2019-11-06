@@ -38,6 +38,12 @@ public class FortificationPhase implements PhaseViewPublisher{
 		
 		String[] commandComponents = command.split(" ");
 		
+		// Call card exchange
+		if(commandComponents[0].equalsIgnoreCase("exchangecards")) {
+			ReinforcementPhase rp = new ReinforcementPhase();
+			return rp.reinforce(player, command);
+		}
+		
 		// check if it is a fortification command
 		this.notifyObserver("Checking for valid fortification command");
 		String commandName = commandComponents[0];
