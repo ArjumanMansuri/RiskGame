@@ -1,11 +1,14 @@
 package com.riskGame.observer;
 
+import java.util.ArrayList;
+
 public class StartupPhaseObserver extends PhaseViewObserver{
 
 	 
 	
 	public StartupPhaseObserver() {
 		super();
+		this.actions = new ArrayList<String>();
 		this.gamePhaseName = "STARTUP PHASE";
 	}
 
