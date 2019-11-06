@@ -14,7 +14,7 @@ import javax.swing.WindowConstants;
 public  class PlayerDominationViewObserver {
 	
 		public static JFrame frame = new JFrame();
-		public static JTextArea textArea = new JTextArea(25,25);
+		public static JTextArea textArea = new JTextArea(30,40);
 		public static JScrollPane scroll = new JScrollPane(textArea);
 	 /**
 	 *String domniationViewData to display the domination details.

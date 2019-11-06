@@ -37,6 +37,5 @@ public class CardExchange implements Observer {
 		}
 
 		System.out.println("Number of Artillary Cards = " + a + "\nNumber of Cavalry Cards = " + ca + "\nNumber of Infantry Cards = " + i);
-		//System.out.println("Player " + p.getPlayerName() + " army count = " + p.getPlayerNumOfArmy());
 	}
 }

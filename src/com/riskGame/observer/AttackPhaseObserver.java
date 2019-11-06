@@ -15,10 +15,6 @@ import javax.swing.WindowConstants;
 
 
 public class AttackPhaseObserver extends PhaseViewObserver{
-	
-	public static JFrame frame = new JFrame();
-	public static JTextArea textArea = new JTextArea(30,40);
-	public static JScrollPane scroll = new JScrollPane(textArea);
 
 	/**
 	 * Constructor for AttackPhaseObserver sets the gamePhaseName.
@@ -38,23 +34,23 @@ public class AttackPhaseObserver extends PhaseViewObserver{
 		
 		if(! (action == null))
 		{
-			textArea.append(action);
-			textArea.append("\n-------------------------\n");
-			textArea.setLineWrap(true);
-			textArea.setWrapStyleWord(true);
-			textArea.setEditable(false);
+			StartupPhaseObserver.textArea.append(action);
+			StartupPhaseObserver.textArea.append("\n-------------------------\n");
+			StartupPhaseObserver.textArea.setLineWrap(true);
+			StartupPhaseObserver.textArea.setWrapStyleWord(true);
+			StartupPhaseObserver.textArea.setEditable(false);
 			
-			 scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-			 scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+			StartupPhaseObserver.scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+			StartupPhaseObserver.scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 			 
-			 frame.setContentPane(scroll);
-			 frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-			 frame.setResizable(false);
-			 frame.pack();
-		     frame.setVisible(true);
+			StartupPhaseObserver.frame.setContentPane(StartupPhaseObserver.scroll);
+			StartupPhaseObserver.frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+			StartupPhaseObserver.frame.setResizable(false);
+			StartupPhaseObserver.frame.pack();
+			StartupPhaseObserver.frame.setVisible(true);
 		}	
 		else
-			textArea.setText("");
+			StartupPhaseObserver.textArea.setText("");
 	}
 
 	/**
