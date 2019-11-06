@@ -39,4 +39,17 @@ public class CardTest {
 		assertEquals(3, myPlayer.getCards().size());			
 	}
 	
+	@Test
+	public void testCardTransfer() {
+		Player myPlayer2 = new Player();
+		myPlayer2.setPlayerName("Player2");
+		
+		Card card1 = new Card(Card.ARTILLARY);
+		
+		card1.changeOwner(myPlayer);		
+		card1.changeOwner(myPlayer2); // change the owner of the card 
+		
+		assertEquals("Player2", myPlayer.getPlayerName());			
+	}
+	
 }
