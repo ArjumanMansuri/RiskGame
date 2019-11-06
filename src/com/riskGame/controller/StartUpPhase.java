@@ -294,7 +294,7 @@ public class StartUpPhase implements PhaseViewPublisher, PlayerDominationViewPub
 	 * @throws ArrayIndexOutOfBoundsException
 	 * 
 	 */
-	int inputValidator(String thisInput) throws ArrayIndexOutOfBoundsException{
+	public int inputValidator(String thisInput) throws ArrayIndexOutOfBoundsException{
 		String[] parsedString = thisInput.split(" ");
 		try{
 			if(parsedString[0].equals("gameplayer")){
@@ -324,7 +324,7 @@ public class StartUpPhase implements PhaseViewPublisher, PlayerDominationViewPub
 	 * @return True if found and False if not.
 	 * 
 	 */
-	Boolean ifContains(HashMap<Integer,Player> temp,String name){
+	public Boolean ifContains(HashMap<Integer,Player> temp,String name){
 		for(int i=1;i<=temp.size();i++){
 			if(temp.get(i).getPlayerName().equals(name))
 				return true;
