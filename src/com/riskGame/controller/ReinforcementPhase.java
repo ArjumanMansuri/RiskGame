@@ -27,6 +27,9 @@ public class ReinforcementPhase implements PhaseViewPublisher, PlayerDominationV
 	private PhaseViewObserver newObserver;
 	private PlayerDominationViewObserver newDomiantionObserver;
 	
+	/**
+	 * constructor for this class
+	 */
 	public ReinforcementPhase() {
 		newObserver = new ReinforcementPhaseObserver();
 		newDomiantionObserver = new PlayerDominationViewObserver();
@@ -54,7 +57,12 @@ public class ReinforcementPhase implements PhaseViewPublisher, PlayerDominationV
 		this.notifyObserver("Number of new armies is " + newArmies + " for player " + p.getPlayerName());
 		p.setPlayerNumOfArmy(p.getPlayerNumOfArmy() + newArmies);
 	}
-	
+	/**
+	 * This function is to process the player's command and for reinforcement
+	 * @param player  id of player
+	 * @param commandComponents command in string array
+	 * @return "playerRinforced" if successful else throws an Error
+	 */
 	public String processReinforceCmd(int player, String[] commandComponents) {
 		if(commandComponents.length != 3) {
 			return "Player not reinforced";
@@ -93,6 +101,12 @@ public class ReinforcementPhase implements PhaseViewPublisher, PlayerDominationV
 		return "Player reinforced";
 	}
 	
+	/**
+	 * Exchange card logic
+	 * @param playerNumber id of player
+	 * @param commandComponents command in string array
+	 * @return "Exchange Done" if successful else throws an Error
+	 */
 	public String processExchangeCardCmd(int playerNumber, String[] commandComponents) {
 		Player p = Game.getPlayersList().get(playerNumber);
 		if(commandComponents[1].contains("none")) {
@@ -265,13 +279,21 @@ public class ReinforcementPhase implements PhaseViewPublisher, PlayerDominationV
 		int reinformentArmies =  currentPlayer.getOwnedCountries().size() /3;
 		return reinformentArmies;
 	}
-
+	
+	/**
+	 * This method is to notify the observer pattern
+	 * @param action string to notify the observer
+	 */
 	@Override
 	public void notifyObserver(String action) {
 		this.newObserver.update(action);
 		
 	}
 	
+	/**
+	 * This method is to notify the Domination observer pattern
+	 * @param action string to notify the observer
+	 */
 	public void notifyDominationObserver(String action) {
 		this.newDomiantionObserver.updateDomination(action);
 	}

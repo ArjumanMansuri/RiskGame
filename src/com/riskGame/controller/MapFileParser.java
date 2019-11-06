@@ -21,10 +21,18 @@ public class MapFileParser {
 	public static final String MAP_FILE_NAME = "maps/World.map";
 	String fileData;
 
+	/**
+	 * getter method for file data
+	 * @return data of file
+	 */
 	public String getFileData() {
 		return fileData;	
 	}
 
+	/**
+	 * setter method for file data
+	 * @param fileData data of file
+	 */
 	public void setFileData(String fileData) {
 		this.fileData = fileData;
 	}

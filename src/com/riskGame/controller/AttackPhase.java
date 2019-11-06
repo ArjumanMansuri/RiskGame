@@ -30,6 +30,9 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 	private static String defenderCountry;
 	private static int defenderPlayer;
 	private static int attackerPlayer;
+	private PhaseViewObserver newObserver;
+	private static String attackerDiceRollsString;
+	private static String defenderDiceRollsString;
 	private PlayerDominationViewObserver newDomiantionObserver;
 	/**
 	 * getter method to get the attacker player number.
@@ -49,28 +52,38 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 		AttackPhase.attackerPlayer = attackerPlayer;
 	}
 
-	private PhaseViewObserver newObserver;
-
-	private static String attackerDiceRollsString;
-	private static String defenderDiceRollsString;
-
+	/**
+	 * getter method to get attacker dice rolls
+	 * @return attackerDiceRollsString String value of all attacker dice rolls
+	 */
 	public static String getAttackerDiceRollsString() {
 		return attackerDiceRollsString;
 	}
 
+	/**
+	 * setter method to get attacker dice rolls
+	 * @param attackerDiceRollsString String value of all attacker dice rolls
+	 */
 	public static void setAttackerDiceRollsString(String attackerDiceRollsString) {
 		attackerDiceRollsString = attackerDiceRollsString;
 	}
-
+	
+	/**
+	 * getter method to get defender dice rolls
+	 * @return defenderDiceRollsString String value of all defender dice rolls
+	 */
 	public static String getDefenderDiceRollsString() {
 		return defenderDiceRollsString;
 	}
-
+	
+	/**
+	 * setter method to get defender dice rolls
+	 * @param defenderDiceRollsString String value of all defender dice rolls
+	 */
 	public static void setDefenderDiceRollsString(String defenderDiceRollsString) {
 		defenderDiceRollsString = defenderDiceRollsString;
 	}
-
-
+	
 	/**
 	 * Default constructor which will create new observer object. 
 	 */
@@ -494,6 +507,10 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 
 	}
 	
+	/**
+	 * This method is to notify the Domincation observer pattern
+	 * @param action string to notify the observer
+	 */
 	public void notifyDominationObserver(String action) {
 		this.newDomiantionObserver.updateDomination(action);
 	}

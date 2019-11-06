@@ -7,7 +7,6 @@ import java.util.HashMap;
  * @author goumis
  *
  */
-
 public class Map {
 	private HashMap<String, Continent> continents;
 

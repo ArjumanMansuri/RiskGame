@@ -23,22 +23,30 @@ import java.util.*;
 public class StartUpPhase implements PhaseViewPublisher, PlayerDominationViewPublisher{
 	private HashMap<Integer,Player> playersData;
 	private int noOfPlayers;
-	
-
-
 	private PhaseViewObserver newObserver;
 	private PlayerDominationViewObserver newDomiantionObserver;
 	
+	/**
+	 * Constructor of this class
+	 */
 	public StartUpPhase(){
 		playersData = new HashMap<Integer,Player>();
 		newObserver = new StartupPhaseObserver();
 		newDomiantionObserver = new PlayerDominationViewObserver();
 	}
 	
+	/**
+	 * getter method for number of players
+	 * @return number of players
+	 */
 	public int getNoOfPlayers() {
 		return noOfPlayers;
 	}
-
+	
+	/**
+	 * setter method for number of players
+	 * @param noOfPlayers
+	 */
 	public void setNoOfPlayers(int noOfPlayers) {
 		this.noOfPlayers = noOfPlayers;
 	}
@@ -347,17 +355,21 @@ public class StartUpPhase implements PhaseViewPublisher, PlayerDominationViewPub
 		}
 		return false;
 	}
-
-
 	
-
+	/**
+	 * This method is to notify the observer pattern
+	 * @param action string to notify the observer
+	 */
 	@Override
 	public void notifyObserver(String action) {
 		this.newObserver.update(action);
 		
 	}
 
-	
+	/**
+	 * This method is to notify the Domination observer pattern
+	 * @param action string to notify the observer
+	 */
 	public void notifyDominationObserver(String action) {
 		this.newDomiantionObserver.updateDomination(action);
 	}

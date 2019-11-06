@@ -76,7 +76,11 @@ public class MapFileEdit {
 			return "error";
 		}
 	}
-	
+	/**
+	 *  Validate map on loading and saving
+	 * @param fileName Name of the map file
+	 * @return true if file is valid else false
+	 */
 	private boolean validateMapOnLoadAndSave(String fileName) {
 		MapFileParser mapParser = new MapFileParser();
 		

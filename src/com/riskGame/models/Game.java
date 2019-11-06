@@ -137,7 +137,7 @@ public class Game {
 	 * setter method to set static object edited map.
 	 * @param editMap object for the edited map.
 	 *
-	 * */
+	 */
 	public static void setEditMap(Map editMap) {
 		Game.editMap = editMap;
 	}
