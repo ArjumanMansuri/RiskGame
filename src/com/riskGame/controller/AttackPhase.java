@@ -20,7 +20,7 @@ import com.riskGame.observer.StartupPhaseObserver;
  * This class has business logic of the attack phase
  *
  */
-public class AttackPhase {
+
 
 public class AttackPhase implements PhaseViewPublisher{
 	
@@ -456,7 +456,7 @@ public class AttackPhase implements PhaseViewPublisher{
 	 * @return true if the countries are adjacent else false
 	 */
 
-	private boolean areCountriesAdjacent(String fromCountry,String toCountry) {
+	public boolean areCountriesAdjacent(String fromCountry,String toCountry) {
 		this.notifyObserver("Checking if the countries are adjacent for the battle");
 
 			if(!(Country.getListOfCountries().get(fromCountry).getNeighbours().containsKey(toCountry))){
