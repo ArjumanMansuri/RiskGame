@@ -37,6 +37,7 @@ public class AttackTest {
 			Country newCountry = new Country();
 			newCountry.setCountryName(countryName);
 			newCountry.setNumberOfArmies(7);
+			newCountry.setOwner(1);
 			countriesMap.put(countryName, newCountry);
 			p1OwnedCountries.add(countryName);
 		}
@@ -45,6 +46,7 @@ public class AttackTest {
 			Country newCountry = new Country();
 			newCountry.setCountryName(countryName);
 			newCountry.setNumberOfArmies(7);
+			newCountry.setOwner(2);
 			countriesMap.put(countryName, newCountry);
 			p2OwnedCountries.add(countryName);
 		}
@@ -140,6 +142,6 @@ public class AttackTest {
 	 */
 	@Test
 	public void testAttack() {
-		assertEquals(true,ap.attack().contains("Conquer"));	
+		assertEquals(true,p1.attack().contains("Conquer"));	
 	}
 }

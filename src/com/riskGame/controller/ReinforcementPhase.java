@@ -30,14 +30,18 @@ public class ReinforcementPhase implements PhaseViewPublisher, PlayerDominationV
 	public ReinforcementPhase() {
 		newObserver = new ReinforcementPhaseObserver();
 		newDomiantionObserver = new PlayerDominationViewObserver();
+		
 	}
+	
+	// Player obj 
+	// setPlayer()
 	
 	/**
 	 * This method is used to  calculate the number of Reinforcement armies and set to access globally.
 	 * @param playerNumber turn of player.
 	 * 
 	 */
-	public void calculateReinforcementArmies(int playerNumber) {
+	public void calculateReinforcementArmies(int playerNumber) {		
 		Player p = Game.getPlayersList().get(playerNumber);
 		this.notifyObserver("Calculating Reinforcement armies for the player " + p.getPlayerName());
 		int newArmies =  p.getOwnedCountries().size() /3;
@@ -247,37 +251,7 @@ public class ReinforcementPhase implements PhaseViewPublisher, PlayerDominationV
 		}
 	}
 	
-	/**
-	 * This method checks and calculates the number of reinforcement armies depending on the number of players.
-	 * @param player - number of player.
-	 * @param command - command from the user input.
-	 * @return error if incorrect or saved if correct.
-	 * 
-	 */
-	public String reinforce(int player,String command) {	
-		
-		if(command.isEmpty() || command.trim().length()==0) {
-			return "Error : Invalid Command";
-		}
-		//check if it is a reinforcement command
-		String[] commandComponents = command.split(" ");
-		if(commandComponents.length < 2 || commandComponents.length > 4) {
-			return "Error : Number of arguments does not match";
-		}
-		
-		String commandName = commandComponents[0];
-		if(commandName.equalsIgnoreCase("reinforce")) {
-			return processReinforceCmd(player, commandComponents);
-		}
-		else if(commandName.equalsIgnoreCase("exchangecards")) {
-			return processExchangeCardCmd(player, commandComponents);
-		}
-		else {
-			return "Error : Please enter reinforcement command";
-		}
-		
-			
-	}
+	
 	/**
 	 * This method is used to calculate reinforcement armies for testing.
 	 * @param currentPlayer turn of the current player.
