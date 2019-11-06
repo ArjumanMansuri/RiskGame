@@ -13,19 +13,23 @@ import com.riskGame.models.Player;
 import com.riskGame.observer.FortificationPhaseObserver;
 import com.riskGame.observer.PhaseViewObserver;
 import com.riskGame.observer.PhaseViewPublisher;
+import com.riskGame.observer.PlayerDominationViewObserver;
+import com.riskGame.observer.PlayerDominationViewPublisher;
 import com.riskGame.observer.ReinforcementPhaseObserver;
 
 /**
  * This class contains the business logic of the Reinforcement Phase.
- * @author goumis
+ * @author GouthamG
  *
  */
-public class ReinforcementPhase implements PhaseViewPublisher{
+public class ReinforcementPhase implements PhaseViewPublisher, PlayerDominationViewPublisher{
 	
 	private PhaseViewObserver newObserver;
+	private PlayerDominationViewObserver newDomiantionObserver;
 	
 	public ReinforcementPhase() {
 		newObserver = new ReinforcementPhaseObserver();
+		newDomiantionObserver = new PlayerDominationViewObserver();
 	}
 	
 	/**
@@ -51,7 +55,7 @@ public class ReinforcementPhase implements PhaseViewPublisher{
 	}
 	
 	public String processReinforceCmd(int player, String[] commandComponents) {
-		if(commandComponents.length < 3) {
+		if(commandComponents.length != 3) {
 			return "Player not reinforced";
 		}
 		
@@ -63,6 +67,8 @@ public class ReinforcementPhase implements PhaseViewPublisher{
 			return "Error : Country not owned by "+p.getPlayerName()+" or invalid country ";
 		}
 		
+		
+		
 		if(!(p.getPlayerNumOfArmy()>=num)) {
 			return "Error : Insufficient armies to move";
 		}
@@ -70,7 +76,7 @@ public class ReinforcementPhase implements PhaseViewPublisher{
 		p.setPlayerNumOfArmy(p.getPlayerNumOfArmy()-num);
 		this.notifyObserver("Calculating Reinforcement armies for the player " + p.getPlayerName());
 		Country.getListOfCountries().get(countryName).setNumberOfArmies(Country.getListOfCountries().get(countryName).getNumberOfArmies()+num);
-		this.notifyObserver("New armies for thr country " + countryName + " is " + Country.getListOfCountries().get(countryName).getNumberOfArmies()+num);
+		this.notifyObserver("New armies for the country " + countryName + " is " + Country.getListOfCountries().get(countryName).getNumberOfArmies());
 	
 		return "Player reinforced";
 	}
@@ -282,5 +288,9 @@ public class ReinforcementPhase implements PhaseViewPublisher{
 	public void notifyObserver(String action) {
 		this.newObserver.update(action);
 		
+	}
+	
+	public void notifyDominationObserver(String action) {
+		this.newDomiantionObserver.updateDomination(action);
 	}
 }

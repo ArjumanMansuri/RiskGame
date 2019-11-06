@@ -13,9 +13,9 @@ public  class PlayerDominationViewObserver {
 	 public String domniationViewData; 
 	 
 	 /**
-	 *Update method for updating the log message.
+	 *UpdateDomination method for updating the log message.
 	 */
-	 public void update(String action) {
+	 public void updateDomination(String action) {
 		 domniationViewData = action;
 		  System.out.println(action);
 			
