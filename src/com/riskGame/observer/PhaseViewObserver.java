@@ -24,6 +24,10 @@ public abstract class PhaseViewObserver {
 	 */
 	ArrayList<String> actions;
 	
+	public PhaseViewObserver() {
+		actions = new ArrayList<String>();
+	}
+
 	/**
 	 *Abstract method for updating the log message.
 	 */

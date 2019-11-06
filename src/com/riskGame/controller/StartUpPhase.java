@@ -280,7 +280,6 @@ public class StartUpPhase implements PhaseViewPublisher{
 			Game.setPlayersList(playersData);
 			return "exit";
 		}
-
 	}
 
 	/**
