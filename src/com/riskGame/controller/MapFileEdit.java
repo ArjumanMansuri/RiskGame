@@ -206,7 +206,7 @@ public class MapFileEdit {
 		mapContent = getSaveMapFileContent();
 		return mapContent;
 	}
-
+	
 	/**
 	 * Edit the neighbor of a country.
 	 * @param commandInput - input command from the user.
@@ -259,7 +259,6 @@ public class MapFileEdit {
 		return checkCommandArgs(commandInput, true);
 	}
 	
-
 	/**
 	 * Check if a given country exists in the map.
 	 * @param countryName - name of the country to check existence.
@@ -362,13 +361,17 @@ public class MapFileEdit {
 			String name = argSplit[1]; // continent name 
 			
 			if(argSplit[0].equals("-add")) {
-				int value = Integer.parseInt(argSplit[2]); // continent control value 				
-				Continent addContinent = new Continent();
-				addContinent.setContinentName(name);
-				addContinent.setControlValue(value);
-				if(!editMapContinents.containsKey(name)) {
-					editMapContinents.put(name, addContinent);
-				}						
+				try {				
+					int value = Integer.parseInt(argSplit[2]); // continent control value 				
+					Continent addContinent = new Continent();
+					addContinent.setContinentName(name);
+					addContinent.setControlValue(value);
+					if(!editMapContinents.containsKey(name)) {
+						editMapContinents.put(name, addContinent);
+					}
+				} catch(NumberFormatException e) {
+					return false;
+				}
 			} else if(argSplit[0].equals("-remove")){			
 				if(editMapContinents.containsKey(name)) {
 					editMapContinents.remove(name);
@@ -421,10 +424,10 @@ public class MapFileEdit {
 		
 		MapConnected continentsConnected = new MapConnected(Game.getEditMap().getContinents(),countries);	
 		boolean validContinents = continentsConnected.checkConnectedContinents();
-		
+				
 		MapConnected countriesConnected = new MapConnected(countries);
 		boolean validCountries  = countriesConnected.checkConnectedCountries();
-		
+				
 		if(validContinents && validCountries && validNeighbors) {
 			return true;
 		}
@@ -675,8 +678,7 @@ public class MapFileEdit {
 				fileContent += countryName + ",0,0," +  printContinent.getContinentName() + "," + neighborCSV + "\n";				
 			}			
 			fileContent += "\n";
-		}
-		
+		}		
 		return fileContent;		
 	}
 	
@@ -759,5 +761,34 @@ public class MapFileEdit {
 		}
 		return processArgList;
 	}	
-		
+	
+	/**
+	 * Show the map anytime during the game play.
+	 */
+	public static void gamePlayShowMap() {
+		// Print all the continents
+		System.out.println("------------------------------------------------\n");		
+		for(Continent showContinent : Game.getMap().getContinents().values()) {
+			System.out.println(showContinent.getContinentName() + " = " + showContinent.getControlValue());
+		}
+			
+		// Print countries and armies 
+		for(Country showCountry : Country.getListOfCountries().values()) {
+			System.out.println("Country Name : " + showCountry.getCountryName());
+			System.out.println("Armies 	: " + showCountry.getNumberOfArmies());
+			try {
+				System.out.println("Owner  	: " + Game.getPlayersList().get(showCountry.getOwner()).getPlayerName());
+			} catch(Exception e) {
+				// 
+			} finally {
+				System.out.println("Owner   : N/A");
+			}
+			
+			System.out.println("-------------- \n Neighbors : \n--------------");			
+			for(Country showCountryNeighbor : showCountry.getNeighbours().values()) {
+				System.out.println(showCountryNeighbor.getCountryName());
+			}						
+			System.out.println("------------------------------------------------");
+		}		
+	}
 }
