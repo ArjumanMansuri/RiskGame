@@ -191,9 +191,13 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 			ReinforcementPhase rp = new ReinforcementPhase();
 			return rp.reinforce(player, command);
 		}
+		
+		if(commandComponents[0].equalsIgnoreCase("showmap")) {
+			MapFileEdit.gamePlayShowMap();
+			return "";
+		}
 
 		// check if it is an attack command
-
 		String commandName = commandComponents[0];
 		if(!commandName.equalsIgnoreCase("attack")) {
 			return "Error : Please enter attack command";

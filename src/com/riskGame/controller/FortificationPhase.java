@@ -46,6 +46,11 @@ public class FortificationPhase implements PhaseViewPublisher{
 			ReinforcementPhase rp = new ReinforcementPhase();
 			return rp.reinforce(player, command);
 		}
+		
+		if(commandComponents[0].equalsIgnoreCase("showmap")) {
+			MapFileEdit.gamePlayShowMap();
+			return "";
+		}
 
 		// check if it is a fortification command
 		this.notifyObserver("Checking for valid fortification command");

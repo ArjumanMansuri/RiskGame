@@ -59,6 +59,11 @@ public class ReinforcementPhase implements PhaseViewPublisher, PlayerDominationV
 			return "Player not reinforced";
 		}
 		
+		if(commandComponents[0].equalsIgnoreCase("showmap")) {
+			MapFileEdit.gamePlayShowMap();
+			return "";
+		}
+		
 		String countryName = commandComponents[1];
 		int num = Integer.parseInt(commandComponents[2]);
 		
