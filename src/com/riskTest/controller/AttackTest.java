@@ -20,6 +20,7 @@ public class AttackTest {
 	
 	AttackPhase ap = new AttackPhase();
 	static Player p1 = new Player();
+	static Player p2 = new Player();
 	
 	/**
 	 * This method is called once before the test methods for AttackTest class to setup the context
@@ -29,7 +30,9 @@ public class AttackTest {
 		
 		HashMap<String, Country> countriesMap = new HashMap<String, Country>();
 		ArrayList<String> p1OwnedCountries = new ArrayList<String>();
-		String[] countries = {"Iran", "Japan", "canada","Germany", "France", "Siberia", "China", "Afghanistan", "Ukraine", "Yatusk", "Kamchatka", "Mongolia", "Egypt", "Indonesia"};
+		ArrayList<String> p2OwnedCountries = new ArrayList<String>();
+		String[] countries = {"Iran", "China", "canada","Germany", "France", "Siberia"};
+		String[] countries2 = {"Japan", "Afghanistan", "Ukraine", "Yatusk", "Kamchatka", "Mongolia"};
 		for(String countryName: countries) {
 			Country newCountry = new Country();
 			newCountry.setCountryName(countryName);
@@ -37,10 +40,14 @@ public class AttackTest {
 			countriesMap.put(countryName, newCountry);
 			p1OwnedCountries.add(countryName);
 		}
-		Country newCountry = new Country();
-		newCountry.setCountryName("Sri Lanka");
-		newCountry.setNumberOfArmies(7);
-		countriesMap.put("Sri Lanka", newCountry);
+		
+		for(String countryName: countries2) {
+			Country newCountry = new Country();
+			newCountry.setCountryName(countryName);
+			newCountry.setNumberOfArmies(7);
+			countriesMap.put(countryName, newCountry);
+			p2OwnedCountries.add(countryName);
+		}
 		
 		Country.setListOfCountries(countriesMap);
 		HashMap<String, Country> p1Neighbours = new HashMap<String, Country>();
@@ -49,8 +56,10 @@ public class AttackTest {
 		
 		AttackPhase.setAttackerCountry("Iran");
 		p1.setOwnedCountries(p1OwnedCountries);
+		p2.setOwnedCountries(p2OwnedCountries);
 		HashMap<Integer, Player> playerList = new HashMap<Integer, Player>();
 		playerList.put(1, p1);
+		playerList.put(2, p2);
 		Game.setPlayersList(playerList);
 	}
 	
@@ -83,7 +92,7 @@ public class AttackTest {
 	 */
 	@Test
 	public void testDoCountriesExist() {
-		assertEquals(true,ap.doCountriesExist(p1.getOwnedCountries(),"Iran", "Japan"));	
+		assertEquals(false,ap.doCountriesExist(p1.getOwnedCountries(),"Iran", "Japan"));	
 	}
 	
 	/**
@@ -108,5 +117,29 @@ public class AttackTest {
 	@Test
 	public void testAreArmiesSufficientToAttack() {
 		assertEquals(true,ap.areArmiesSufficientToAttack("Iran", 3));	
+	}
+	
+	/**
+	 * This method is to test if attack setup is done properly
+	 */
+	@Test
+	public void testAttackSetup() {
+		assertEquals(true,ap.attackSetup(1, "attack Iran Japan 3").contains("DefenderPlayer"));	
+	}
+	
+	/**
+	 * This method is to test if attack setup is done properly
+	 */
+	@Test
+	public void testDefendDice() {
+		assertEquals(true,ap.setDefendDice(2, "defend 2").contains("Conquer"));	
+	}
+	
+	/**
+	 * This method is to test if attack setup is done properly
+	 */
+	@Test
+	public void testAttack() {
+		assertEquals(true,ap.attack().contains("Conquer"));	
 	}
 }

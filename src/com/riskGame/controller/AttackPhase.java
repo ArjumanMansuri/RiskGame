@@ -16,7 +16,6 @@ import com.riskGame.observer.PlayerDominationViewObserver;
 import com.riskGame.observer.PlayerDominationViewPublisher;
 import com.riskGame.observer.StartupPhaseObserver;
 
-
 /**
  * 
  * @author Arjuman Mansuri
@@ -52,7 +51,6 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 
 	private PhaseViewObserver newObserver;
 
-	//changesNiral <---
 	private static String attackerDiceRollsString;
 	private static String defenderDiceRollsString;
 
@@ -215,15 +213,13 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 		else {
 			String fromCountry = commandComponents[1];
 			String toCountry = commandComponents[2];
-
-			HashMap<String,Continent> continentList =  Game.getMap().getContinents();
-			ArrayList<String> countries = new ArrayList<>();
-			for (Continent continent: continentList.values()) {
-				for(Country country : continent.getTerritories()){
-					countries.add(country.getCountryName());
-				}
-			}
-
+			
+			 
+	            HashMap<String,Country> countriesMap = new HashMap<>();
+	            countriesMap = Country.getListOfCountries();
+	            ArrayList<String> countries = new ArrayList<String>(countriesMap.keySet());
+	           
+		
 			// check if those countries exist
 			if(!doCountriesExist(countries, fromCountry, toCountry)){
 				return "Error : Either one or both of the country names do not exist";
@@ -246,13 +242,12 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 
 			this.notifyObserver(fromCountry + " and " + toCountry + " exist in countries list which are owned by neighbouring country players" );
 
+
 			String numDice = commandComponents[3];
 
 			if(numDice.equalsIgnoreCase("allout")) {
 				AttackPhase.attackerCountry = fromCountry;
-				this.notifyObserver("Attacker country name is " + fromCountry);
 				AttackPhase.defenderCountry = toCountry;
-				this.notifyObserver("Defender country name is " + toCountry);
 				int attackerArmies = Country.getListOfCountries().get(AttackPhase.attackerCountry).getNumberOfArmies();
 
 				if(attackerArmies == 1) {
@@ -278,25 +273,19 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 				while(attackerArmies!=1 && defenderArmies!=0) {
 					if(attackerArmies > 3) {
 						AttackPhase.attackerDiceNum = 3;
-						this.notifyObserver("Attacker Dice number is 3");
 					}
 					else {
 						AttackPhase.attackerDiceNum = attackerArmies - 1;
-						this.notifyObserver("Attacker Dice number is " + AttackPhase.attackerDiceNum);
 					}
 					if(defenderArmies > 1) {
 						AttackPhase.defenderDiceNum = 2;
-						this.notifyObserver("Defender Dice number is 2");
 					}
 					else {
 						AttackPhase.defenderDiceNum = defenderArmies;
-						this.notifyObserver("Defender Dice number is " + AttackPhase.defenderDiceNum);
 					}
 					result = attack();
 					attackerArmies = Country.getListOfCountries().get(AttackPhase.attackerCountry).getNumberOfArmies();
 					defenderArmies = Country.getListOfCountries().get(AttackPhase.defenderCountry).getNumberOfArmies();
-					this.notifyObserver("Attacker has " + attackerArmies + "armies");
-					this.notifyObserver("Defender has " + defenderArmies + "armies");
 				}
 				return result +" "+AttackPhase.defenderPlayer;
 			}
@@ -312,7 +301,6 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 				}
 				int diceNum = Integer.parseInt(numDice);
 				// check if sufficient armies to move
-				this.notifyObserver("Checking if armies are sufficient to move");
 				if(!areArmiesSufficientToAttack(fromCountry, diceNum)) {
 					int maxArmiesToBeMoved = Country.getListOfCountries().get(fromCountry).getNumberOfArmies()-1;
 
@@ -327,6 +315,11 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 				AttackPhase.attackerCountry = fromCountry;
 				AttackPhase.defenderCountry = toCountry;
 
+				// get to know the defender player
+				int defenderPlayer = Country.getListOfCountries().get(toCountry).getOwner();
+				AttackPhase.defenderPlayer = defenderPlayer;
+
+
 				this.notifyObserver("Attacker is player : " + Game.getPlayersList().get(player).getPlayerName());
 				this.notifyObserver("Defender is player : " + Game.getPlayersList().get(Country.getListOfCountries().get(toCountry).getOwner()).getPlayerName());
 				this.notifyObserver("Attacker country name is " + fromCountry);
@@ -335,7 +328,6 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 				// get to know the defender player
 				int defenderPlayer = Country.getListOfCountries().get(toCountry).getOwner();
 				AttackPhase.defenderPlayer = defenderPlayer;
-
 
 				return "DefenderPlayer "+defenderPlayer;
 			}
@@ -374,7 +366,7 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 			return "Error: You can roll a maximum of "+Country.getListOfCountries().get(AttackPhase.defenderCountry).getNumberOfArmies()+" dice.";
 		}
 		AttackPhase.defenderDiceNum = Integer.parseInt(numDice);
-		this.notifyObserver("Defender dice nmber is  " + AttackPhase.defenderDiceNum);
+		
 		return attack();
 	}
 
@@ -383,25 +375,20 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 	 * @return canConquer if the attacker wins or else canNotConquer
 	 * 
 	 */
-	private String attack() {
+	public String attack() {
 		ArrayList<Integer> attackerDiceRolls = new ArrayList<Integer>();
 		ArrayList<Integer> defenderDiceRolls = new ArrayList<Integer>();
-
-		//<---changesNiral
+    
 		String tempString = "";
-		///->>>
-
-
-		for(int i=0;i<AttackPhase.attackerDiceNum;i++) {
+	
+  for(int i=0;i<AttackPhase.attackerDiceNum;i++) {
 			int rollNum = rollDice();
 			attackerDiceRolls.add(rollNum);
 			tempString =  tempString + rollNum + " ";
 		}
 
-		//changesNiral<---
 		attackerDiceRollsString = tempString;
 		tempString="";
-		//--->
 
 		for(int i=0;i<AttackPhase.defenderDiceNum;i++) {
 			int rollNum = rollDice();
@@ -409,9 +396,7 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 			tempString =  tempString + rollNum + " ";
 		}
 
-		//changesNiral<---
 		defenderDiceRollsString = tempString;
-		//--->
 		
 
 		while(attackerDiceRolls.size()!=0 && defenderDiceRolls.size()!=0){
@@ -419,6 +404,7 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 			int attackerMax = Collections.max(attackerDiceRolls);
 			int defenderMax = Collections.max(defenderDiceRolls);
 			if(attackerMax > defenderMax) {
+
 				this.notifyObserver("Defender lost 1 army !!");
 				Country.getListOfCountries().get(AttackPhase.defenderCountry).setNumberOfArmies(Country.getListOfCountries().get(AttackPhase.defenderCountry).getNumberOfArmies()-1);
 			}
@@ -479,15 +465,13 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 		return (int)(Math.random()*6)+1;
 	}
 
-
 	/**
 	 * This method implements army moving if the attacker wins the battle
 	 * @param player number indicating player
 	 * @param command moveArmy command
 	 * @return done if successful else error
 	 */
-
-	public String moveArmies(int player ,String command) {
+	public String moveArmies(int player,String command) {
 		if(command.isEmpty() || command.trim().length()==0) {
 			return "Error : Invalid Command";
 		}
@@ -516,10 +500,12 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 		Country.getListOfCountries().get(AttackPhase.defenderCountry).setNumberOfArmies(Country.getListOfCountries().get(AttackPhase.defenderCountry).getNumberOfArmies()+numOfArmies);
 		// change ownership of defender country
 		Country.getListOfCountries().get(AttackPhase.defenderCountry).setOwner(player);
+		
 		Game.getPlayersList().get(player).getOwnedCountries().add(defenderCountry);
 		Game.getPlayersList().get(defenderPlayer).getOwnedCountries().remove(defenderCountry);
 
 		this.notifyObserver("Ownership of country " + AttackPhase.defenderCountry + "is changed to " + Game.getPlayersList().get(player).getPlayerName());
+
 		return "done";
 	}
 
