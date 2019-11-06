@@ -107,6 +107,7 @@ public class Game {
         for(Integer key : Game.playersList.keySet()) {
         	if(cardExView == null) {
         		System.out.println("EX VIEW IS NULL");
+        		continue;
         	}
         	Game.playersList.get(key).addObserver(cardExView);
         }
@@ -127,7 +128,6 @@ public class Game {
 	        //ReinforcementPhase rp = new ReinforcementPhase();
 	        //rp.reinforce(1, "exchangecards -none");
 	        //rp.reinforce(1, "reinforce ");
-		 
         }*/
     }
 
