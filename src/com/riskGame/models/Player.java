@@ -272,6 +272,9 @@ public class Player extends Observable implements Observer {
 			return "Error : Number of arguments does not match";
 		}
 
+		if(commandComponents.length == 4 && !commandComponents[3].matches("\\d+")) {
+			return "Error : Please enter a valid number of armies";
+		}
 		// fortify 'fromcountry' 'tocountry' 'num'
 		else {
 			String fromCountry = commandComponents[1];

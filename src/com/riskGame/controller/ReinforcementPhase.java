@@ -33,9 +33,6 @@ public class ReinforcementPhase implements PhaseViewPublisher, PlayerDominationV
 		
 	}
 	
-	// Player obj 
-	// setPlayer()
-	
 	/**
 	 * This method is used to  calculate the number of Reinforcement armies and set to access globally.
 	 * @param playerNumber turn of player.
@@ -69,7 +66,13 @@ public class ReinforcementPhase implements PhaseViewPublisher, PlayerDominationV
 		}
 		
 		String countryName = commandComponents[1];
-		int num = Integer.parseInt(commandComponents[2]);
+		String strNum = commandComponents[2];
+		
+		if(!strNum.matches("\\d+")) {
+			return "Error : Please enter a valid number of armies";
+		}
+		
+		int num = Integer.parseInt(strNum);
 		
 		Player p = Game.getPlayersList().get(player);
 		if(!p.getOwnedCountries().contains(countryName)) {
