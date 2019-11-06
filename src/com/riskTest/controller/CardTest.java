@@ -10,6 +10,9 @@ import com.riskGame.models.*;
 public class CardTest {
 	
 	Player myPlayer;
+	/**
+	 * This method is called once before the test methods for CardTest class to setup the context
+	 */
 	@Before
 	public void before() {
 		myPlayer = new Player();
