@@ -286,7 +286,7 @@ public class StartUpPhase implements PhaseViewPublisher{
 	 * To validate the input string.
 	 * @param thisInput Input String.
 	 * @return 1 if valid and 0 if invalid.
-	 * @throws ArrayIndexOutOfBoundsException.
+	 * @throws ArrayIndexOutOfBoundsException
 	 * 
 	 */
 	int inputValidator(String thisInput) throws ArrayIndexOutOfBoundsException{

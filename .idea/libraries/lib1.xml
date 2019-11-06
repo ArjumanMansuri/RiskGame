@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="lib1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/out/production/RiskGame/lib/log4j-1.2.17.jar!/" />
+      <root url="jar://$PROJECT_DIR$/out/production/RiskGame/lib/common-lang3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/out/production/RiskGame/lib/jdk_logging.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
