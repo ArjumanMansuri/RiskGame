@@ -12,6 +12,15 @@ import com.riskGame.observer.PhaseViewObserver;
 import com.riskGame.observer.PhaseViewPublisher;
 import com.riskGame.observer.StartupPhaseObserver;
 
+
+/**
+ * 
+ * @author Arjuman Mansuri
+ * This class has business logic of the attack phase
+ *
+ */
+public class AttackPhase {
+
 public class AttackPhase implements PhaseViewPublisher{
 	
 	private static int attackerDiceNum;
@@ -26,10 +35,101 @@ public class AttackPhase implements PhaseViewPublisher{
 	}
 	
 	/**
-	 * This method would help making the fortification move if it is valid
-	 * @param fromCountry
-	 * @param toCountry
-	 * @param num
+	 * getter method to get the attacker dice number.
+	 * @return attackerDiceNum attacker dice number.
+	 *
+	 */
+	public static int getAttackerDiceNum() {
+		return attackerDiceNum;
+	}
+
+	/**
+	 * setter method to assign the attacker dice number.
+	 * @param attackerDiceNum attacker dice number.
+	 *
+	 */
+	public static void setAttackerDiceNum(int attackerDiceNum) {
+		AttackPhase.attackerDiceNum = attackerDiceNum;
+	}
+
+	/**
+	 * getter method to get the defender dice number.
+	 * @return defenderDiceNum defender dice number.
+	 *
+	 */
+	public static int getDefenderDiceNum() {
+		return defenderDiceNum;
+	}
+
+	/**
+	 * setter method to assign the defender dice number.
+	 * @param defenderDiceNum defender dice number.
+	 *
+	 */
+	public static void setDefenderDiceNum(int defenderDiceNum) {
+		AttackPhase.defenderDiceNum = defenderDiceNum;
+	}
+
+	/**
+	 * getter method to get the attacker country name.
+	 * @return attackerCountry attacker country name.
+	 *
+	 */
+	public static String getAttackerCountry() {
+		return attackerCountry;
+	}
+
+	/**
+	 * setter method to assign the attacker country name.
+	 * @param attackerCountry attacker country name.
+	 *
+	 */
+	public static void setAttackerCountry(String attackerCountry) {
+		AttackPhase.attackerCountry = attackerCountry;
+	}
+
+	/**
+	 * getter method to get the defender country name.
+	 * @return defenderCountry defender country name.
+	 *
+	 */
+	public static String getDefenderCountry() {
+		return defenderCountry;
+	}
+
+	/**
+	 * setter method to assign the defender country name.
+	 * @param defenderCountry defender country name.
+	 *
+	 */
+	public static void setDefenderCountry(String defenderCountry) {
+		AttackPhase.defenderCountry = defenderCountry;
+	}
+
+	/**
+	 * getter method to get the defender player number.
+	 * @return defenderPlayer defender player number.
+	 *
+	 */
+	public static int getDefenderPlayer() {
+		return defenderPlayer;
+	}
+
+	/**
+	 * setter method to assign the defender player number.
+	 * @param defenderPlayer defender player number.
+	 *
+	 */
+	public static void setDefenderPlayer(int defenderPlayer) {
+		AttackPhase.defenderPlayer = defenderPlayer;
+	}
+	
+	/**
+	 * This method would help setting up the attack
+	 * @param player player number indicating the turn
+	 * @param command operation to be performed by the player
+	 * @return Defender Player if successful else error
+	 * 
 	 */
 	public String attackSetup(int player,String command) {
 		if(command.isEmpty() || command.trim().length()==0) {
@@ -182,6 +282,13 @@ public class AttackPhase implements PhaseViewPublisher{
 		}
 	}
 	
+	/**
+	 * This method helps to setup the defender dice number and calls the attack method
+	 * @param player player number indicating the turn
+	 * @param command operation to be performed by the player
+	 * @return the return string from the attack method
+	 * 
+	 */
 	public String setDefendDice(int player,String command) {
 		if(command.isEmpty() || command.trim().length()==0) {
 			return "Error : Invalid Command";
@@ -211,6 +318,11 @@ public class AttackPhase implements PhaseViewPublisher{
 		return attack();
 	}
 	
+	/**
+	 * This method implements the real attack between the attacker and the defender countries
+	 * @return canConquer if the attacker wins or else canNotConquer
+	 * 
+	 */
 	private String attack() {
 		ArrayList<Integer> attackerDiceRolls = new ArrayList<Integer>();
 		ArrayList<Integer> defenderDiceRolls = new ArrayList<Integer>();
@@ -246,18 +358,40 @@ public class AttackPhase implements PhaseViewPublisher{
 		
 	}
 	
+	
+	/**
+	 * This methods checks if attack is possible by the attacker country
+	 * @return true if possible else false
+	 */
 	public boolean isAttackPossible() {
 		return Country.getListOfCountries().get(AttackPhase.attackerCountry).getNumberOfArmies() > 1;
 	}
 	
+	/**
+	 * This method checks if the player has won the game
+	 * @param player number indicating player
+	 * @return true if the player has won else false
+	 */
 	public boolean hasPlayerWon(int player) {
 		return Country.getListOfCountries().size() == Game.getPlayersList().get(player).getOwnedCountries().size();
 	}
 	
-	private int rollDice() {
+	/**
+	 * This method implements roll of a dice
+	 * @return number between 1 to 6 inclusive
+	 */
+	public int rollDice() {
 		return (int)(Math.random()*6)+1;
 	}
 	
+  
+	/**
+	 * This method implements army moving if the attacker wins the battle
+	 * @param player number indicating player
+	 * @param command moveArmy command
+	 * @return done if successful else error
+	 */
+
 	public String moveArmies(int player ,String command) {
 		if(command.isEmpty() || command.trim().length()==0) {
 			return "Error : Invalid Command";
@@ -301,7 +435,7 @@ public class AttackPhase implements PhaseViewPublisher{
 	 * @param toCountry Name of the country to which player wants to move his army/armies
 	 * @return true if the countries exist else false
 	 */
-	private boolean doCountriesExist(ArrayList<String> countries,String fromCountry,String toCountry) {
+	public boolean doCountriesExist(ArrayList<String> countries,String fromCountry,String toCountry) {
 		return (countries.contains(fromCountry)) && (countries.contains(toCountry));
 	}
 	
@@ -312,8 +446,10 @@ public class AttackPhase implements PhaseViewPublisher{
 	 * @param toCountry Name of the country to which player wants to move his army/armies
 	 * @return true if the countries are adjacent else false
 	 */
+
 	private boolean areCountriesAdjacent(String fromCountry,String toCountry) {
 		this.notifyObserver("Checking if the countries are adjacent for the battle");
+
 			if(!(Country.getListOfCountries().get(fromCountry).getNeighbours().containsKey(toCountry))){
 				return false;
 			}
@@ -323,24 +459,24 @@ public class AttackPhase implements PhaseViewPublisher{
 	}
 	
 	/**
-	 * This method checks if the countries provided as parameters are owned by the player
+	 * This method checks if the countries provided as parameters are not owned by the player
 	 * @param ownedCountries List of countries owned by the player
 	 * @param fromCountry Name of the country from which player wants to move his army/armies
 	 * @param toCountry Name of the country to which player wants to move his army/armies
 	 * @return true if the countries are owned by the player else false
 	 */
-	private boolean isCountryNotOwnedByPlayer(ArrayList<String> ownedCountries,String fromCountry) {
+	public boolean isCountryNotOwnedByPlayer(ArrayList<String> ownedCountries,String fromCountry) {
 		return !ownedCountries.contains(fromCountry);
 	}
 	
 	/**
-	 * This method checks if the 'fromCountry' has sufficient armies to move
+	 * This method checks if the 'fromCountry' has sufficient armies to attack
 	 * @param ownedCountries List of countries owned by the player
 	 * @param fromCountry Name of the country from which player wants to move his army/armies
 	 * @param num number of armies to move
 	 * @return true if sufficient armies available else false
 	 */
-	private boolean areArmiesSufficientToAttack(String fromCountry,int diceNum) {
+	public boolean areArmiesSufficientToAttack(String fromCountry,int diceNum) {
 		return Country.getListOfCountries().get(fromCountry).getNumberOfArmies()>diceNum;
 	}
 
