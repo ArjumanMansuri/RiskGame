@@ -31,23 +31,10 @@ public class ReinforcementPhaseObserver extends PhaseViewObserver{
 	public void update(String action) {
 		if(! (action == null))
 		{
-			StartupPhaseObserver.textArea.append(action);
-			StartupPhaseObserver.textArea.append("\n-------------------------\n");
-			StartupPhaseObserver.textArea.setLineWrap(true);
-			StartupPhaseObserver.textArea.setWrapStyleWord(true);
-			StartupPhaseObserver.textArea.setEditable(false);
-			
-			StartupPhaseObserver.scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-			StartupPhaseObserver.scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-			 
-			StartupPhaseObserver.frame.setContentPane(StartupPhaseObserver.scroll);
-			StartupPhaseObserver.frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-			StartupPhaseObserver.frame.setResizable(false);
-			StartupPhaseObserver.frame.pack();
-			StartupPhaseObserver.frame.setVisible(true);
+			StartupPhaseObserver.startupViewData= action;
 		}	
 		else
-			StartupPhaseObserver.textArea.setText("");
+			StartupPhaseObserver.startupViewData ="";
 	}
 
 	/**
