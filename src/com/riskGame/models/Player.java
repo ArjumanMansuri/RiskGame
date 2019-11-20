@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
 
+import com.riskGame.Strategies.AttackType;
+import com.riskGame.Strategies.FortifyType;
+import com.riskGame.Strategies.ReinforceType;
 import com.riskGame.controller.AttackPhase;
 import com.riskGame.controller.FortificationPhase;
 import com.riskGame.controller.MapFileEdit;
@@ -24,7 +27,9 @@ public class Player extends Observable implements Observer {
     private ArrayList<String> ownedCountries;
     private ArrayList<Card> cards;
     private ArrayList<String> ownedContinents;
-    
+    protected AttackType attackType; 
+    protected ReinforceType reinforceType;
+    protected FortifyType fortifyType;
     
 
     /**
