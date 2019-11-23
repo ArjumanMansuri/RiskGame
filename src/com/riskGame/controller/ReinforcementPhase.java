@@ -43,7 +43,7 @@ public class ReinforcementPhase implements PhaseViewPublisher, PlayerDominationV
 	 */
 	public void calculateReinforcementArmies(int playerNumber) {		
 		Player p = Game.getPlayersList().get(playerNumber);
-		this.notifyObserver("Calculating Reinforcement armies for the player " + p.getPlayerName());
+		this.notifyObserver(p.getPlayerName()+" : Calculating reinforcement armies");
 		int newArmies =  p.getOwnedCountries().size() /3;
 
 		for(Map.Entry<String, Continent> entry : Game.getMap().getContinents().entrySet()) {
