@@ -1,10 +1,12 @@
 package com.riskGame.Strategies;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import com.riskGame.controller.ReinforcementPhase;
 import com.riskGame.models.Country;
 import com.riskGame.models.Game;
+import com.riskGame.models.Player;
 
 public interface ReinforceType {
 	String reinforce(int player,String ...command);
@@ -97,13 +99,13 @@ class RandomReinforce implements ReinforceType{
 		Country.getListOfCountries().get(countryName).setNumberOfArmies(newNumberOfArmies);
 
 		if(countryName.length() < 1 || newNumberOfArmies < 1){
-			return false;
+			return "false";
 		}
-		return true;
+		return "true";
 	}
 
 	public String generateRandomCountry(ArrayList<String> countryList) {
-		Random randomCountry = new Random(); 
+		Random randomCountry = new Random();
         return countryList.get(randomCountry.nextInt(countryList.size()));			
 	}
 
@@ -117,7 +119,7 @@ class RandomReinforce implements ReinforceType{
 class CheaterReinforce implements ReinforceType{
 
 	@Override
-	public String reinforce(int player,String ...command)  {
+	public String reinforce(int playerIndex,String ...command)  {
 		Player p = Game.getPlayersList().get(playerIndex);
 		boolean reinforceValid = true;
 
@@ -131,7 +133,7 @@ class CheaterReinforce implements ReinforceType{
 			}
 		}
 
-		return reinforceValid;
+		return String.valueOf(reinforceValid);
 	}
 }
 

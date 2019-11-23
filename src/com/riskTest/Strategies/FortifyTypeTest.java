@@ -11,6 +11,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class FortifyTypeTest {
@@ -132,12 +133,12 @@ public class FortifyTypeTest {
 	
 	@Test
 	public void testRandomFortifyType() {
-		assertTrue(randomPlayer.fortifyType.fortify(1));
+		assertEquals("true", randomPlayer.getFortifyType().fortify(1, ""));
 	}
 
 	@Test
 	public void testCheaterFortifyType() {
-		assertTrue(cheaterPlayer.fortifyType.fortify(2));
+		assertEquals("true",cheaterPlayer.getFortifyType().fortify(2, ""));
 	}
 
 }
