@@ -1,9 +1,14 @@
 package com.riskGame.Strategies;
 
+import java.util.ArrayList;
+
 import com.riskGame.controller.ReinforcementPhase;
+import com.riskGame.models.Country;
+import com.riskGame.models.Game;
 
 public interface ReinforceType {
-	String reinforce(int player,String command);
+	String reinforce(int player,String ...command);
+	ReinforcementPhase rp = new ReinforcementPhase();
 }
 
 class HumanReinforce implements ReinforceType{
@@ -16,14 +21,14 @@ class HumanReinforce implements ReinforceType{
 	 * 
 	 */
 	@Override
-	public String reinforce(int player,String command) {
+	public String reinforce(int player,String ...command) {
 		// TODO Auto-generated method stub
-		ReinforcementPhase rp = new ReinforcementPhase();
-		if(command.isEmpty() || command.trim().length()==0) {
+		
+		if(command[0].isEmpty() || command[0].trim().length()==0) {
 			return "Error : Invalid Command";
 		}
 		//check if it is a reinforcement command
-		String[] commandComponents = command.split(" ");
+		String[] commandComponents = command[0].split(" ");
 		if(commandComponents.length < 2 || commandComponents.length > 4) {
 			return "Error : Number of arguments does not match";
 		}
@@ -45,7 +50,7 @@ class HumanReinforce implements ReinforceType{
 class BenevolentReinforce implements ReinforceType{
 
 	@Override
-	public String reinforce(int player,String command) {
+	public String reinforce(int player,String ...command) {
 		// TODO Auto-generated method stub
 		return "";
 	}
@@ -55,8 +60,21 @@ class BenevolentReinforce implements ReinforceType{
 class AggresiveReinforce implements ReinforceType{
 
 	@Override
-	public String reinforce(int player,String command)  {
+	public String reinforce(int player,String ...command)  {
 		// TODO Auto-generated method stub
+		// get the strongest country
+		ArrayList<String> ownedCountries = Game.getPlayersList().get(player).getOwnedCountries();
+		int maxArmies = 0;
+		String countryWithMaxArmies = "";
+		for(String country : ownedCountries) {
+			if(Country.getListOfCountries().get(country).getNumberOfArmies() > maxArmies) {
+				maxArmies = Country.getListOfCountries().get(country).getNumberOfArmies();
+				countryWithMaxArmies = country;
+			}
+		}
+		// reinforce it
+		String[] commandComponents = {"reinforce",countryWithMaxArmies,String.valueOf(Game.getPlayersList().get(player).getPlayerNumOfArmy())};
+		rp.processReinforceCmd(player, commandComponents);
 		return "";
 	}
 }
@@ -65,7 +83,7 @@ class AggresiveReinforce implements ReinforceType{
 class RandomReinforce implements ReinforceType{
 
 	@Override
-	public String reinforce(int player,String command)  {
+	public String reinforce(int player,String ...command)  {
 		// TODO Auto-generated method stub
 		return "";
 	}
@@ -75,7 +93,7 @@ class RandomReinforce implements ReinforceType{
 class CheaterReinforce implements ReinforceType{
 
 	@Override
-	public String reinforce(int player,String command)  {
+	public String reinforce(int player,String ...command)  {
 		// TODO Auto-generated method stub
 		return "";
 	}
