@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.riskGame.Strategies.CheaterPlayer;
 import com.riskGame.models.Country;
 import com.riskGame.models.Game;
 import org.junit.Before;
@@ -15,7 +16,7 @@ import com.riskGame.Strategies.RandomPlayer;
 import com.riskGame.models.Player;
 
 public class ReinforceTypeTest {
-	Player randomPlayer;
+	Player randomPlayer,cheaterPlayer;
 	
 	@Before
 	public void before() {
@@ -24,6 +25,8 @@ public class ReinforceTypeTest {
 
 		/* Create a new Random player and add to playerdata  */
 		randomPlayer = new RandomPlayer();
+		cheaterPlayer = new CheaterPlayer();
+
 		ArrayList<String> ownedCountries = new ArrayList();
 		String[] countries = {"Iran", "Japan", "canada","Germany", "France", "Asia", "Siberia", "China"};
 		for(String countryName: countries) {
@@ -41,9 +44,25 @@ public class ReinforceTypeTest {
 			newCountry.setOwner(1);
 			countriesMap.put(countryName, newCountry);
 		}
+
+		ArrayList<String> ownedCountries2 = new ArrayList();
+		String[] countries2 = {"Japan", "Afghanistan", "Ukraine", "Yatusk", "Kamchatka", "Mongolia"};
+		for(String countryName: countries2) {
+			Country newCountry = new Country();
+			newCountry.setCountryName(countryName);
+			newCountry.setNumberOfArmies(7);
+			newCountry.setOwner(2);
+			countriesMap.put(countryName, newCountry);
+			ownedCountries2.add(countryName);
+		}
+		cheaterPlayer.setOwnedCountries(ownedCountries2);
+
+		// set list of countries
 		Country.setListOfCountries(countriesMap);
 
-		playersData.put(1,randomPlayer);
+		// add Players
+		playersData.put(1, randomPlayer);
+		playersData.put(2, cheaterPlayer);
 		Game.setPlayersList(playersData);
 	}
 	
@@ -51,5 +70,10 @@ public class ReinforceTypeTest {
 	public void testRandomReinforceType() {
 		assertTrue(randomPlayer.reinforceType.reinforce(1));
 	}
-	
+
+	@Test
+	public void testCheaterReinforceType() {
+		assertTrue(cheaterPlayer.reinforceType.reinforce(2));
+	}
+
 }

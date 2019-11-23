@@ -1,6 +1,7 @@
 package com.riskGame.Strategies;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 import com.riskGame.models.Country;
@@ -8,13 +9,13 @@ import com.riskGame.models.Game;
 import com.riskGame.models.Player;
 
 public interface ReinforceType {
-	boolean reinforce(int player);
+	boolean reinforce(int playerIndex);
 }
 
 class HumanReinforce implements ReinforceType{
 
 	@Override
-	public boolean reinforce(int player) {
+	public boolean reinforce(int playerIndex) {
 		// TODO Auto-generated method stub
 
 		return false;
@@ -28,7 +29,7 @@ class BenevolentReinforce implements ReinforceType{
 
 
 	@Override
-	public boolean reinforce(int player) {
+	public boolean reinforce(int playerIndex) {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -40,12 +41,10 @@ class BenevolentReinforce implements ReinforceType{
 class AggresiveReinforce implements ReinforceType{
 
 	@Override
-	public boolean reinforce(int player) {
+	public boolean reinforce(int playerIndex) {
 		// TODO Auto-generated method stub
 		return false;
 	}
-
-
 
 }
 
@@ -88,11 +87,22 @@ class RandomReinforce implements ReinforceType{
 class CheaterReinforce implements ReinforceType{
 
 	@Override
-	public boolean reinforce(int player) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	public boolean reinforce(int playerIndex) {
+		Player p = Game.getPlayersList().get(playerIndex);
+		boolean reinforceValid = true;
 
+		// double the country army count
+		for(String countryName : p.getOwnedCountries()){
+			int beforeDouble = Country.getListOfCountries().get(countryName).getNumberOfArmies();
+			Country.getListOfCountries().get(countryName).setNumberOfArmies(beforeDouble * 2);
+
+			if(Country.getListOfCountries().get(countryName).getNumberOfArmies() != (beforeDouble * 2)){
+				reinforceValid = false;
+			}
+		}
+
+		return reinforceValid;
+	}
 
 }
 
