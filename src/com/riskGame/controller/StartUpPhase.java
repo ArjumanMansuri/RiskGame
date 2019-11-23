@@ -1,6 +1,5 @@
 package com.riskGame.controller;
 
-import com.riskGame.models.Continent;
 import com.riskGame.models.Player;
 import com.riskGame.observer.PhaseViewObserver;
 import com.riskGame.observer.PhaseViewPublisher;
@@ -10,9 +9,13 @@ import com.riskGame.observer.StartupPhaseObserver;
 import com.riskGame.models.Country;
 import com.riskGame.models.Map;
 import com.riskGame.models.Game;
+import com.riskGame.Strategies.AggressivePlayer;
+import com.riskGame.Strategies.BenevolentPlayer;
+import com.riskGame.Strategies.CheaterPlayer;
+import com.riskGame.Strategies.HumanPlayer;
+import com.riskGame.Strategies.RandomPlayer;
 import com.riskGame.controller.MapFileParser;
 import java.io.File;
-import java.util.HashMap;
 import java.util.*;
 
 /**
@@ -261,11 +264,28 @@ public class StartUpPhase implements PhaseViewPublisher, PlayerDominationViewPub
 			if(parsedString[i].equals("-add")) {
 
 				if(!ifContains(playersData,parsedString[i+1])) {
-					Player p = new Player();
+					Player p;
+					String behaviour = parsedString[i+2].toLowerCase();
+					if(behaviour.equals("human")) {
+						p = new HumanPlayer();
+					}
+					else if(behaviour.equals("aggressive")) {
+						p = new AggressivePlayer();
+					}
+					else if(behaviour.equals("benevolent")) {
+						p = new BenevolentPlayer();		
+					}
+					else if(behaviour.equals("random")) {
+						p = new RandomPlayer();					
+					}
+					else {
+						p = new CheaterPlayer();
+					}
 					p.setPlayerName(parsedString[i+1]);
 					p.setPlayerNumOfArmy(army[noOfPlayers-2]);
+					p.setPlayerType(behaviour);
 					playersData.put(playerId,p);
-					i++;
+					i+=2;
 					playerId++;
 				}
 				else i++;
@@ -319,13 +339,22 @@ public class StartUpPhase implements PhaseViewPublisher, PlayerDominationViewPub
 	 * 
 	 */
 	public int inputValidator(String thisInput) throws ArrayIndexOutOfBoundsException{
+		String[] validPlayerTypes = {"human","aggressive","benevolent","random","cheater"};
 		String[] parsedString = thisInput.split(" ");
 		try{
-			if(parsedString[0].equals("gameplayer")){
+			if(parsedString[0].equals("gameplayer") && isNumberOfArgumentsCorrect(parsedString)){
 				for(int i=1;i<parsedString.length;i++){
 					if(parsedString[i].equals("-add") || parsedString[i].equals("-remove")){
-						if(!parsedString[i+1].equals("-add") && !parsedString[i+1].equals("-remove")){
-							i=i+1;
+						if(parsedString[i].equals("-add")){
+							if(!Arrays.asList(validPlayerTypes).contains(parsedString[i+2].toLowerCase())) {
+								return 0;
+							}
+							else {
+								i = i+2;
+							}
+						}
+						else {
+							i = i+1;
 						}
 					}
 					else{
@@ -341,6 +370,18 @@ public class StartUpPhase implements PhaseViewPublisher, PlayerDominationViewPub
 		}
 	}
 
+	
+	public boolean isNumberOfArgumentsCorrect(String[] parsedString) {
+		 List<String>parsedStringList = Arrays.asList(parsedString);
+		int addFrequency = Collections.frequency(parsedStringList, "-add");
+		int removeFrequency = Collections.frequency(parsedStringList, "-remove");
+		if(parsedStringList.size()-1 == (addFrequency*3)+(removeFrequency*2)) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 	/**
 	 * This method checks if the hashmap contains the string or not.
 	 * @param temp Hashmap with the data.
