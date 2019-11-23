@@ -28,7 +28,7 @@ public class Player extends Observable implements Observer {
     private ArrayList<Card> cards;
     private ArrayList<String> ownedContinents;
     protected AttackType attackType; 
-    protected ReinforceType reinforceType;
+    public ReinforceType reinforceType;
     protected FortifyType fortifyType;
     
 
@@ -145,27 +145,29 @@ public class Player extends Observable implements Observer {
 	 * @return error if incorrect or saved if correct.
 	 * 
 	 */
-	public String reinforce(int player,String command) {	
-		ReinforcementPhase rp = new ReinforcementPhase();
-		if(command.isEmpty() || command.trim().length()==0) {
-			return "Error : Invalid Command";
-		}
-		//check if it is a reinforcement command
-		String[] commandComponents = command.split(" ");
-		if(commandComponents.length < 2 || commandComponents.length > 4) {
-			return "Error : Number of arguments does not match";
-		}
-		
-		String commandName = commandComponents[0];
-		if(commandName.equalsIgnoreCase("reinforce")) {
-			return rp.processReinforceCmd(player, commandComponents);
-		}
-		else if(commandName.equalsIgnoreCase("exchangecards")) {
-			return rp.processExchangeCardCmd(player, commandComponents);
-		}
-		else {
-			return "Error : Please enter reinforcement command";
-		}
+	public String reinforce(int player,String command) {
+		this.reinforceType.reinforce(player);
+		return null;
+//		ReinforcementPhase rp = new ReinforcementPhase();
+//		if(command.isEmpty() || command.trim().length()==0) {
+//			return "Error : Invalid Command";
+//		}
+//		//check if it is a reinforcement command
+//		String[] commandComponents = command.split(" ");
+//		if(commandComponents.length < 2 || commandComponents.length > 4) {
+//			return "Error : Number of arguments does not match";
+//		}
+//		
+//		String commandName = commandComponents[0];
+//		if(commandName.equalsIgnoreCase("reinforce")) {
+//			return rp.processReinforceCmd(player, commandComponents);
+//		}
+//		else if(commandName.equalsIgnoreCase("exchangecards")) {
+//			return rp.processExchangeCardCmd(player, commandComponents);
+//		}
+//		else {
+//			return "Error : Please enter reinforcement command";
+//		}
 	}
 	
 	/**
