@@ -1,13 +1,13 @@
 package com.riskGame.Strategies;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 import com.riskGame.controller.FortificationPhase;
 import com.riskGame.controller.MapFileEdit;
 import com.riskGame.controller.ReinforcementPhase;
 import com.riskGame.models.Country;
 import com.riskGame.models.Game;
+import com.riskGame.models.Player;
 
 public interface FortifyType {
 	String fortify(int player,String command);
@@ -147,7 +147,7 @@ class CheaterFortify implements FortifyType{
 				fortifiedCheater = true;
 			}
 		}
-		return fortifiedCheater;
+		return String.valueOf(fortifiedCheater);
 	}
 
 
@@ -172,9 +172,9 @@ class RandomFortify implements FortifyType{
 
 		// check if before fortify and after fortify values are same
 		if(fromCountBeforeFortify == Country.getListOfCountries().get(fromCountry).getNumberOfArmies() && Country.getListOfCountries().get(toCountry).getNumberOfArmies() == toCountBeforeFortify){
-			return false;
+			return "false";
 		}
-		return true;
+		return "true";
 	}
 
 	public int generateRandomArmyCount(int i) {
