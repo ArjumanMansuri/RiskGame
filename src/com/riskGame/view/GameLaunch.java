@@ -14,7 +14,6 @@ import com.riskGame.models.Game;
 import com.riskGame.models.Map;
 import com.riskGame.models.Player;
 
-
 /**
  * This class holds the method that gives the menu option to start game and edit map.
  * @author Mudra-PC
@@ -46,7 +45,7 @@ public class GameLaunch {
 			switch(optionMain) {
 			case 1:
 				StartUpPhase startUpPhase = new StartUpPhase();
-				startUpPhase.notifyObserver("StartUp Phase started...");
+				startUpPhase.notifyObserver("Start up Phase started...");
 				do{
 					System.out.println("Enter number of players ranging from 2 to 6:");
 					noOfPlayers = sc.nextLine().trim();
@@ -71,7 +70,7 @@ public class GameLaunch {
 
 				// add Player phase
 				do {
-					System.out.println("Enter gameplayer -add playername -remove playername");
+					System.out.println("Enter gameplayer -add playername strategy -remove playername");
 					String input = sc.nextLine();
 					response = startUpPhase.parser(input);
 					if(response.equals("error")) {
@@ -91,43 +90,51 @@ public class GameLaunch {
 				
 				while(!response.equals("done")) {
 					for(int i=1;i<=Integer.parseInt(noOfPlayers);i++) {
-						System.out.println("Player : "+Game.getPlayersList().get(i).getPlayerName());
-						if(Game.getPlayersList().get(i).getPlayerNumOfArmy()!=0) {
-							System.out.println("Select your option");
-							System.out.println("1.Place armies individually");
-							System.out.println("2.Place All");
-							int armyOption = Integer.parseInt(sc.nextLine());
-							if(armyOption==1) {
-								do {
-									if(response.contains("Error")) {
-										System.out.println(response);
-									}
-									System.out.println("Enter command as : placearmy 'countryname'");
-									response = startUpPhase.placeArmy(i, sc.nextLine().toString());
-									if(response.equals("donePlaceArmy")) {
-										GameLaunch.printPlayerInformation(i);
-										startUpPhase.notifyDominationObserver(Game.getPlayersList().get(i).computeDominationViewData());
-									}
-								}while(!response.equals("donePlaceArmy"));
-							}
-							else {
-								do {
-									if(response.contains("Error")) {
-										System.out.println(response);
-									}
-									System.out.println("Enter command as : placeall");
-									String command = sc.nextLine().trim();
-
-									response = startUpPhase.placeAll(i,command);
-									if(response.equals("donePlaceall")) {
-										GameLaunch.printPlayerInformation(i);
-										startUpPhase.notifyDominationObserver(Game.getPlayersList().get(i).computeDominationViewData());
-									}
-								}while(!response.equals("donePlaceall"));
-							}
+						
+						//if a player is non-human, place all its armies automatically
+						if(!Game.getPlayersList().get(i).getPlayerType().toLowerCase().equals("human") && Game.getPlayersList().get(i).getPlayerNumOfArmy()!=0) {
+							startUpPhase.placeAll(i,"placeall");
+							GameLaunch.printPlayerInformation(i);
 						}
 						else {
-							System.out.println("All your armies have been placed");
+							if(Game.getPlayersList().get(i).getPlayerNumOfArmy()!=0) {
+								System.out.println("Player : "+Game.getPlayersList().get(i).getPlayerName());
+								System.out.println("Select your option");
+								System.out.println("1.Place armies individually");
+								System.out.println("2.Place All");
+								int armyOption = Integer.parseInt(sc.nextLine());
+								if(armyOption==1) {
+									do {
+										if(response.contains("Error")) {
+											System.out.println(response);
+										}
+										System.out.println("Enter command as : placearmy 'countryname'");
+										response = startUpPhase.placeArmy(i, sc.nextLine().toString());
+										if(response.equals("donePlaceArmy")) {
+											GameLaunch.printPlayerInformation(i);
+											startUpPhase.notifyDominationObserver(Game.getPlayersList().get(i).computeDominationViewData());
+										}
+									}while(!response.equals("donePlaceArmy"));
+								}
+								else {
+									do {
+										if(response.contains("Error")) {
+											System.out.println(response);
+										}
+										System.out.println("Enter command as : placeall");
+										String command = sc.nextLine().trim();
+	
+										response = startUpPhase.placeAll(i,command);
+										if(response.equals("donePlaceall")) {
+											GameLaunch.printPlayerInformation(i);
+											startUpPhase.notifyDominationObserver(Game.getPlayersList().get(i).computeDominationViewData());
+										}
+									}while(!response.equals("donePlaceall"));
+								}
+							}
+							else {
+								System.out.println("All your armies have been placed");
+							}
 						}
 					}
 					response = startUpPhase.allPlayerArmies();
@@ -155,7 +162,7 @@ public class GameLaunch {
 						System.out.println("Use command : reinforce 'countryname' 'num'");
 						GameLaunch.printPlayerInformation(i);
 						System.out.println("Number of reinforcement armies available : "+Game.getPlayersList().get(i).getPlayerNumOfArmy());
-						response = Game.getPlayersList().get(i).reinforce(i,sc.nextLine());
+						response = Game.getPlayersList().get(i).getReinforceType().reinforce(i,sc.nextLine());
 					}
 					rp.notifyObserver("End of reinforcement phase for the player : " + Game.getPlayersList().get(i).getPlayerName());
 					rp.notifyDominationObserver(Game.getPlayersList().get(i).computeDominationViewData());
@@ -278,7 +285,7 @@ public class GameLaunch {
 
 
 						String command = sc.nextLine().trim();
-						response = Game.getPlayersList().get(i).fortify(i,command);
+						response = Game.getPlayersList().get(i).getFortifyType().fortify(i,command);
 						if(response.equals("done")) {
 							GameLaunch.printPlayerInformation(i);
 						}
@@ -333,7 +340,7 @@ public class GameLaunch {
 	 */
 	public static void printPlayerInformation(int player) {
 		// Printing players' countries with adjacent countries and number of armies
-		System.out.println("Player : "+Game.getPlayersList().get(player).getPlayerName());
+		System.out.println("Player : "+Game.getPlayersList().get(player).getPlayerName()+" : "+Game.getPlayersList().get(player).getPlayerType());
 		ArrayList<String> countries = Game.getPlayersList().get(player).getOwnedCountries();
 		for(String k:countries) {
 			Country country = Country.getListOfCountries().get(k);

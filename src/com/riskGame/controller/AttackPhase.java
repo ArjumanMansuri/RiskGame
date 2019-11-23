@@ -40,7 +40,7 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 	 *
 	 */
 	public static int getAttackerPlayer() {
-		return attackerPlayer;
+		return AttackPhase.attackerPlayer;
 	}
 
 	/**
@@ -57,7 +57,7 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 	 * @return attackerDiceRollsString String value of all attacker dice rolls
 	 */
 	public static String getAttackerDiceRollsString() {
-		return attackerDiceRollsString;
+		return AttackPhase.attackerDiceRollsString;
 	}
 
 	/**
@@ -65,7 +65,7 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 	 * @param attackerDiceRollsString String value of all attacker dice rolls
 	 */
 	public static void setAttackerDiceRollsString(String attackerDiceRollsString) {
-		attackerDiceRollsString = attackerDiceRollsString;
+		AttackPhase.attackerDiceRollsString = attackerDiceRollsString;
 	}
 	
 	/**
@@ -73,7 +73,7 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 	 * @return defenderDiceRollsString String value of all defender dice rolls
 	 */
 	public static String getDefenderDiceRollsString() {
-		return defenderDiceRollsString;
+		return AttackPhase.defenderDiceRollsString;
 	}
 	
 	/**
@@ -81,7 +81,7 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 	 * @param defenderDiceRollsString String value of all defender dice rolls
 	 */
 	public static void setDefenderDiceRollsString(String defenderDiceRollsString) {
-		defenderDiceRollsString = defenderDiceRollsString;
+		AttackPhase.defenderDiceRollsString = defenderDiceRollsString;
 	}
 	
 	/**
@@ -200,7 +200,7 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 		// Call card exchange
 		if(commandComponents[0].equalsIgnoreCase("exchangecards")) {
 			ReinforcementPhase rp = new ReinforcementPhase();
-			return Game.getPlayersList().get(player).reinforce(player, command);
+			return Game.getPlayersList().get(player).getReinforceType().reinforce(player, command);
 		}
 		
 		if(commandComponents[0].equalsIgnoreCase("showmap")) {
@@ -296,7 +296,7 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 					else {
 						AttackPhase.defenderDiceNum = defenderArmies;
 					}
-					result = Game.getPlayersList().get(AttackPhase.attackerPlayer).attack();
+					result = Game.getPlayersList().get(AttackPhase.attackerPlayer).getAttackType().attack();
 					attackerArmies = Country.getListOfCountries().get(AttackPhase.attackerCountry).getNumberOfArmies();
 					defenderArmies = Country.getListOfCountries().get(AttackPhase.defenderCountry).getNumberOfArmies();
 				}
@@ -375,7 +375,7 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 		}
 		AttackPhase.defenderDiceNum = Integer.parseInt(numDice);
 		
-		return Game.getPlayersList().get(AttackPhase.getAttackerPlayer()).attack();
+		return Game.getPlayersList().get(AttackPhase.getAttackerPlayer()).getAttackType().attack();
 	}
 
 
