@@ -2,19 +2,22 @@ package com.riskGame.Strategies;
 
 import java.util.ArrayList;
 import java.util.Random;
+
+import com.riskGame.models.Country;
 import com.riskGame.models.Game;
 import com.riskGame.models.Player;
 
 public interface ReinforceType {
-	void reinforce(int player);
+	boolean reinforce(int player);
 }
 
 class HumanReinforce implements ReinforceType{
 
 	@Override
-	public void reinforce(int player) {
+	public boolean reinforce(int player) {
 		// TODO Auto-generated method stub
-		
+
+		return false;
 	}
 
 
@@ -25,9 +28,9 @@ class BenevolentReinforce implements ReinforceType{
 
 
 	@Override
-	public void reinforce(int player) {
+	public boolean reinforce(int player) {
 		// TODO Auto-generated method stub
-		
+		return false;
 	}
 
 
@@ -37,9 +40,9 @@ class BenevolentReinforce implements ReinforceType{
 class AggresiveReinforce implements ReinforceType{
 
 	@Override
-	public void reinforce(int player) {
+	public boolean reinforce(int player) {
 		// TODO Auto-generated method stub
-		
+		return false;
 	}
 
 
@@ -50,37 +53,44 @@ class AggresiveReinforce implements ReinforceType{
 class RandomReinforce implements ReinforceType{
 
 	@Override
-	public void reinforce(int player) {
-		// generate a random country and random number	
-		Player p = Game.getPlayersList().get(player);
+	public boolean reinforce(int playerIndex) {
+		// generate a random country and random number
+		Player p = Game.getPlayersList().get(playerIndex);
 		String countryName = generateRandomCountry(p.getOwnedCountries());
-		System.out.println(countryName);
-//		int num = generateRandomArmyCount(p.getPlayerNumOfArmy());				
-		
-//		p.setPlayerNumOfArmy(p.getPlayerNumOfArmy() - num);		
-//		Country.getListOfCountries().get(countryName).setNumberOfArmies(Country.getListOfCountries().get(countryName).getNumberOfArmies()+num);		
+
+		// generate a random number of army count for reinforcing
+		int initialArmyCount = p.getPlayerNumOfArmy();
+		int randomArmyCount = generateRandomArmyCount(initialArmyCount);
+		p.setPlayerNumOfArmy(initialArmyCount - randomArmyCount);
+
+		// reinforce with new number of armies for the countrName
+		int newNumberOfArmies = Country.getListOfCountries().get(countryName).getNumberOfArmies() + randomArmyCount;
+		Country.getListOfCountries().get(countryName).setNumberOfArmies(newNumberOfArmies);
+
+		if(countryName.length() < 1 || newNumberOfArmies < 1){
+			return false;
+		}
+		return true;
 	}
 
-	private String generateRandomCountry(ArrayList<String> countryList) {		
+	public String generateRandomCountry(ArrayList<String> countryList) {
 		Random randomCountry = new Random(); 
         return countryList.get(randomCountry.nextInt(countryList.size()));			
 	}
 
-	private int generateRandomArmyCount(int i) {
-		
-		return i;		
+	public int generateRandomArmyCount(int i) {
+		Random randomArmy = new Random();
+		return randomArmy.nextInt(i);
 	}
-
-	
 }
 
 
 class CheaterReinforce implements ReinforceType{
 
 	@Override
-	public void reinforce(int player) {
+	public boolean reinforce(int player) {
 		// TODO Auto-generated method stub
-		
+		return false;
 	}
 
 
