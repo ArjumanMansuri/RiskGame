@@ -354,7 +354,8 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 		Game.getPlayersList().get(player).getOwnedCountries().add(defenderCountry);
 		Game.getPlayersList().get(defenderPlayer).getOwnedCountries().remove(defenderCountry);
 
-		this.notifyObserver("Ownership of country " + AttackPhase.defenderCountry + "is changed to " + Game.getPlayersList().get(player).getPlayerName());
+		this.notifyObserver("Ownership of country " + AttackPhase.defenderCountry + " is changed to " + Game.getPlayersList().get(player).getPlayerName());
+		System.out.println("Ownership of country " + AttackPhase.defenderCountry + " is changed to " + Game.getPlayersList().get(player).getPlayerName());
 
 		return "done";
 	}
@@ -419,7 +420,7 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 	}
 	
 	/**
-	 * This method is to notify the Domincation observer pattern
+	 * This method is to notify the Domination observer pattern
 	 * @param action string to notify the observer
 	 */
 	public void notifyDominationObserver(String action) {

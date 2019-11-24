@@ -1,5 +1,6 @@
 package com.riskGame.models;
 
+import java.io.Serializable;							
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -14,7 +15,7 @@ import com.riskGame.view.CardExchange;
  * @author Mudra-PC
  * Model class for Game with map and playersList as its data members
  */
-public class Game {
+public class Game  implements Serializable  {
 
 	private static Map map = new Map();
 	private static HashMap<Integer,Player> playersList = new HashMap<>();
@@ -23,6 +24,8 @@ public class Game {
 	private static ArrayList<Card> gameCards;
 	private static CardExchange cardExView = new CardExchange();
 	public static int exchanges_made = 0;
+	private static int playerTurn;
+	private static String phase;						   
 
 	/**
 	 * This is a default constructor that creates game object.
@@ -63,6 +66,14 @@ public class Game {
 		return gameCards;
 	}
 
+	/**
+	 * setter method to set static arrayList of cards
+	 * @param gameCards set list of card
+	 *
+	 */
+	public static void setCards(ArrayList<Card> gameCards) {
+		Game.gameCards = gameCards;
+	}
 	/**
 	 * method to assign cards randomly among players
 	 * @param p player
@@ -153,11 +164,44 @@ public class Game {
 
 	/**
 	 * setter method to set the edited map to true if correct.
-	 * @param editMapSet passese the boolean value true if set correctly.
+	 * @param editMapSet passes the boolean value true if set correctly.
 	 *
 	 */
 	public static void setEditMapSet(boolean editMapSet) {
 		Game.editMapSet = editMapSet;
+	}
+	/**
+	 * getter method to get static turn of player
+	 * @return playerTurn number indicating turn of a player
+	 */
+	public static int getPlayerTurn() {
+		return playerTurn;
+	}
+
+	/**
+	 * setter method to player turn
+	 * @param playerTurn number indicating turn of a player
+	 *
+	 */
+	public static void setPlayerTurn(int playerTurn) {
+		Game.playerTurn = playerTurn;
+	}
+
+	/**
+	 * getter method to get the current phase
+	 * @return phase String indicating current phase the game is in
+	 */
+	public static String getPhase() {
+		return phase;
+	}
+	
+	/**
+	 * setter method to set the current phase
+	 * @param phase String indicating current phase the game is in
+	 *
+	 */
+	public static void setPhase(String phase) {
+		Game.phase = phase;
 	}
 }
 

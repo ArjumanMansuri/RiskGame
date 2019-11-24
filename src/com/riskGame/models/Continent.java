@@ -1,5 +1,6 @@
 package com.riskGame.models;
 
+import java.io.Serializable;							
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +9,7 @@ import java.util.List;
  * @author goumis
  *
  */
-public class Continent {
+public class Continent implements Serializable {
 
 	private String continentName;
 	private List<Country> territories;

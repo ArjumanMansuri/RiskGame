@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-
+import java.io.Serializable;
 import com.riskGame.controller.AttackPhase;
 import com.riskGame.controller.MapFileEdit;
 import com.riskGame.controller.ReinforcementPhase;
@@ -17,7 +17,7 @@ public interface AttackType {
 	AttackPhase ap = new AttackPhase();
 }
 
- class HumanAttack implements AttackType{
+ class HumanAttack implements AttackType,Serializable{
 	 
 	 	/**
 		 * This method would help setting up the attack
@@ -181,7 +181,7 @@ public interface AttackType {
 
  }
 
- class AggresiveAttack implements AttackType{
+ class AggresiveAttack implements AttackType,Serializable{
 
 	@Override
 	public String attackSetup(int player,String ...command) {
@@ -210,12 +210,16 @@ public interface AttackType {
 					break;
 				}
 			}
+			if(ownedCountries.size() == maxTriedCountries.size()) {
+				System.out.println("Attack skipped");
+				break;
+			}											  
 		}while(toCountry.length()==0);
 		System.out.println(fromCountry + " and " + toCountry + " exist in countries list which are owned by neighbouring country players");	
 		ap.notifyObserver(fromCountry + " and " + toCountry + " exist in countries list which are owned by neighbouring country players" );
 
 		AttackPhase.setAttackerPlayer(player);
-		AttackPhase.setAttackerCountry(fromCountry);
+		AttackPhase.setAttackerCountry(fromCountry);	// countries with max armies as fromCountry
 		AttackPhase.setDefenderCountry(toCountry);
 		int attackerArmies = Country.getListOfCountries().get(AttackPhase.getAttackerCountry()).getNumberOfArmies();
 		int defenderArmies = Country.getListOfCountries().get(AttackPhase.getDefenderCountry()).getNumberOfArmies();
@@ -229,6 +233,8 @@ public interface AttackType {
 
 		AttackPhase.setDefenderPlayer(defenderPlayer);
 		
+		String result = "";
+		// allout attack implementation						 
 		while(attackerArmies!=1 && defenderArmies!=0) {
 			if(attackerArmies > 3) {
 				AttackPhase.setAttackerDiceNum(3);
@@ -242,26 +248,32 @@ public interface AttackType {
 			else {
 				AttackPhase.setDefenderDiceNum(defenderArmies);
 			}
-			ap.attack();
+			result = ap.attack();
 			
 			attackerArmies = Country.getListOfCountries().get(AttackPhase.getAttackerCountry()).getNumberOfArmies();
 			defenderArmies = Country.getListOfCountries().get(AttackPhase.getDefenderCountry()).getNumberOfArmies();
 		}
-		String moveArmiesCommand = "attackmove "+ String.valueOf(attackerArmies-1);
-		return ap.moveArmies(AttackPhase.getAttackerPlayer(), moveArmiesCommand);
+		if(result.contains("canConquer")) {
+			// conquer defender country by moving all armies except one to it
+			String moveArmiesCommand = "attackmove "+ String.valueOf(attackerArmies-1);
+			return ap.moveArmies(AttackPhase.getAttackerPlayer(), moveArmiesCommand);
+		}
+		else {
+			return result;
 		}
  }
-
- class BenevolentAttack implements AttackType{
+ }
+ class BenevolentAttack implements AttackType,Serializable{
 
 	@Override
 	public String attackSetup(int player,String ...command) {
 		// TODO Auto-generated method stub
+		System.out.println("Attack skipped");
 		return "";
 	}
  }
 
- class CheaterAttack implements AttackType{
+ class CheaterAttack implements AttackType,Serializable{
 	 protected ArrayList<String> conqueredList;
 
 	 /**
@@ -311,7 +323,7 @@ public interface AttackType {
 
  }
 
- class RandomAttack implements AttackType {
+ class RandomAttack implements AttackType,Serializable {
 	static final int MAX_LIMIT_ATTACK_RANDOM = 5;
 	protected ArrayList<String> ownedCountryLostList;
 

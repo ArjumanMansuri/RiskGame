@@ -1,5 +1,6 @@
 package com.riskGame.models;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
 /**
@@ -7,7 +8,7 @@ import java.util.HashMap;
  * @author Mudra-PC
  *
  */
-public class Country {
+public class Country  implements Serializable{
 
 	private static HashMap<String,Country> listOfCountries = new HashMap<>();
 
