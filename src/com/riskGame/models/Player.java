@@ -30,7 +30,7 @@ public class Player extends Observable implements Observer {
     private ArrayList<Card> cards;
     private ArrayList<String> ownedContinents;
     protected AttackType attackType; 
-    protected ReinforceType reinforceType;
+    public ReinforceType reinforceType;
     protected FortifyType fortifyType;
     protected String playerType;
 

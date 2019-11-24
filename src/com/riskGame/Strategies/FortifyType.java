@@ -1,19 +1,18 @@
 package com.riskGame.strategies;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 import com.riskGame.controller.FortificationPhase;
 import com.riskGame.controller.MapFileEdit;
 import com.riskGame.controller.ReinforcementPhase;
 import com.riskGame.models.Country;
 import com.riskGame.models.Game;
+import com.riskGame.models.Player;
 
 public interface FortifyType {
 	FortificationPhase fp = new FortificationPhase();
 	String fortify(int player,String ...command);
 }
-
 
 class HumanFortify implements FortifyType{
 
@@ -99,12 +98,9 @@ class HumanFortify implements FortifyType{
 		}
 		return "done";
 	}
-
-
 }
 
 class AggresiveFortify implements FortifyType{
-
 	@Override
 	public String fortify(int player,String ...command) {
 		// TODO Auto-generated method stub
@@ -138,6 +134,8 @@ class AggresiveFortify implements FortifyType{
 		System.out.println("Fortified from "+fromCountry+" to "+toCountry+" with "+String.valueOf(armiesToMove)+" armies");
 		return "done";
 	}
+
+	
 }
 
 class BenevolentFortify implements FortifyType{
@@ -148,28 +146,79 @@ class BenevolentFortify implements FortifyType{
 		return "";
 	}
 
-
 }
 
 class CheaterFortify implements FortifyType{
 
 	@Override
-	public String fortify(int player,String ...command) {
-		// TODO Auto-generated method stub
-		return "";
+	public String fortify(int playerIndex,String ...command) {
+		Player p = Game.getPlayersList().get(playerIndex);
+		Iterator ownCountryIter = p.getOwnedCountries().iterator();
+		boolean fortifiedCheater = false;
+
+		while(ownCountryIter.hasNext()){
+			String ownCountry = (String) ownCountryIter.next();
+			HashMap<String, Country> ownCountryNeighbors = Country.getListOfCountries().get(ownCountry).getNeighbours();
+			boolean shouldDoubleFortify = false;
+
+			for(Map.Entry<String, Country> neighbor : ownCountryNeighbors.entrySet()){
+				int neighborOwner = neighbor.getValue().getOwner();
+				if(neighborOwner != playerIndex){
+					shouldDoubleFortify = true;
+					break;
+				}
+			}
+
+			// if eligible - Double the army count
+			if(shouldDoubleFortify){
+				Country.getListOfCountries().get(ownCountry).setNumberOfArmies( Country.getListOfCountries().get(ownCountry).getNumberOfArmies() * 2 );
+				fortifiedCheater = true;
+			}
+		}
+		return String.valueOf(fortifiedCheater);
 	}
 
 
 }
 
-
 class RandomFortify implements FortifyType{
 
 	@Override
-	public String fortify(int player,String ...command) {
-		// TODO Auto-generated method stub
-		return "";
+  public String fortify(int playerIndex,String ...command) {
+		Player p = Game.getPlayersList().get(playerIndex);
+
+		// generate random from country and to country
+		String fromCountry = generateFromCountry(p.getOwnedCountries());
+		String toCountry = generateToCountry(Country.getListOfCountries().get(fromCountry).getNeighbours());
+		int numArmiesToMove = generateRandomArmyCount(Country.getListOfCountries().get(fromCountry).getNumberOfArmies() - 1);
+
+		// move armies
+		int fromCountBeforeFortify = Country.getListOfCountries().get(fromCountry).getNumberOfArmies();
+		int toCountBeforeFortify = Country.getListOfCountries().get(toCountry).getNumberOfArmies();
+		Country.getListOfCountries().get(fromCountry).setNumberOfArmies(fromCountBeforeFortify - numArmiesToMove);
+		Country.getListOfCountries().get(toCountry).setNumberOfArmies(toCountBeforeFortify + numArmiesToMove);
+
+		// check if before fortify and after fortify values are same
+		if(fromCountBeforeFortify == Country.getListOfCountries().get(fromCountry).getNumberOfArmies() && Country.getListOfCountries().get(toCountry).getNumberOfArmies() == toCountBeforeFortify){
+			return "false";
+		}
+		return "true";
 	}
 
+	public int generateRandomArmyCount(int i) {
+		Random randomArmy = new Random();
+		return randomArmy.nextInt(i);
+	}
 
+	public String generateFromCountry(ArrayList<String> countryList) {
+		Random randomCountry = new Random();
+		return countryList.get(randomCountry.nextInt(countryList.size()));
+	}
+
+	public String generateToCountry(HashMap<String, Country> countryList) {
+		Random randomCountry = new Random();
+		Object[] values = countryList.values().toArray();
+		Country toCountry = (Country) values[randomCountry.nextInt(values.length)];
+		return toCountry.getCountryName();
+	}
 }
