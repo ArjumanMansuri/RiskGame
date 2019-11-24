@@ -68,12 +68,12 @@ public class ReinforceTypeTest {
 	
 	@Test
 	public void testRandomReinforceType() {
-		assertTrue(randomPlayer.reinforceType.reinforce(1));
+		assertEquals("true",randomPlayer.reinforceType.reinforce(1));
 	}
 
 	@Test
 	public void testCheaterReinforceType() {
-		assertTrue(cheaterPlayer.reinforceType.reinforce(2));
+		assertEquals("true",cheaterPlayer.reinforceType.reinforce(2));
 	}
 
 }

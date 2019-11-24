@@ -1,4 +1,4 @@
-package com.riskGame.strategies;
+package com.riskGame.Strategies;
 
 import java.util.ArrayList;
 import java.util.Random;
