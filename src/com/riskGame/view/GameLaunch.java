@@ -177,8 +177,9 @@ public class GameLaunch {
 					AttackPhase ap = new AttackPhase();
 					ap.notifyObserver("Initiating attack phase for " + Game.getPlayersList().get(i).getPlayerName());
 					response = "";
+					int defender = 0;
 					if(Game.getPlayersList().get(i).getPlayerType().equals("human")) {
-						int defender = 0;
+						
 						boolean reAttack = false;
 						do {
 							do {
@@ -198,7 +199,7 @@ public class GameLaunch {
 								if(reAttack) {
 									command = command + "reattack";
 								}
-								response = ap.attackSetup(i,command);
+								response = Game.getPlayersList().get(i).getAttackType().attackSetup(i,command);
 								if(response.contains("Conquer")) {
 									defender = Integer.parseInt(response.split(" ")[2]);
 									break;
@@ -221,23 +222,11 @@ public class GameLaunch {
 									}
 									System.out.println("Enter number of dice, you want to roll using 'defend 'numdice'' command");
 									String command = sc.nextLine().trim();
-									response = ap.setDefendDice(defender,command);
-	
-									//changesNiral<---
-									String attackerRolls = AttackPhase.getAttackerDiceRollsString();
-									String defenderRolls = AttackPhase.getDefenderDiceRollsString();
-									if(!response.contains("Error")) {
-										System.out.println("Attacker Dice Rolls: "+attackerRolls+"\n"+"Defender Dice Rolls: "+defenderRolls);
-									}
-									//--->
-	
+									response = ap.setDefendDice(defender,command);	
 								}while(!response.contains("Conquer"));
 							}
 							// If defender country lost and has zero armies on it
 							if(response.contains("canConquer")) {
-								if(ap.hasPlayerWon(i)) {
-									break game;
-								}
 								int noOfArmies = Integer.parseInt(response.split(" ")[1]);
 								System.out.println("You can conquer the defender country by moving armies to it. You have "+noOfArmies+" armies left.");
 								response = "";
@@ -250,6 +239,9 @@ public class GameLaunch {
 									response = ap.moveArmies(i,command);
 									reAttack = false;
 								}while(!response.contains("done"));
+								if(ap.hasPlayerWon(i)) {
+									break game;
+								}
 							}
 							else{
 								if(!response.equalsIgnoreCase("noattack") && ap.isAttackPossible()) {
@@ -276,32 +268,41 @@ public class GameLaunch {
 						}
 					}
 					else {
-						
+						Game.getPlayersList().get(i).getAttackType().attackSetup(i);
+						GameLaunch.printPlayerInformation(i);
+						GameLaunch.printPlayerInformation(AttackPhase.getDefenderPlayer());
 					}
 					ap.notifyObserver("End of Attack phase for the player : " + Game.getPlayersList().get(i).getPlayerName());
 					ap.notifyDominationObserver(Game.getPlayersList().get(i).computeDominationViewData());
 					// fortification phase starts
 					System.out.println("Fortification phase starts");
 					fp.notifyObserver("Initiating fortification phase for " + Game.getPlayersList().get(i).getPlayerName());
-					response = "";
-					do {
-						if(response.contains("Error")) {
-							System.out.println(response);
-						}
-
-						GameLaunch.printPlayerInformation(i);
-
-						System.out.println("Use command : fortify 'fromcountry' 'tocountry' 'num'");
-						System.out.println("Or use command : fortify none");
-
-
-						String command = sc.nextLine().trim();
-						response = Game.getPlayersList().get(i).getFortifyType().fortify(i,command);
-						if(response.equals("done")) {
+					if(Game.getPlayersList().get(i).getPlayerType().equals("human")) {
+						response = "";
+						
+						do {
+							if(response.contains("Error")) {
+								System.out.println(response);
+							}
+	
 							GameLaunch.printPlayerInformation(i);
-						}
-
-					}while(!response.equals("done"));
+	
+							System.out.println("Use command : fortify 'fromcountry' 'tocountry' 'num'");
+							System.out.println("Or use command : fortify none");
+	
+	
+							String command = sc.nextLine().trim();
+							response = Game.getPlayersList().get(i).getFortifyType().fortify(i,command);
+							if(response.equals("done")) {
+								GameLaunch.printPlayerInformation(i);
+							}
+	
+						}while(!response.equals("done"));
+					}
+					else {
+						Game.getPlayersList().get(i).getFortifyType().fortify(i);
+						GameLaunch.printPlayerInformation(i);
+					}
 					fp.notifyObserver("End of fortification phase for " + Game.getPlayersList().get(i).getPlayerName());
 					System.out.println("Player "+i+"'s turn ends");
 				}

@@ -1,4 +1,4 @@
-package com.riskGame.Strategies;
+package com.riskGame.strategies;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -75,6 +75,7 @@ class AggresiveReinforce implements ReinforceType{
 		}
 		// reinforce it
 		String[] commandComponents = {"reinforce",countryWithMaxArmies,String.valueOf(Game.getPlayersList().get(player).getPlayerNumOfArmy())};
+		System.out.println("Reinforced "+countryWithMaxArmies+" with "+String.valueOf(Game.getPlayersList().get(player).getPlayerNumOfArmy())+" armies");
 		rp.processReinforceCmd(player, commandComponents);
 		return "";
 	}
