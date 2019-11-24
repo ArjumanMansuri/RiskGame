@@ -7,7 +7,7 @@ public class CheaterPlayer extends Player {
 	public CheaterPlayer() {
 		// TODO Auto-generated constructor stub
 		super();
-		attackType = new CheaterAttack();
+		attackType = new CheaterAttack(getPlayerNumber());
 		fortifyType = new CheaterFortify();
 		reinforceType = new CheaterReinforce();
 	}
