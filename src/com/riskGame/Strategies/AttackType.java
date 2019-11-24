@@ -1,5 +1,6 @@
 package com.riskGame.strategies;
 
+import java.util.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -263,21 +264,124 @@ public interface AttackType {
 }
 
  class CheaterAttack implements AttackType{
+	 protected int playerIndex;
+	 protected ArrayList<String> conqueredList;
+	 public CheaterAttack(int playerNumber) {
+			playerIndex = playerNumber;
+			conqueredList = new ArrayList<String>();
+	 }
 
-	@Override
-	public String attackSetup(int player,String ...command){
-		// TODO Auto-generated method stub
+	 @Override
+	public String attack() {
+		Player p = Game.getPlayersList().get(playerIndex);
+		Iterator ownCountryIter = p.getOwnedCountries().iterator();
+
+		while(ownCountryIter.hasNext()){
+			String ownCountry = (String) ownCountryIter.next();
+			HashMap<String, Country> ownCountryNeighbors = Country.getListOfCountries().get(ownCountry).getNeighbours();
+
+			for(Map.Entry<String, Country> neighbor : ownCountryNeighbors.entrySet()){
+				if(!conqueredList.contains(neighbor.getKey())) {
+					int neighborOwner = neighbor.getValue().getOwner();
+					if (neighborOwner != playerIndex) {
+						moveArmies(ownCountry, neighbor.getValue());
+						break;
+					}
+				}
+			}
+		}
 		return "";
 	}
-	
-}
+
+	 /**
+	  *
+	  * @param attackerCountry current player's owned country
+	  * @param defenderCountry neighbor country of the owner country
+	  */
+	 private void moveArmies(String attackerCountry, Country defenderCountry) {
+		 int numOfArmiesCanBeMoved = Country.getListOfCountries().get(attackerCountry).getNumberOfArmies() / 2;
+
+		 // Set number of armies
+		 Country.getListOfCountries().get(attackerCountry).setNumberOfArmies(Country.getListOfCountries().get(attackerCountry).getNumberOfArmies() - numOfArmiesCanBeMoved);
+		 Country.getListOfCountries().get(defenderCountry).setNumberOfArmies(Country.getListOfCountries().get(defenderCountry.getCountryName()).getNumberOfArmies() + numOfArmiesCanBeMoved);
+
+		 // change ownership of defender country
+		 Country.getListOfCountries().get(defenderCountry).setOwner(playerIndex);
+
+		 Game.getPlayersList().get(playerIndex).getOwnedCountries().add(defenderCountry.getCountryName());
+		 Game.getPlayersList().get(defenderCountry.getOwner()).getOwnedCountries().remove(defenderCountry.getCountryName());
+
+		 // add defender country to the conquered list (so that it is skipped in the next iteration)
+		 conqueredList.add(defenderCountry.getCountryName());
+	 }
+
+ }
 
 class RandomAttack implements AttackType{
+	static final int MAX_LIMIT_ATTACK_RANDOM = 5;
+	protected int playerIndex;
+	protected ArrayList<String> ownedCountryLostList;
+
+	public RandomAttack(int playerNumber) {
+		playerIndex = playerNumber;
+		ownedCountryLostList = new ArrayList<String>();
+	}
 
 	@Override
+	public String attack() {
+		Player p = Game.getPlayersList().get(playerIndex);
+		Iterator ownCountryIter = p.getOwnedCountries().iterator();
+
+		String attackerCountry = generateRandomCountry(p.getOwnedCountries()); // init value
+		int randomAttackCount = generateRandomAttackCount(MAX_LIMIT_ATTACK_RANDOM);
+		int attackCounter = 0;
+
+		while(attackCounter != 0){
+			// check attacker country still with us ( not lost ) && number of attack count is greater than 0
+			if(ownedCountryLostList.contains(attackerCountry)){
+				attackerCountry = generateRandomCountry(p.getOwnedCountries()); // init value
+			}
+			HashMap<String, Country> ownCountryNeighbors = Country.getListOfCountries().get(attackerCountry).getNeighbours();
+			ArrayList<String> enemyNeighborCountries = new ArrayList<String>;
+
+			// generate a country list of enemy neighbors
+			for(Map.Entry<String, Country> neighbor : ownCountryNeighbors.entrySet()){
+				int neighborOwner = neighbor.getValue().getOwner();
+				if(neighborOwner != playerIndex){
+					enemyNeighborCountries.add(neighbor.getKey());
+				}
+			}
+
+			// generate random defender country
+			String randomSelectedDefenderCountry = generateRandomCountry(enemyNeighborCountries);
+
+			// Attack with attackerCountry and randomSelectedDefenderCountry
+			int randomNumDice = generateRandomAttackCount(6);
+
+
+			// when the attackerCountry loses, remove it from the p.getOwnedCountries() - remove - and setOwnedCountries()
+			attackCounter--;
+		}
+
 	public String attackSetup(int player,String ...command) {
 		// TODO Auto-generated method stub
 		return "";
+	}
+
+	public int generateRandomAttackCount(int max) {
+		Random randomArmy = new Random();
+		return randomArmy.nextInt(max);
+	}
+
+	public String generateRandomCountry(ArrayList<String> countryList) {
+		Random randomCountry = new Random();
+//		if(ownedCountryLostList.size() > 0){
+//			for (String lostCountry : ownedCountryLostList) {
+//				countryList.removeIf(countryListElement -> (countryListElement.equalsIgnoreCase(lostCountry)));
+//			}
+//			return countryList.get(randomCountry.nextInt(countryList.size()));
+//		}
+		return countryList.get(randomCountry.nextInt(countryList.size()));
 	}
 	
 }
