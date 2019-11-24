@@ -262,19 +262,14 @@ public interface AttackType {
  }
 
  class CheaterAttack implements AttackType{
-	 protected int playerIndex;
 	 protected ArrayList<String> conqueredList;
-	 public CheaterAttack(int playerNumber) {
-			playerIndex = playerNumber;
-			conqueredList = new ArrayList<String>();
-	 }
 
 	 /**
 	  *
 	  * @param attackerCountry current player's owned country
 	  * @param defenderCountry neighbor country of the owner country
 	  */
-	 private void moveArmies(String attackerCountry, Country defenderCountry) {
+	 private void moveArmies(String attackerCountry, Country defenderCountry, int player) {
 		 int numOfArmiesCanBeMoved = Country.getListOfCountries().get(attackerCountry).getNumberOfArmies() / 2;
 
 		 // Set number of armies
@@ -282,9 +277,9 @@ public interface AttackType {
 		 Country.getListOfCountries().get(defenderCountry).setNumberOfArmies(Country.getListOfCountries().get(defenderCountry.getCountryName()).getNumberOfArmies() + numOfArmiesCanBeMoved);
 
 		 // change ownership of defender country
-		 Country.getListOfCountries().get(defenderCountry).setOwner(playerIndex);
+		 Country.getListOfCountries().get(defenderCountry).setOwner(player);
 
-		 Game.getPlayersList().get(playerIndex).getOwnedCountries().add(defenderCountry.getCountryName());
+		 Game.getPlayersList().get(player).getOwnedCountries().add(defenderCountry.getCountryName());
 		 Game.getPlayersList().get(defenderCountry.getOwner()).getOwnedCountries().remove(defenderCountry.getCountryName());
 
 		 // add defender country to the conquered list (so that it is skipped in the next iteration)
@@ -293,8 +288,8 @@ public interface AttackType {
 
 	 @Override
 	 public String attackSetup(int player, String... command) {
-
-		 Player p = Game.getPlayersList().get(playerIndex);
+		 conqueredList = new ArrayList<String>();
+		 Player p = Game.getPlayersList().get(player);
 		 Iterator ownCountryIter = p.getOwnedCountries().iterator();
 
 		 while(ownCountryIter.hasNext()){
@@ -304,8 +299,8 @@ public interface AttackType {
 			 for(Map.Entry<String, Country> neighbor : ownCountryNeighbors.entrySet()){
 				 if(!conqueredList.contains(neighbor.getKey())) {
 					 int neighborOwner = neighbor.getValue().getOwner();
-					 if (neighborOwner != playerIndex) {
-						 moveArmies(ownCountry, neighbor.getValue());
+					 if (neighborOwner != player) {
+						 moveArmies(ownCountry, neighbor.getValue(), player);
 						 break;
 					 }
 				 }
