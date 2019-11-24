@@ -182,165 +182,76 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 	public static void setDefenderPlayer(int defenderPlayer) {
 		AttackPhase.defenderPlayer = defenderPlayer;
 	}
-
 	/**
-	 * This method would help setting up the attack
-	 * @param player player number indicating the turn
-	 * @param command operation to be performed by the player
-	 * @return Defender Player if successful else error
+	 * This method implements the real attack between the attacker and the defender countries
+	 * @return canConquer if the attacker wins or else canNotConquer
 	 * 
 	 */
-	public String attackSetup(int player,String command) {
-		if(command.isEmpty() || command.trim().length()==0) {
-			return "Error : Invalid Command";
+	public String attack() {
+		// TODO Auto-generated method stub
+		ArrayList<Integer> attackerDiceRolls = new ArrayList<Integer>();
+		ArrayList<Integer> defenderDiceRolls = new ArrayList<Integer>();
+    
+		String tempString = "";
+	
+	for(int i=0;i<AttackPhase.getAttackerDiceNum();i++) {
+			int rollNum = rollDice();
+			attackerDiceRolls.add(rollNum);
+			tempString =  tempString + rollNum + " ";
 		}
 
-		String[] commandComponents = command.split(" ");
+		AttackPhase.setAttackerDiceRollsString(tempString);
+		tempString="";
 
-		// Call card exchange
-		if(commandComponents[0].equalsIgnoreCase("exchangecards")) {
-			ReinforcementPhase rp = new ReinforcementPhase();
-			return Game.getPlayersList().get(player).getReinforceType().reinforce(player, command);
-		}
-		
-		if(commandComponents[0].equalsIgnoreCase("showmap")) {
-			MapFileEdit.gamePlayShowMap();
-			return "";
+		for(int i=0;i<AttackPhase.getDefenderDiceNum();i++) {
+			int rollNum = rollDice();
+			defenderDiceRolls.add(rollNum);
+			tempString =  tempString + rollNum + " ";
 		}
 
-		// check if it is an attack command
-		String commandName = commandComponents[0];
-		if(!commandName.equalsIgnoreCase("attack")) {
-			return "Error : Please enter attack command";
-		}
-		// attack noattack
-		if(commandComponents.length == 2) {
-			if(commandComponents[1].equalsIgnoreCase("noattack")) {
-				return "done";
-			}
-		}
+		AttackPhase.setDefenderDiceRollsString(tempString);
+		System.out.println("Attacker Dice Rolls: "+AttackPhase.getAttackerDiceRollsString()+"\n"+"Defender Dice Rolls: "+AttackPhase.getDefenderDiceRollsString());
+		while(attackerDiceRolls.size()!=0 && defenderDiceRolls.size()!=0){
+			// check if attacker wins
+			int attackerMax = Collections.max(attackerDiceRolls);
+			int defenderMax = Collections.max(defenderDiceRolls);
+			if(attackerMax > defenderMax) {
 
-		if(!(commandComponents.length == 4)) {
-			return "Error : Number of arguments does not match";
-		}
-		else {
-			String fromCountry = commandComponents[1];
-			String toCountry = commandComponents[2];
-			
-			 
-	            HashMap<String,Country> countriesMap = new HashMap<>();
-	            countriesMap = Country.getListOfCountries();
-	            ArrayList<String> countries = new ArrayList<String>(countriesMap.keySet());
-	           
-		
-			// check if those countries exist
-			if(!doCountriesExist(countries, fromCountry, toCountry)){
-				return "Error : Either one or both of the country names do not exist";
-			}
-			// check if attacking country owned by player
-			ArrayList<String> ownedCountries = Game.getPlayersList().get(player).getOwnedCountries();
-			if(isCountryNotOwnedByPlayer(ownedCountries,fromCountry)) {
-				return "Error : Country from which you want to attack is not owned by you";
-			}
-
-			// check if attacked country owned by player
-			if(!isCountryNotOwnedByPlayer(ownedCountries,toCountry)) {
-				return "Error : You cannot attack a country owned by you";
-			}
-
-			// check if they are adjacent
-			if(!(areCountriesAdjacent(fromCountry, toCountry))){
-				return "Error : Given countries are not adjacent";
-			}
-
-			this.notifyObserver(fromCountry + " and " + toCountry + " exist in countries list which are owned by neighbouring country players" );
-
-
-			String numDice = commandComponents[3];
-			AttackPhase.attackerPlayer = player;
-			if(numDice.equalsIgnoreCase("allout")) {
-				AttackPhase.attackerCountry = fromCountry;
-				AttackPhase.defenderCountry = toCountry;
-				int attackerArmies = Country.getListOfCountries().get(AttackPhase.attackerCountry).getNumberOfArmies();
-
-				if(attackerArmies == 1) {
-					return "Error : You should have more than 1 army on "+AttackPhase.attackerCountry+" to attack.";
-				}
-
-				int defenderArmies = Country.getListOfCountries().get(AttackPhase.defenderCountry).getNumberOfArmies();
-				if(defenderArmies == 0) {
-					return "Error : You should have at least 1 army on "+AttackPhase.defenderCountry+" to defend.";
-				}
-
-
-
-				String result = "";
-				int defenderPlayer = Country.getListOfCountries().get(toCountry).getOwner();
-
-				this.notifyObserver("Attacker " + Game.getPlayersList().get(player).getPlayerName() + " has " + attackerArmies + " armies");
-				this.notifyObserver("Defender " + Game.getPlayersList().get(defenderPlayer).getPlayerName()+ " has " +defenderArmies+  " armies");
-
-				AttackPhase.defenderPlayer = defenderPlayer;
-				
-				
-				while(attackerArmies!=1 && defenderArmies!=0) {
-					if(attackerArmies > 3) {
-						AttackPhase.attackerDiceNum = 3;
-					}
-					else {
-						AttackPhase.attackerDiceNum = attackerArmies - 1;
-					}
-					if(defenderArmies > 1) {
-						AttackPhase.defenderDiceNum = 2;
-					}
-					else {
-						AttackPhase.defenderDiceNum = defenderArmies;
-					}
-					result = Game.getPlayersList().get(AttackPhase.attackerPlayer).getAttackType().attack();
-					attackerArmies = Country.getListOfCountries().get(AttackPhase.attackerCountry).getNumberOfArmies();
-					defenderArmies = Country.getListOfCountries().get(AttackPhase.defenderCountry).getNumberOfArmies();
-				}
-				return result +" "+AttackPhase.defenderPlayer;
+				notifyObserver("Defender lost 1 army !!");
+				System.out.println("Defender lost 1 army !!");
+				Country.getListOfCountries().get(AttackPhase.getDefenderCountry()).setNumberOfArmies(Country.getListOfCountries().get(AttackPhase.getDefenderCountry()).getNumberOfArmies()-1);
 			}
 			else {
-				if(command.endsWith("reattack")) {
-					if(!AttackPhase.attackerCountry.equalsIgnoreCase(fromCountry)) {
-						return "Error : You cannot change attacking country during reattack";
-					}
-					numDice = numDice.replace("reattack", "");
-				}
-				if(!numDice.matches("\\d") || Integer.parseInt(numDice) > 3) {
-					return "Error : Please enter a valid number of dice (1, 2 or 3) you want to roll";
-				}
-				int diceNum = Integer.parseInt(numDice);
-				// check if sufficient armies to move
-				if(!areArmiesSufficientToAttack(fromCountry, diceNum)) {
-					int maxArmiesToBeMoved = Country.getListOfCountries().get(fromCountry).getNumberOfArmies()-1;
-
-					if(maxArmiesToBeMoved!=0) {
-						return "Error : Insufficient armies on "+fromCountry+" to roll "+ diceNum+" dice. Try rolling "+maxArmiesToBeMoved+" dice.";
-					}
-					else {
-						return "Error : You cannot attack from "+fromCountry+" as it has 1 army. Try attacking from other country with more than 1 army";
-					}
-				}
-				AttackPhase.attackerDiceNum = diceNum;
-				AttackPhase.attackerCountry = fromCountry;
-				AttackPhase.defenderCountry = toCountry;
-
-				// get to know the defender player
-				int defenderPlayer = Country.getListOfCountries().get(toCountry).getOwner();
-				AttackPhase.defenderPlayer = defenderPlayer;
-
-				this.notifyObserver("Attacker is player : " + Game.getPlayersList().get(player).getPlayerName());
-				this.notifyObserver("Defender is player : " + Game.getPlayersList().get(Country.getListOfCountries().get(toCountry).getOwner()).getPlayerName());
-				this.notifyObserver("Attacker country name is " + fromCountry);
-				this.notifyObserver("Defender country name is " + toCountry);
-
-				return "DefenderPlayer "+defenderPlayer;
+				notifyObserver("Attacker lost 1 army !!");
+				System.out.println("Attacker lost 1 army !!");
+				Country.getListOfCountries().get(AttackPhase.getAttackerCountry()).setNumberOfArmies(Country.getListOfCountries().get(AttackPhase.getAttackerCountry()).getNumberOfArmies()-1);
 			}
+			attackerDiceRolls.remove((Integer)attackerMax);
+			defenderDiceRolls.remove((Integer)defenderMax);
+		}
+		if(Country.getListOfCountries().get(AttackPhase.getDefenderCountry()).getNumberOfArmies()==0) {
+			Player p = Game.getPlayersList().get(Country.getListOfCountries().get(AttackPhase.getDefenderCountry()).getOwner());
+			Game.assignRandomCard(p);
+			boolean controlsContinent = true;
+			String continentOfConqueredCountry = Country.getListOfCountries().get(AttackPhase.getAttackerCountry()).getContinent();
+			ArrayList<Country> countries = (ArrayList<Country>) Game.getMap().getContinents().get(continentOfConqueredCountry).getTerritories();
+			for(Country country : countries) {
+				if(!p.getOwnedCountries().contains(country)) {
+					controlsContinent = false;
+					break;
+				}
+			}
+			if(controlsContinent) {
+				p.getOwnedContinents().add(continentOfConqueredCountry);
+			}
+			
+			return "canConquer "+Country.getListOfCountries().get(AttackPhase.getAttackerCountry()).getNumberOfArmies();
+		}
+		else {
+			return "canNotConquer "+Country.getListOfCountries().get(AttackPhase.getAttackerCountry()).getNumberOfArmies();
 		}
 	}
+	
 
 	/**
 	 * This method helps to setup the defender dice number and calls the attack method
@@ -375,7 +286,7 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 		}
 		AttackPhase.defenderDiceNum = Integer.parseInt(numDice);
 		
-		return Game.getPlayersList().get(AttackPhase.getAttackerPlayer()).getAttackType().attack();
+		return attack();
 	}
 
 
