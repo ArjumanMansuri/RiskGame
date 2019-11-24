@@ -1,5 +1,6 @@
 package com.riskGame.models;
 
+import java.io.Serializable;							
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,7 +21,7 @@ import com.riskGame.controller.ReinforcementPhase;
  *
  */
 
-public class Player extends Observable implements Observer {
+public class Player extends Observable implements Observer,Serializable {
 
 	private int playerNumber;
     

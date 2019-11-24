@@ -1,6 +1,7 @@
 package com.riskGame.Strategies;
 
 import java.util.*;
+import java.io.Serializable;						   
 
 import com.riskGame.controller.FortificationPhase;
 import com.riskGame.controller.MapFileEdit;
@@ -14,7 +15,7 @@ public interface FortifyType {
 	String fortify(int player,String ...command);
 }
 
-class HumanFortify implements FortifyType{
+class HumanFortify implements FortifyType,Serializable{
 
 	/**
 	 * This method would help making the fortification move if it is valid
@@ -100,16 +101,17 @@ class HumanFortify implements FortifyType{
 	}
 }
 
-class AggresiveFortify implements FortifyType{
+class AggresiveFortify implements FortifyType,Serializable{
 	@Override
 	public String fortify(int player,String ...command) {
 		// TODO Auto-generated method stub
 		ArrayList<String> ownedCountries = Game.getPlayersList().get(player).getOwnedCountries();
-		int maxArmies = 0;
+		int maxArmies;
 		String toCountry = "";
 		String fromCountry = "";
 		ArrayList<String> maxTriedCountries = new ArrayList<String>();
 		do {
+			maxArmies = 0;	 
 			for(String country : ownedCountries) {
 				if(Country.getListOfCountries().get(country).getNumberOfArmies() > maxArmies && !maxTriedCountries.contains(country)) {
 					maxArmies = Country.getListOfCountries().get(country).getNumberOfArmies();
@@ -125,6 +127,10 @@ class AggresiveFortify implements FortifyType{
 					break;
 				}
 			}
+			if(ownedCountries.size() == maxTriedCountries.size()) {
+				System.out.println("Fortification skipped");
+				break;
+			}											  
 		}while(fromCountry.length()==0);
 		
 		int armiesToMove = Country.getListOfCountries().get(fromCountry).getNumberOfArmies() - 1;
@@ -138,17 +144,53 @@ class AggresiveFortify implements FortifyType{
 	
 }
 
-class BenevolentFortify implements FortifyType{
+class BenevolentFortify implements FortifyType,Serializable{
 
 	@Override
 	public String fortify(int player,String ...command) {
 		// TODO Auto-generated method stub
-		return "";
+		ArrayList<String> ownedCountries = Game.getPlayersList().get(player).getOwnedCountries();
+		int minArmies;
+		String toCountry = "";
+		String fromCountry = "";
+		ArrayList<String> minTriedCountries = new ArrayList<String>();
+		do {
+			minArmies = Integer.MAX_VALUE;
+			// select weakest country for fortification
+			for(String country : ownedCountries) {
+				if(Country.getListOfCountries().get(country).getNumberOfArmies() < minArmies && !minTriedCountries.contains(country)) {
+					minArmies = Country.getListOfCountries().get(country).getNumberOfArmies();
+					toCountry = country;
+				}
+			}
+			minTriedCountries.add(toCountry);
+			
+			// select fromCountry
+			for(String country : Country.getListOfCountries().get(toCountry).getNeighbours().keySet()) {
+				if(!fp.areCountriesNotOwnedByPlayer(ownedCountries,country,toCountry) && Country.getListOfCountries().get(country).getNumberOfArmies() > 1) {
+					fromCountry = country;
+					break;
+				}
+			}
+			if(ownedCountries.size() == minTriedCountries.size()) {
+				System.out.println("Fortification skipped");
+				break;
+																																		   
+							
+			}
+		}while(fromCountry.length()==0);
+		
+		int armiesToMove = Country.getListOfCountries().get(fromCountry).getNumberOfArmies() - 1;
+		// move all armies except one
+		Country.getListOfCountries().get(fromCountry).setNumberOfArmies(Country.getListOfCountries().get(fromCountry).getNumberOfArmies()-armiesToMove);
+		Country.getListOfCountries().get(toCountry).setNumberOfArmies(Country.getListOfCountries().get(toCountry).getNumberOfArmies()+armiesToMove);
+		System.out.println("Fortified from "+fromCountry+" to "+toCountry+" with "+String.valueOf(armiesToMove)+" armies");
+		return "done";
 	}
 
 }
 
-class CheaterFortify implements FortifyType{
+class CheaterFortify implements FortifyType,Serializable{
 
 	@Override
 	public String fortify(int playerIndex,String ...command) {
@@ -181,7 +223,7 @@ class CheaterFortify implements FortifyType{
 
 }
 
-class RandomFortify implements FortifyType{
+class RandomFortify implements FortifyType,Serializable{
 
 	@Override
   public String fortify(int playerIndex,String ...command) {

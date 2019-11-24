@@ -1,5 +1,6 @@
 package com.riskGame.models;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
 /**
@@ -7,7 +8,7 @@ import java.util.HashMap;
  * @author goumis
  *
  */
-public class Map {
+public class Map implements Serializable {
 	private HashMap<String, Continent> continents;
 
 	/**

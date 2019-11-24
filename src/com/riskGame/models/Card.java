@@ -1,12 +1,13 @@
 package com.riskGame.models;
 
+import java.io.Serializable;
 import java.util.Observable;
 /**
  * This is a model class for the card that holds the properties for cards
  * @author Mudra-PC
  *
  */
-public class Card extends Observable {
+public class Card extends Observable implements Serializable {
 	public final static int ARTILLARY = 0;
 	public final static int INFANTRY = 1;
 	public final static int CAVALRY = 2;

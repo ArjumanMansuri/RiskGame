@@ -55,7 +55,7 @@ public class ReinforcementPhase implements PhaseViewPublisher, PlayerDominationV
 		}
 		
 		this.notifyObserver("Number of new armies is " + newArmies + " for player " + p.getPlayerName());
-		p.setPlayerNumOfArmy(p.getPlayerNumOfArmy() + newArmies);
+		p.setPlayerNumOfArmy(newArmies);
 	}
 	/**
 	 * This function is to process the player's command and for reinforcement

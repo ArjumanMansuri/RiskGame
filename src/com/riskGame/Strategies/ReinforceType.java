@@ -1,5 +1,6 @@
 package com.riskGame.Strategies;
 
+import java.io.Serializable;							
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -13,7 +14,7 @@ public interface ReinforceType {
 	ReinforcementPhase rp = new ReinforcementPhase();
 }
 
-class HumanReinforce implements ReinforceType{
+class HumanReinforce implements ReinforceType,Serializable{
 
 	/**
 	 * This method checks and calculates the number of reinforcement armies depending on the number of players.
@@ -49,17 +50,42 @@ class HumanReinforce implements ReinforceType{
 }
 
 
-class BenevolentReinforce implements ReinforceType{
+class BenevolentReinforce implements ReinforceType,Serializable{
 
-
+	@Override
 	public String reinforce(int player,String ...command) {
 		// TODO Auto-generated method stub
+		// get the weakest countries
+		ArrayList<String> ownedCountries = Game.getPlayersList().get(player).getOwnedCountries();
+		int minArmies;
+		String countryWithMinArmies = "";
+		ArrayList<String> minArmyCountries = new ArrayList<String>();
+		do {
+			minArmies = Integer.MAX_VALUE;
+			for(String country : ownedCountries) {
+				if(Country.getListOfCountries().get(country).getNumberOfArmies() < minArmies && !minArmyCountries.contains(country)) {
+					minArmies = Country.getListOfCountries().get(country).getNumberOfArmies();
+					countryWithMinArmies = country;
+				}
+			}
+			minArmyCountries.add(countryWithMinArmies);
+		}while(minArmyCountries.size()<2);
+		
+		// reinforce weakest countries with approximately half armies on each
+		int totalArmies = Game.getPlayersList().get(player).getPlayerNumOfArmy();
+		String[] commandComponents = {"reinforce",minArmyCountries.get(0),String.valueOf(totalArmies/2)};
+		System.out.println("Reinforced "+minArmyCountries.get(0)+" with "+String.valueOf(totalArmies/2)+" armies");
+		rp.processReinforceCmd(player, commandComponents);
+		
+		String[] commandComponents2 = {"reinforce",minArmyCountries.get(1),String.valueOf(totalArmies - totalArmies/2)};
+		System.out.println("Reinforced "+minArmyCountries.get(1)+" with "+String.valueOf(totalArmies - totalArmies/2)+" armies");
+		rp.processReinforceCmd(player, commandComponents2);
 		return "";
 	}
 }
 
 
-class AggresiveReinforce implements ReinforceType{
+class AggresiveReinforce implements ReinforceType,Serializable{
 
 	public String reinforce(int player,String ...command)  {
 		// TODO Auto-generated method stub
@@ -82,7 +108,7 @@ class AggresiveReinforce implements ReinforceType{
 }
 
 
-class RandomReinforce implements ReinforceType{
+class RandomReinforce implements ReinforceType,Serializable{
 
 	@Override
   public String reinforce(int playerIndex,String ...command)  {
@@ -117,7 +143,7 @@ class RandomReinforce implements ReinforceType{
 }
 
 
-class CheaterReinforce implements ReinforceType{
+class CheaterReinforce implements ReinforceType,Serializable{
 
 	@Override
 	public String reinforce(int playerIndex,String ...command)  {

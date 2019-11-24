@@ -1,11 +1,13 @@
 package com.riskGame.view;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
 import com.riskGame.controller.AttackPhase;
 import com.riskGame.controller.FortificationPhase;
+import com.riskGame.controller.GameLoadSave;
 import com.riskGame.controller.MapFileEdit;
 import com.riskGame.controller.ReinforcementPhase;
 import com.riskGame.controller.StartUpPhase;
@@ -24,9 +26,11 @@ public class GameLaunch {
 	/**
 	 * This main method creates an instance to start the game.
 	 * @param args arguments  to run main method.
+	 * @throws IOException 
+	 * @throws ClassNotFoundException 
 	 * 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException, ClassNotFoundException {
 
 		int optionMain;
 		String noOfPlayers;
@@ -44,6 +48,28 @@ public class GameLaunch {
 			String response ="";
 			switch(optionMain) {
 			case 1:
+				
+				System.out.println("Select from the following options:");
+				System.out.println("1.Play new game");
+				System.out.println("2.Load saved game");
+				
+				int gameOpt = Integer.parseInt(sc.nextLine().trim());
+				boolean loadGame = false;
+				if(gameOpt == 2) {
+					System.out.println("To load a saved game, use command : loadgame 'fileName'");
+					String command = sc.nextLine().trim();
+					String result = "";
+					do {
+						if(result.toLowerCase().contains("error")) {
+							System.out.println(result);
+							System.out.println("To load a saved game, use command : loadgame 'fileName'");
+							command = sc.nextLine().trim();
+						}
+						result = GameLoadSave.load(command);
+					}while(!result.equals("done"));
+					loadGame = true;
+				}
+				if(!loadGame) {
 				StartUpPhase startUpPhase = new StartUpPhase();
 				startUpPhase.notifyObserver("Start up Phase started...");
 				do{
@@ -142,174 +168,246 @@ public class GameLaunch {
 				
 				System.out.println("Initial army assignment is done");
 				startUpPhase.notifyObserver("StartUp Phase has ended...");
+				}
 				// reinforcement phase starts
-
 				ReinforcementPhase rp = new ReinforcementPhase();
 				FortificationPhase fp = new FortificationPhase();
 				char continueGame = 'y';
-				game:while(continueGame=='y') {
-				for(int i=1;i<=Integer.parseInt(noOfPlayers);i++) {
-					System.out.println("Player : "+Game.getPlayersList().get(i).getPlayerName());
-					System.out.println("Reinforcement phase starts");
-					rp.notifyObserver("Initiating reinforcement phase...");
-					// calculating reinforcement armies
-					rp.calculateReinforcementArmies(i);
 				
-					if(Game.getPlayersList().get(i).getPlayerType().equals("human")) {
-						while(Game.getPlayersList().get(i).getPlayerNumOfArmy()!=0) {
-							if(response.contains("Error")) {
-								System.out.println(response);
-							}
-							System.out.println("Use command : reinforce 'countryname' 'num'");
-							GameLaunch.printPlayerInformation(i);
-							System.out.println("Number of reinforcement armies available : "+Game.getPlayersList().get(i).getPlayerNumOfArmy());
-							response = Game.getPlayersList().get(i).getReinforceType().reinforce(i,sc.nextLine());
-						}
+				String currentPhase = "";
+				int turn = 1;
+				boolean setTurn = false;
+				if(loadGame) {
+					turn = Game.getPlayerTurn();
+					currentPhase = Game.getPhase();
+				}
+				
+				game:while(continueGame=='y') {
+				for(int i=1;i<=Game.getPlayersList().size();i++) {
+					
+					if(!setTurn) {
+						i = turn;
+						setTurn = true;
 					}
-					else {
-						Game.getPlayersList().get(i).getReinforceType().reinforce(i);
-						GameLaunch.printPlayerInformation(i);
-					}
-					rp.notifyObserver("End of reinforcement phase for the player : " + Game.getPlayersList().get(i).getPlayerName());
-					rp.notifyDominationObserver(Game.getPlayersList().get(i).computeDominationViewData());
-					// Attack Phase starts
-					System.out.println("Attack phase starts...");
-					AttackPhase ap = new AttackPhase();
-					ap.notifyObserver("Initiating attack phase for " + Game.getPlayersList().get(i).getPlayerName());
-					response = "";
-					int defender = 0;
-					if(Game.getPlayersList().get(i).getPlayerType().equals("human")) {
-						
-						boolean reAttack = false;
-						do {
-							do {
+					
+					Game.setPlayerTurn(i);	// saving player turn in case game is saved
+					System.out.println("Player : "+Game.getPlayersList().get(i).getPlayerName());
+					if(currentPhase.length()==0 || currentPhase.equals("reinforce")) {
+						currentPhase="";
+						Game.setPhase("reinforce");  // saving player phase in case game is saved
+						System.out.println("Reinforcement phase starts");
+						rp.notifyObserver("Initiating reinforcement phase...");
+						// calculating reinforcement armies
+						rp.calculateReinforcementArmies(i);
+					
+						if(Game.getPlayersList().get(i).getPlayerType().equals("human")) {
+							while(Game.getPlayersList().get(i).getPlayerNumOfArmy()!=0) {
 								if(response.contains("Error")) {
 									System.out.println(response);
 								}
-		
 								GameLaunch.printPlayerInformation(i);
-		
-								System.out.println("Use command : attack 'countrynamefrom' 'countynameto' 'numdice'");
-								if(!reAttack) {
-									System.out.println("Use command for allout mode : attack 'countrynamefrom' 'countynameto' allout");
-									System.out.println("Or to skip attack use command : attack noattack");
+								System.out.println("Use command : reinforce 'countryname' 'num'");
+								System.out.println("Number of reinforcement armies available : "+Game.getPlayersList().get(i).getPlayerNumOfArmy());
+								System.out.println("To quit and save the game, use command : savegame");
+								String command = sc.nextLine().trim();
+								if(command.contains("savegame")) {
+									String result = "";
+									do {
+										if(result.toLowerCase().contains("error")) {
+											System.out.println(result);
+											System.out.println("To quit and save the game, use command : savegame 'filename'");
+											command = sc.nextLine().trim();
+										}
+										result = GameLoadSave.save(command);
+									}while(!result.equals("done"));
+									System.exit(0);
 								}
 								
-								String command = sc.nextLine().trim();
-								if(reAttack) {
-									command = command + "reattack";
-								}
-								response = Game.getPlayersList().get(i).getAttackType().attackSetup(i,command);
-								if(response.contains("Conquer")) {
-									defender = Integer.parseInt(response.split(" ")[2]);
-									break;
-								}
-								else if(response.equalsIgnoreCase("done")) {
-									System.out.println("Attack phase skipped");
-									response = "noAttack";
-									break;
-								}
-							}while(!response.contains("DefenderPlayer"));
+								response = Game.getPlayersList().get(i).getReinforceType().reinforce(i,command);
+							}
+						}
+						else {
+							Game.getPlayersList().get(i).getReinforceType().reinforce(i);
+							GameLaunch.printPlayerInformation(i);
+						}
+						rp.notifyObserver("End of reinforcement phase for the player : " + Game.getPlayersList().get(i).getPlayerName());
+						rp.notifyDominationObserver(Game.getPlayersList().get(i).computeDominationViewData());
+					}
+					// Attack Phase starts
+					if(currentPhase.length()==0 || currentPhase.equals("attack")) {
+						currentPhase="";
+						Game.setPhase("attack");  // saving player phase in case game is saved
+						System.out.println("Attack phase starts...");
+						AttackPhase ap = new AttackPhase();
+						ap.notifyObserver("Initiating attack phase for " + Game.getPlayersList().get(i).getPlayerName());
+						response = "";
+						int defender = 0;
+						if(Game.getPlayersList().get(i).getPlayerType().equals("human")) {
 							
-							if(response.contains("DefenderPlayer")) {
-								// get defender's numDice
-								defender = Integer.parseInt(response.split(" ")[1]);
-								System.out.println("Defender player is player : "+Game.getPlayersList().get(defender).getPlayerName());
-								response = "";
+							boolean reAttack = false;
+							do {
 								do {
 									if(response.contains("Error")) {
 										System.out.println(response);
 									}
-									System.out.println("Enter number of dice, you want to roll using 'defend 'numdice'' command");
-									String command = sc.nextLine().trim();
-									response = ap.setDefendDice(defender,command);	
-								}while(!response.contains("Conquer"));
-							}
-							// If defender country lost and has zero armies on it
-							if(response.contains("canConquer")) {
-								int noOfArmies = Integer.parseInt(response.split(" ")[1]);
-								System.out.println("You can conquer the defender country by moving armies to it. You have "+noOfArmies+" armies left.");
-								response = "";
-								do {
-									if(response.contains("Error")) {
-										System.out.println(response);
+			
+									GameLaunch.printPlayerInformation(i);
+			
+									System.out.println("Use command : attack 'countrynamefrom' 'countynameto' 'numdice'");
+									String command = "";
+									if(!reAttack) {
+										System.out.println("Use command for allout mode : attack 'countrynamefrom' 'countynameto' allout");
+										System.out.println("Or to skip attack use command : attack noattack");
+										System.out.println("To quit and save the game, use command : savegame 'filename'");
+										String result = "";
+										command = sc.nextLine().trim();
+										if(command.contains("savegame")) {
+											do {
+												if(result.toLowerCase().contains("error")) {
+													System.out.println(result);
+													System.out.println("To quit and save the game, use command : savegame 'filename'");
+													command = sc.nextLine().trim();
+												}
+												result = GameLoadSave.save(command);
+											}while(!result.equals("done"));
+											System.exit(0);
+										}
 									}
-									System.out.println("Move armies using the 'attackmove 'num'' command.");
-									String command = sc.nextLine().trim();
-									response = ap.moveArmies(i,command);
-									reAttack = false;
-								}while(!response.contains("done"));
-								if(ap.hasPlayerWon(i)) {
-									break game;
+									
+									if(reAttack) {
+										command = command + "reattack";
+									}
+									response = Game.getPlayersList().get(i).getAttackType().attackSetup(i,command);
+									if(response.contains("Conquer")) {
+										defender = Integer.parseInt(response.split(" ")[2]);
+										break;
+									}
+									else if(response.equalsIgnoreCase("done")) {
+										System.out.println("Attack phase skipped");
+										response = "noAttack";
+										break;
+									}
+								}while(!response.contains("DefenderPlayer"));
+								
+								if(response.contains("DefenderPlayer")) {
+									// get defender's numDice
+									defender = Integer.parseInt(response.split(" ")[1]);
+									System.out.println("Defender player is player : "+Game.getPlayersList().get(defender).getPlayerName());
+									response = "";
+									do {
+										if(response.contains("Error")) {
+											System.out.println(response);
+										}
+										System.out.println("Enter number of dice, you want to roll using 'defend 'numdice'' command");
+										String command = sc.nextLine().trim();
+										response = ap.setDefendDice(defender,command);	
+									}while(!response.contains("Conquer"));
 								}
-							}
-							else{
-								if(!response.equalsIgnoreCase("noattack") && ap.isAttackPossible()) {
+								// If defender country lost and has zero armies on it
+								if(response.contains("canConquer")) {
 									int noOfArmies = Integer.parseInt(response.split(" ")[1]);
-									System.out.println("Attacker still have "+noOfArmies+" left. Do you want to attack again y or n.?");
-									if(sc.nextLine().equalsIgnoreCase("y")) {
-										reAttack = true;
+									System.out.println("You can conquer the defender country by moving armies to it. You have "+noOfArmies+" armies left.");
+									response = "";
+									do {
+										if(response.contains("Error")) {
+											System.out.println(response);
+										}
+										System.out.println("Move armies using the 'attackmove 'num'' command.");
+										String command = sc.nextLine().trim();
+										response = ap.moveArmies(i,command);
+										reAttack = false;
+									}while(!response.contains("done"));
+									if(ap.hasPlayerWon(i)) {
+										break game;
+									}
+								}
+								else{
+									if(!response.equalsIgnoreCase("noattack") && ap.isAttackPossible()) {
+										int noOfArmies = Integer.parseInt(response.split(" ")[1]);
+										System.out.println("Attacker still have "+noOfArmies+" left. Do you want to attack again y or n.?");
+										if(sc.nextLine().equalsIgnoreCase("y")) {
+											reAttack = true;
+										}
+										else {
+											reAttack = false;
+											break;
+										}
 									}
 									else {
 										reAttack = false;
-										break;
 									}
 								}
-								else {
-									reAttack = false;
-								}
+							}while(reAttack==true);
+							
+							if (!response.equalsIgnoreCase("noAttack")) {
+								System.out.println("Attack Phase ends");
+								GameLaunch.printPlayerInformation(i);
+								GameLaunch.printPlayerInformation(defender);
 							}
-						}while(reAttack==true);
-						
-						if (!response.equalsIgnoreCase("noAttack")) {
-							System.out.println("Attack Phase ends");
-							GameLaunch.printPlayerInformation(i);
-							GameLaunch.printPlayerInformation(defender);
 						}
-					}
-					else {
-						Game.getPlayersList().get(i).getAttackType().attackSetup(i);
-						GameLaunch.printPlayerInformation(i);
-						GameLaunch.printPlayerInformation(AttackPhase.getDefenderPlayer());
-					}
-					ap.notifyObserver("End of Attack phase for the player : " + Game.getPlayersList().get(i).getPlayerName());
-					ap.notifyDominationObserver(Game.getPlayersList().get(i).computeDominationViewData());
-					// fortification phase starts
-					System.out.println("Fortification phase starts");
-					fp.notifyObserver("Initiating fortification phase for " + Game.getPlayersList().get(i).getPlayerName());
-					if(Game.getPlayersList().get(i).getPlayerType().equals("human")) {
-						response = "";
-						
-						do {
-							if(response.contains("Error")) {
-								System.out.println(response);
-							}
-	
+						else {
+							Game.getPlayersList().get(i).getAttackType().attackSetup(i);
 							GameLaunch.printPlayerInformation(i);
-	
-							System.out.println("Use command : fortify 'fromcountry' 'tocountry' 'num'");
-							System.out.println("Or use command : fortify none");
-	
-	
-							String command = sc.nextLine().trim();
-							response = Game.getPlayersList().get(i).getFortifyType().fortify(i,command);
-							if(response.equals("done")) {
+							GameLaunch.printPlayerInformation(AttackPhase.getDefenderPlayer());
+						}
+						ap.notifyObserver("End of Attack phase for the player : " + Game.getPlayersList().get(i).getPlayerName());
+						ap.notifyDominationObserver(Game.getPlayersList().get(i).computeDominationViewData());
+					}
+					// fortification phase starts
+						if(currentPhase.length()==0 || currentPhase.equals("fortify")) {
+							currentPhase="";
+							Game.setPhase("fortify");  // saving player phase in case game is saved
+							System.out.println("Fortification phase starts");
+							fp.notifyObserver("Initiating fortification phase for " + Game.getPlayersList().get(i).getPlayerName());
+							if(Game.getPlayersList().get(i).getPlayerType().equals("human")) {
+								response = "";
+								
+								do {
+									if(response.contains("Error")) {
+										System.out.println(response);
+									}
+			
+									GameLaunch.printPlayerInformation(i);
+			
+									System.out.println("Use command : fortify 'fromcountry' 'tocountry' 'num'");
+									System.out.println("Or use command : fortify none");
+									System.out.println("To quit and save the game, use command : savegame");
+									String command = sc.nextLine().trim();
+									if(command.contains("savegame")) {
+										String result = "";
+										do {
+											if(result.toLowerCase().contains("error")) {
+												System.out.println(result);
+												System.out.println("To quit and save the game, use command : savegame 'filename'");
+												command = sc.nextLine().trim();
+											}
+											result = GameLoadSave.save(command);
+										}while(!result.equals("done"));
+										System.exit(0);
+									}
+			
+									
+									response = Game.getPlayersList().get(i).getFortifyType().fortify(i,command);
+									if(response.equals("done")) {
+										GameLaunch.printPlayerInformation(i);
+									}
+			
+								}while(!response.equals("done"));
+							}
+							else {
+								Game.getPlayersList().get(i).getFortifyType().fortify(i);
 								GameLaunch.printPlayerInformation(i);
 							}
-	
-						}while(!response.equals("done"));
-					}
-					else {
-						Game.getPlayersList().get(i).getFortifyType().fortify(i);
-						GameLaunch.printPlayerInformation(i);
-					}
-					fp.notifyObserver("End of fortification phase for " + Game.getPlayersList().get(i).getPlayerName());
-					System.out.println("Player "+i+"'s turn ends");
+							fp.notifyObserver("End of fortification phase for " + Game.getPlayersList().get(i).getPlayerName());
+							System.out.println("Player "+i+"'s turn ends");
+						}
 				}
 				System.out.println("Do you want to continue the game? 'y' or 'n'");
 				continueGame = sc.nextLine().trim().charAt(0);
+				//continueGame = 'y';
 				}
 				break;
+			
 			case 2:				
 				String fileExistsResponse;
 				do {
