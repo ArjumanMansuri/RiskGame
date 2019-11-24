@@ -1,4 +1,4 @@
-package com.riskGame.strategies;
+package com.riskGame.Strategies;
 
 import java.util.*;
 import java.util.ArrayList;
@@ -178,7 +178,8 @@ public interface AttackType {
 				}
 			}
 		}
-}
+
+ }
 
  class AggresiveAttack implements AttackType{
 
@@ -249,9 +250,7 @@ public interface AttackType {
 		String moveArmiesCommand = "attackmove "+ String.valueOf(attackerArmies-1);
 		return ap.moveArmies(AttackPhase.getAttackerPlayer(), moveArmiesCommand);
 		}
-	}
-	
-
+ }
 
  class BenevolentAttack implements AttackType{
 
@@ -260,8 +259,7 @@ public interface AttackType {
 		// TODO Auto-generated method stub
 		return "";
 	}
-	
-}
+ }
 
  class CheaterAttack implements AttackType{
 	 protected int playerIndex;
@@ -270,28 +268,6 @@ public interface AttackType {
 			playerIndex = playerNumber;
 			conqueredList = new ArrayList<String>();
 	 }
-
-	 @Override
-	public String attack() {
-		Player p = Game.getPlayersList().get(playerIndex);
-		Iterator ownCountryIter = p.getOwnedCountries().iterator();
-
-		while(ownCountryIter.hasNext()){
-			String ownCountry = (String) ownCountryIter.next();
-			HashMap<String, Country> ownCountryNeighbors = Country.getListOfCountries().get(ownCountry).getNeighbours();
-
-			for(Map.Entry<String, Country> neighbor : ownCountryNeighbors.entrySet()){
-				if(!conqueredList.contains(neighbor.getKey())) {
-					int neighborOwner = neighbor.getValue().getOwner();
-					if (neighborOwner != playerIndex) {
-						moveArmies(ownCountry, neighbor.getValue());
-						break;
-					}
-				}
-			}
-		}
-		return "";
-	}
 
 	 /**
 	  *
@@ -315,39 +291,56 @@ public interface AttackType {
 		 conqueredList.add(defenderCountry.getCountryName());
 	 }
 
+	 @Override
+	 public String attackSetup(int player, String... command) {
+
+		 Player p = Game.getPlayersList().get(playerIndex);
+		 Iterator ownCountryIter = p.getOwnedCountries().iterator();
+
+		 while(ownCountryIter.hasNext()){
+			 String ownCountry = (String) ownCountryIter.next();
+			 HashMap<String, Country> ownCountryNeighbors = Country.getListOfCountries().get(ownCountry).getNeighbours();
+
+			 for(Map.Entry<String, Country> neighbor : ownCountryNeighbors.entrySet()){
+				 if(!conqueredList.contains(neighbor.getKey())) {
+					 int neighborOwner = neighbor.getValue().getOwner();
+					 if (neighborOwner != playerIndex) {
+						 moveArmies(ownCountry, neighbor.getValue());
+						 break;
+					 }
+				 }
+			 }
+		 }
+		 return "";
+	 }
+
  }
 
-class RandomAttack implements AttackType{
+ class RandomAttack implements AttackType {
 	static final int MAX_LIMIT_ATTACK_RANDOM = 5;
-	protected int playerIndex;
 	protected ArrayList<String> ownedCountryLostList;
 
-	public RandomAttack(int playerNumber) {
-		playerIndex = playerNumber;
+	public String attackSetup ( int player, String ...command){
 		ownedCountryLostList = new ArrayList<String>();
-	}
-
-	@Override
-	public String attack() {
-		Player p = Game.getPlayersList().get(playerIndex);
+		Player p = Game.getPlayersList().get(player);
 		Iterator ownCountryIter = p.getOwnedCountries().iterator();
 
 		String attackerCountry = generateRandomCountry(p.getOwnedCountries()); // init value
 		int randomAttackCount = generateRandomAttackCount(MAX_LIMIT_ATTACK_RANDOM);
 		int attackCounter = 0;
 
-		while(attackCounter != 0){
+		while (attackCounter != 0) {
 			// check attacker country still with us ( not lost ) && number of attack count is greater than 0
-			if(ownedCountryLostList.contains(attackerCountry)){
+			if (ownedCountryLostList.contains(attackerCountry)) {
 				attackerCountry = generateRandomCountry(p.getOwnedCountries()); // init value
 			}
 			HashMap<String, Country> ownCountryNeighbors = Country.getListOfCountries().get(attackerCountry).getNeighbours();
-			ArrayList<String> enemyNeighborCountries = new ArrayList<String>;
+			ArrayList<String> enemyNeighborCountries = new ArrayList<String>();
 
 			// generate a country list of enemy neighbors
-			for(Map.Entry<String, Country> neighbor : ownCountryNeighbors.entrySet()){
+			for (Map.Entry<String, Country> neighbor : ownCountryNeighbors.entrySet()) {
 				int neighborOwner = neighbor.getValue().getOwner();
-				if(neighborOwner != playerIndex){
+				if (neighborOwner != player) {
 					enemyNeighborCountries.add(neighbor.getKey());
 				}
 			}
@@ -362,26 +355,16 @@ class RandomAttack implements AttackType{
 			// when the attackerCountry loses, remove it from the p.getOwnedCountries() - remove - and setOwnedCountries()
 			attackCounter--;
 		}
-
-	public String attackSetup(int player,String ...command) {
-		// TODO Auto-generated method stub
 		return "";
 	}
 
-	public int generateRandomAttackCount(int max) {
+	public int generateRandomAttackCount ( int max){
 		Random randomArmy = new Random();
 		return randomArmy.nextInt(max);
 	}
 
-	public String generateRandomCountry(ArrayList<String> countryList) {
+	public String generateRandomCountry (ArrayList < String > countryList) {
 		Random randomCountry = new Random();
-//		if(ownedCountryLostList.size() > 0){
-//			for (String lostCountry : ownedCountryLostList) {
-//				countryList.removeIf(countryListElement -> (countryListElement.equalsIgnoreCase(lostCountry)));
-//			}
-//			return countryList.get(randomCountry.nextInt(countryList.size()));
-//		}
 		return countryList.get(randomCountry.nextInt(countryList.size()));
 	}
-	
 }
