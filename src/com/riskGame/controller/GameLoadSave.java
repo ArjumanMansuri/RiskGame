@@ -15,8 +15,19 @@ import com.riskGame.models.Game;
 import com.riskGame.models.Map;
 import com.riskGame.models.Player;
 
+/**
+ * 
+ * @author Arjuman Mansuri
+ * class for handling game save and load operations
+ */
 public class GameLoadSave {
 	
+	/**
+	 * This method performs the save game operation
+	 * @param command command to save game
+	 * @return done or error depending on the command
+	 * @throws IOException
+	 */
 	public static String save(String command) throws IOException {
 		
 		if(!command.contains("savegame")) {
@@ -52,6 +63,12 @@ public class GameLoadSave {
 		return "done";
 	}
 	
+	/**
+	 * This method performs the load game operation
+	 * @param command command to load game
+	 * @return done or error depending on the command
+	 * @throws IOException
+	 */
 	public static String load(String command) throws IOException, ClassNotFoundException {
 		if(!command.contains("loadgame")) {
 			return "Error : Invalid command";

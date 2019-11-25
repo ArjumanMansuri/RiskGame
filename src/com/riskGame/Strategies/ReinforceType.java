@@ -9,11 +9,21 @@ import com.riskGame.models.Country;
 import com.riskGame.models.Game;
 import com.riskGame.models.Player;
 
+/**
+ * This interface helps implement strategy pattern for fortify type
+ * @author Arjuman Mansuri
+ *
+ */
 public interface ReinforceType {
 	String reinforce(int player,String ...command);
 	ReinforcementPhase rp = new ReinforcementPhase();
 }
 
+/**
+ * This class contains the business logic for human reinforce type
+ * @author Arjuman Mansuri
+ *
+ */
 class HumanReinforce implements ReinforceType,Serializable{
 
 	/**
@@ -49,9 +59,20 @@ class HumanReinforce implements ReinforceType,Serializable{
 	}
 }
 
-
+/**
+ * This class contains the business logic for benevolent reinforce type
+ * @author Arjuman Mansuri
+ *
+ */
 class BenevolentReinforce implements ReinforceType,Serializable{
 
+	/**
+	 * This method checks and calculates the number of reinforcement armies depending on the number of players.
+	 * @param player - number of player.
+	 * @param command - empty in this case
+	 * @return error if incorrect or saved if correct.
+	 * 
+	 */
 	@Override
 	public String reinforce(int player,String ...command) {
 		// TODO Auto-generated method stub
@@ -84,9 +105,20 @@ class BenevolentReinforce implements ReinforceType,Serializable{
 	}
 }
 
-
+/**
+ * This class contains the business logic for aggressive reinforce type
+ * @author Arjuman Mansuri
+ *
+ */
 class AggresiveReinforce implements ReinforceType,Serializable{
 
+	/**
+	 * This method checks and calculates the number of reinforcement armies depending on the number of players.
+	 * @param player - number of player.
+	 * @param command - empty in this case
+	 * @return error if incorrect or saved if correct.
+	 * 
+	 */
 	public String reinforce(int player,String ...command)  {
 		// TODO Auto-generated method stub
 		// get the strongest country
@@ -107,11 +139,22 @@ class AggresiveReinforce implements ReinforceType,Serializable{
 	}
 }
 
-
+/**
+ * This class contains the business logic for random reinforce type
+ * @author Arjuman Mansuri
+ *
+ */
 class RandomReinforce implements ReinforceType,Serializable{
 
+	/**
+	 * This method checks and calculates the number of reinforcement armies depending on the number of players.
+	 * @param player - number of player.
+	 * @param command - empty in this case
+	 * @return error if incorrect or saved if correct.
+	 * 
+	 */
 	@Override
-  public String reinforce(int playerIndex,String ...command)  {
+	public String reinforce(int playerIndex,String ...command)  {
 		// generate a random country and random number
 		Player p = Game.getPlayersList().get(playerIndex);
 		String countryName = generateRandomCountry(p.getOwnedCountries());
@@ -131,20 +174,41 @@ class RandomReinforce implements ReinforceType,Serializable{
 		return "true";
 	}
 
+	/**
+	 * This method generates random country
+	 * @param countryList list of countries owned by player
+	 * @return random country
+	 */
 	public String generateRandomCountry(ArrayList<String> countryList) {
 		Random randomCountry = new Random();
         return countryList.get(randomCountry.nextInt(countryList.size()));			
 	}
 
+	/**
+	 * This method generates random army count
+	 * @param i bound for generating random army
+	 * @return random number of armies
+	 */
 	public int generateRandomArmyCount(int i) {
 		Random randomArmy = new Random();
 		return randomArmy.nextInt(i);
 	}
 }
 
-
+/**
+ * This class contains the business logic for cheater reinforce type
+ * @author Arjuman Mansuri
+ *
+ */
 class CheaterReinforce implements ReinforceType,Serializable{
 
+	/**
+	 * This method checks and calculates the number of reinforcement armies depending on the number of players.
+	 * @param player - number of player.
+	 * @param command - empty in this case
+	 * @return error if incorrect or saved if correct.
+	 * 
+	 */
 	@Override
 	public String reinforce(int playerIndex,String ...command)  {
 		Player p = Game.getPlayersList().get(playerIndex);

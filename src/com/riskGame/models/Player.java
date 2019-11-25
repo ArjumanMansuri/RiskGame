@@ -24,8 +24,7 @@ import com.riskGame.controller.ReinforcementPhase;
 public class Player extends Observable implements Observer,Serializable {
 
 	private int playerNumber;
-    
-	private String playerName;
+    private String playerName;
     private int playerNumOfArmy;
     private ArrayList<String> ownedCountries;
     private ArrayList<Card> cards;
@@ -176,6 +175,10 @@ public class Player extends Observable implements Observer,Serializable {
 		}
 	}
 	
+	/**
+     * getter method to get list of cards
+     * @return cards list cards
+     */
 	public ArrayList<Card> getCards() {
 		return this.cards;
 	}

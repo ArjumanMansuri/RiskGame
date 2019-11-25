@@ -6,14 +6,14 @@ import com.riskGame.observer.PhaseViewPublisher;
 import com.riskGame.observer.PlayerDominationViewObserver;
 import com.riskGame.observer.PlayerDominationViewPublisher;
 import com.riskGame.observer.StartupPhaseObserver;
+import com.riskGame.strategies.AggressivePlayer;
+import com.riskGame.strategies.BenevolentPlayer;
+import com.riskGame.strategies.CheaterPlayer;
+import com.riskGame.strategies.HumanPlayer;
+import com.riskGame.strategies.RandomPlayer;
 import com.riskGame.models.Country;
 import com.riskGame.models.Map;
 import com.riskGame.models.Game;
-import com.riskGame.Strategies.AggressivePlayer;
-import com.riskGame.Strategies.BenevolentPlayer;
-import com.riskGame.Strategies.CheaterPlayer;
-import com.riskGame.Strategies.HumanPlayer;
-import com.riskGame.Strategies.RandomPlayer;
 import com.riskGame.controller.MapFileParser;
 import java.io.File;
 import java.util.*;
@@ -370,7 +370,11 @@ public class StartUpPhase implements PhaseViewPublisher, PlayerDominationViewPub
 		}
 	}
 
-	
+	/**
+	 * This method checks if the number of arguments is correct
+	 * @param parsedString String containing arguments
+	 * @return trues if number of arguments is correct else false
+	 */
 	public boolean isNumberOfArgumentsCorrect(String[] parsedString) {
 		 List<String>parsedStringList = Arrays.asList(parsedString);
 		int addFrequency = Collections.frequency(parsedStringList, "-add");
