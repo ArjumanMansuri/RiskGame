@@ -30,6 +30,11 @@ public class MapFileEdit {
 	private static final int TYPE_DOMINATION_MAP = 2;
 	private static final int INVALID_MAP_FILE_TYPE = 0;
 
+	private static final int CONTINENT_ADD = 1;
+	private static final int CONTINENT_REMOVE = 2;
+	private static final int COUNTRY_ADD = 3;
+	private static final int COUNTRY_REMOVE = 4;
+
 	private String editMapFileName;
 
 	// Map parser object - DominationMapFileParser or MapFileParser
@@ -325,6 +330,7 @@ public class MapFileEdit {
 								addCountry.setContinent(continentName);
 								addCountry.setCountryName(countryName);						
 								editMapContinents.get(continentName).getTerritories().add(addCountry);
+								checkParserAndUpdateIndexes(countryName, COUNTRY_ADD);
 							}													
 						}	
 					} else {
@@ -332,9 +338,15 @@ public class MapFileEdit {
 					}
 				} else if(argSplit[0].equals("-remove")) {		
 					String countryName = argSplit[1]; // country Name Value
-					for(String continentKey : editMapContinents.keySet()) {										
-						editMapContinents.get(continentKey).getTerritories().removeIf(country -> country.getCountryName().equals(countryName));	
-							
+					for(String continentKey : editMapContinents.keySet()) {
+						int sizeBefore = editMapContinents.get(continentKey).getTerritories().size();
+						editMapContinents.get(continentKey).getTerritories().removeIf(country -> country.getCountryName().equals(countryName));
+						int sizeAfter = editMapContinents.get(continentKey).getTerritories().size();
+
+						if((sizeAfter + 1) == sizeBefore){
+							checkParserAndUpdateIndexes(countryName, COUNTRY_REMOVE);
+						}
+
 						// Remove country from neighbors list of other countries
 						editMapContinents.get(continentKey).getTerritories().forEach(neighborcountry -> {
 							neighborcountry.getNeighbours().entrySet().removeIf(n -> n.getKey().equals(countryName));
@@ -380,6 +392,7 @@ public class MapFileEdit {
 					addContinent.setControlValue(value);
 					if(!editMapContinents.containsKey(name)) {
 						editMapContinents.put(name, addContinent);
+						checkParserAndUpdateIndexes(name, CONTINENT_ADD);
 					}
 				} catch(NumberFormatException e) {
 					return false;
@@ -387,12 +400,58 @@ public class MapFileEdit {
 			} else if(argSplit[0].equals("-remove")){			
 				if(editMapContinents.containsKey(name)) {
 					editMapContinents.remove(name);
+					checkParserAndUpdateIndexes(name, CONTINENT_REMOVE);
 				}
 			}				
 		}		
 		return true;
 	}
-		
+
+	private void checkParserAndUpdateIndexes(String name, int type) {
+		switch(type){
+			case CONTINENT_ADD:
+				int newContinentIndex = DominationMapParser.continentsIndex.size() + 1;
+				DominationMapParser.continentsIndex.put(name, newContinentIndex);
+				break;
+
+			case CONTINENT_REMOVE:
+				// remove the entry in the continentsindex map
+				DominationMapParser.continentsIndex.remove(name);
+
+				// rearrange the continentsIndex indexes for each continent
+				int continentNewIndexer = 1;
+				HashMap<String, Integer> continentsIndexTemp = new HashMap<String, Integer>();
+				for (java.util.Map.Entry<String, Integer> continent: DominationMapParser.continentsIndex.entrySet()) {
+					continentsIndexTemp.put(continent.getKey(), continentNewIndexer);
+					continentNewIndexer++;
+				}
+
+				DominationMapParser.continentsIndex = continentsIndexTemp;
+				break;
+
+			case COUNTRY_ADD:
+				int newCountryIndex = DominationMapParser.countryIndexes.size() + 1;
+				DominationMapParser.countryIndexes.put(newCountryIndex, name);
+				break;
+
+			case COUNTRY_REMOVE:
+				// remove the entry in the countryindex map
+				DominationMapParser.countryIndexes.remove(name);
+
+				// rearrange the continentsIndex indexes for each continent
+				int countryNewIndexer = 1;
+				HashMap<String, Integer> countryIndexTemp = new HashMap<String, Integer>();
+
+				for (java.util.Map.Entry<String, Integer> continent: DominationMapParser.reverseCountryIndexes().entrySet()) {
+					countryIndexTemp.put(continent.getKey(), countryNewIndexer);
+					countryNewIndexer++;
+				}
+
+				DominationMapParser.countryIndexes = DominationMapParser.reverseCountryIndexes(countryIndexTemp);
+				break;
+		}
+	}
+
 	/**
 	 * Parse the editcontinent command and get the command args as list elements.
 	 * @param commandInput

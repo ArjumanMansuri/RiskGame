@@ -269,8 +269,20 @@ public class DominationMapParser implements BaseMapFile {
      * Reverse the countryindexes variable - with String as key and Integer as value
      * @return
      */
-    private HashMap<String, Integer> reverseCountryIndexes() {
-        return null;
+    public static HashMap<String, Integer> reverseCountryIndexes() {
+            HashMap<String, Integer> reversedCountryIndexes = new HashMap<String, Integer>();
+            for (java.util.Map.Entry<Integer, String> countryIndex : countryIndexes.entrySet()){
+                reversedCountryIndexes.put(countryIndex.getValue(), countryIndex.getKey());
+            }
+            return reversedCountryIndexes;
+    }
+
+    public static HashMap<Integer, String> reverseCountryIndexes(HashMap<String, Integer> countryIndexesToReverse) {
+            HashMap<Integer, String> reversedCountryIndexes = new HashMap<Integer, String>();
+            for (java.util.Map.Entry<String, Integer> countryIndex : countryIndexesToReverse.entrySet()) {
+                reversedCountryIndexes.put(countryIndex.getValue(), countryIndex.getKey());
+            }
+            return reversedCountryIndexes;
     }
 
     @Override
