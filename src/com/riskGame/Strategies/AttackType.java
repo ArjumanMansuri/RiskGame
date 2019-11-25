@@ -1,9 +1,6 @@
-package com.riskGame.Strategies;
+package com.riskGame.strategies;
 
 import java.util.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.io.Serializable;
 import com.riskGame.controller.AttackPhase;
 import com.riskGame.controller.MapFileEdit;
@@ -328,50 +325,130 @@ public interface AttackType {
 	protected ArrayList<String> ownedCountryLostList;
 
 	public String attackSetup ( int player, String ...command){
-		ownedCountryLostList = new ArrayList<String>();
 		Player p = Game.getPlayersList().get(player);
-		Iterator ownCountryIter = p.getOwnedCountries().iterator();
 
-		String attackerCountry = generateRandomCountry(p.getOwnedCountries()); // init value
-		int randomAttackCount = generateRandomAttackCount(MAX_LIMIT_ATTACK_RANDOM);
-		int attackCounter = 0;
-
-		while (attackCounter != 0) {
-			// check attacker country still with us ( not lost ) && number of attack count is greater than 0
-			if (ownedCountryLostList.contains(attackerCountry)) {
-				attackerCountry = generateRandomCountry(p.getOwnedCountries()); // init value
-			}
-			HashMap<String, Country> ownCountryNeighbors = Country.getListOfCountries().get(attackerCountry).getNeighbours();
-			ArrayList<String> enemyNeighborCountries = new ArrayList<String>();
-
-			// generate a country list of enemy neighbors
-			for (Map.Entry<String, Country> neighbor : ownCountryNeighbors.entrySet()) {
-				int neighborOwner = neighbor.getValue().getOwner();
-				if (neighborOwner != player) {
-					enemyNeighborCountries.add(neighbor.getKey());
-				}
+		String attackCountries = "";
+		int attackCounter = generateRandomCount(MAX_LIMIT_ATTACK_RANDOM);
+		System.out.println("Attack will happen "+attackCounter+" times.");
+		while (attackCounter > 0) {
+			System.out.println("Main Attack "+attackCounter);
+			attackCountries = generateRandomAttackerAndDefender(p.getOwnedCountries()); // generating a random attacker and defender country for attack
+			if(attackCountries.trim().length()==0) {
+				System.out.println("Main Attack "+attackCounter+" skipped");
+				System.out.println();
+				attackCounter--;
+				continue;
 			}
 
-			// generate random defender country
-			String randomSelectedDefenderCountry = generateRandomCountry(enemyNeighborCountries);
-
+			String attackerCountry = attackCountries.split(",")[0];
+			String defenderCountry = attackCountries.split(",")[1];
 			// Attack with attackerCountry and randomSelectedDefenderCountry
-			int randomNumDice = generateRandomAttackCount(6);
-
-
-			// when the attackerCountry loses, remove it from the p.getOwnedCountries() - remove - and setOwnedCountries()
+			int attackerDiceNum = generateAttackerDiceNum(attackerCountry);
+			int defenderDiceNum = generateDefenderDiceNum(defenderCountry);
+			
+			AttackPhase.setAttackerPlayer(player);
+			AttackPhase.setAttackerCountry(attackerCountry);
+			AttackPhase.setAttackerDiceNum(attackerDiceNum);
+		
+			int defenderPlayer = Country.getListOfCountries().get(defenderCountry).getOwner();
+			
+			AttackPhase.setDefenderPlayer(defenderPlayer);
+			AttackPhase.setDefenderCountry(defenderCountry);
+			AttackPhase.setDefenderDiceNum(defenderDiceNum);
+			int singleAttackCounter = generateRandomCount(MAX_LIMIT_ATTACK_RANDOM);
+			System.out.println("Will try to attack "+singleAttackCounter+" times each.");
+			int attackerArmies = Country.getListOfCountries().get(attackerCountry).getNumberOfArmies();
+			int defenderArmies = Country.getListOfCountries().get(defenderCountry).getNumberOfArmies();
+			while(attackerArmies>1 && singleAttackCounter>0 && defenderArmies>0) {
+				System.out.println("Sub Attack "+singleAttackCounter);
+				System.out.println("Attacker Country : "+attackerCountry);
+				System.out.println("Defender Country : "+defenderCountry);
+				System.out.println("Attacker " + Game.getPlayersList().get(player).getPlayerName() + " has " + attackerArmies + " armies");
+				ap.notifyObserver("Attacker " + Game.getPlayersList().get(player).getPlayerName() + " has " + attackerArmies + " armies");
+				System.out.println("Defender " + Game.getPlayersList().get(defenderPlayer).getPlayerName()+ " has " +defenderArmies+  " armies");
+				ap.notifyObserver("Defender " + Game.getPlayersList().get(defenderPlayer).getPlayerName()+ " has " +defenderArmies+  " armies");
+				
+				String result = ap.attack();
+				
+				attackerArmies = Country.getListOfCountries().get(attackerCountry).getNumberOfArmies();
+				defenderArmies = Country.getListOfCountries().get(defenderCountry).getNumberOfArmies();
+				if(result.contains("canConquer")) {
+					// conquer defender country by moving all armies except one to it
+					int moveArmies = generateRandomCount(attackerArmies-1);
+					String moveArmiesCommand = "attackmove "+ String.valueOf(moveArmies);
+					ap.moveArmies(AttackPhase.getAttackerPlayer(), moveArmiesCommand);
+					
+					System.out.println("Ending main attack "+attackCounter);
+					attackCounter--;
+					continue;
+				}
+				singleAttackCounter--;
+			}
 			attackCounter--;
+			System.out.println();
 		}
 		return "";
 	}
 
-	public int generateRandomAttackCount ( int max){
-		Random randomArmy = new Random();
-		return randomArmy.nextInt(max);
+	public int generateAttackerDiceNum(String attackerCountry) {
+		int numOfArmies = Country.getListOfCountries().get(attackerCountry).getNumberOfArmies();
+		if(numOfArmies>3) {
+			return generateRandomCount(3);
+		}
+		else if(numOfArmies>2) {
+			return generateRandomCount(2);
+		}
+		else {
+			return 1;
+		}
+	}
+	
+	public int generateDefenderDiceNum(String defenderCountry) {
+		int numOfArmies = Country.getListOfCountries().get(defenderCountry).getNumberOfArmies();
+		if(numOfArmies>1) {
+			return generateRandomCount(2);
+		}
+		else {
+			return 1;
+		}
+	}
+	
+	public int generateRandomCount (int max){
+		return (int)(Math.random()*max)+1;
 	}
 
-	public String generateRandomCountry (ArrayList < String > countryList) {
-		Random randomCountry = new Random();
-		return countryList.get(randomCountry.nextInt(countryList.size()));
+	public String generateRandomAttackerAndDefender (ArrayList <String> countryList) {
+		Random randomAttackerCountry = new Random();
+		String attackerCountry;
+		String defenderCountry;
+		
+		ArrayList<String> triedCountries = new ArrayList<String>();
+		
+		do {
+			attackerCountry = countryList.get(randomAttackerCountry.nextInt(countryList.size()));
+			triedCountries.add(attackerCountry);
+			if(triedCountries.size()==countryList.size()) {
+				break;
+			}
+		}while(!(Country.getListOfCountries().get(attackerCountry).getNumberOfArmies()>1));
+		// if a country with 1 army was selected
+		if(!(Country.getListOfCountries().get(attackerCountry).getNumberOfArmies()>1)) {
+			return "";
+		}
+		
+		triedCountries.clear();
+		ArrayList<String> potentialDefenderCountries = new ArrayList<String>(Country.getListOfCountries().get(attackerCountry).getNeighbours().keySet());
+		while(true) {
+			defenderCountry = potentialDefenderCountries.get(randomAttackerCountry.nextInt(potentialDefenderCountries.size()));
+			triedCountries.add(defenderCountry);
+			if(ap.isCountryNotOwnedByPlayer(countryList,defenderCountry) || triedCountries.size()==potentialDefenderCountries.size()) {
+				break;
+			}
+		}
+		if(!ap.isCountryNotOwnedByPlayer(countryList,defenderCountry)) {
+			return "";
+		}
+		
+		return attackerCountry +","+defenderCountry;
 	}
 }

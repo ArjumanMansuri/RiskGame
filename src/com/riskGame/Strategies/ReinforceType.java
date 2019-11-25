@@ -1,4 +1,4 @@
-package com.riskGame.Strategies;
+package com.riskGame.strategies;
 
 import java.io.Serializable;							
 import java.util.ArrayList;

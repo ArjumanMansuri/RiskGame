@@ -356,7 +356,6 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 
 		this.notifyObserver("Ownership of country " + AttackPhase.defenderCountry + " is changed to " + Game.getPlayersList().get(player).getPlayerName());
 		System.out.println("Ownership of country " + AttackPhase.defenderCountry + " is changed to " + Game.getPlayersList().get(player).getPlayerName());
-
 		return "done";
 	}
 
