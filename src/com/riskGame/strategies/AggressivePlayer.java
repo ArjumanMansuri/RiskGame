@@ -1,4 +1,4 @@
-package com.riskGame.Strategies;
+package com.riskGame.strategies;
 
 import com.riskGame.models.Player;
 

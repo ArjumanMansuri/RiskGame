@@ -467,21 +467,21 @@ public class GameLaunch {
         // Check if the user entered all the required command arguments
         if (numGamesFrequency + numPlayersFrequency + numMapFrequency + numTurnsFrequency == 4) {
 
-			try {
-				// Check if the list of map files provided are legit
-				int mapListArgStartIndex = commandList.indexOf("-M"); // index of -M
-				int mapListEndIndex = getTournamentCmdListEndIndex(mapListArgStartIndex, commandList); // end index for the map list inclusive
-				processArgList = getTournamentCmdValues(mapListArgStartIndex, mapListEndIndex, commandList, processArgList, "-M");
+            try {
+                // Check if the list of map files provided are legit
+                int mapListArgStartIndex = commandList.indexOf("-M"); // index of -M
+                int mapListEndIndex = getTournamentCmdListEndIndex(mapListArgStartIndex, commandList); // end index for the map list inclusive
+                processArgList = getTournamentCmdValues(mapListArgStartIndex, mapListEndIndex, commandList, processArgList, "-M");
 
-				// Check if the list of players provided are legit
-				int playerListArgStartIndex = commandList.indexOf("-P"); // index of -M
-				int playerListEndIndex = getTournamentCmdListEndIndex(playerListArgStartIndex, commandList); // end index for the map list inclusive
-				processArgList = getTournamentCmdValues(playerListArgStartIndex, playerListEndIndex, commandList, processArgList, "-M");
+                // Check if the list of players provided are legit
+                int playerListArgStartIndex = commandList.indexOf("-P"); // index of -M
+                int playerListEndIndex = getTournamentCmdListEndIndex(playerListArgStartIndex, commandList); // end index for the map list inclusive
+                processArgList = getTournamentCmdValues(playerListArgStartIndex, playerListEndIndex, commandList, processArgList, "-M");
 
 
-			} catch (IndexOutOfBoundsException e) {
+            } catch (IndexOutOfBoundsException e) {
 
-			}
+            }
             return true;
         }
         return false;
@@ -489,29 +489,25 @@ public class GameLaunch {
 
     // get the command list values and format for later use
     private static List<String> getTournamentCmdValues(int startIndex, int endIndex, List<String> commandList, List<String> processArgList, String type) {
-		String commandItem = "";
+        String commandItem = "";
         for (int index = startIndex; index <= endIndex ; index++) {
-			commandItem = commandList.get(index).trim();
-			isValidTournamentCmdValue(type, commandItem);
-			commandItem += "$";
+            commandItem = commandList.get(index).trim();
+            isValidTournamentCmdValue(type, commandItem);
+            commandItem += "$";
         }
-		processArgList.add(commandItem);
+        processArgList.add(commandItem);
         return processArgList;
     }
 
-	private static void isValidTournamentCmdValue(String type, String commandItem) {
-    	switch (type){
-			case "-M":
-                MapFileEdit mapEditor = new MapFileEdit();
-                String mapFileName = commandItem;
-                if(mapEditor.selectMapParser(mapFileName) == null){
-                    System.out.printf("Wrong file");
-                }
-				break;
-		}
-	}
+    private static void isValidTournamentCmdValue(String type, String commandItem) {
+        switch (type){
+            case "-M":
 
-	// get the end index of the command argument starting the parameter `start`
+                break;
+        }
+    }
+
+    // get the end index of the command argument starting the parameter `start`
     private static int getTournamentCmdListEndIndex(int startIndex, List<String> commandList) {
         for (int index = startIndex + 1; index < commandList.size(); index++) {
             String commandItem = commandList.get(index).trim();
