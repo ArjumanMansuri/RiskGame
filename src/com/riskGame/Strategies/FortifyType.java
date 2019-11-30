@@ -1,4 +1,4 @@
-package com.riskGame.Strategies;
+package com.riskGame.strategies;
 
 import java.util.*;
 import java.io.Serializable;						   
@@ -10,18 +10,28 @@ import com.riskGame.models.Country;
 import com.riskGame.models.Game;
 import com.riskGame.models.Player;
 
+/**
+ * This interface helps implement strategy pattern for fortify type
+ * @author Arjuman Mansuri
+ *
+ */
 public interface FortifyType {
 	FortificationPhase fp = new FortificationPhase();
 	String fortify(int player,String ...command);
 }
 
+/**
+ * This class contains the business logic for human fortify type
+ * @author Arjuman Mansuri
+ *
+ */
 class HumanFortify implements FortifyType,Serializable{
 
 	/**
 	 * This method would help making the fortification move if it is valid
-	 * @param fromCountry
-	 * @param toCountry
-	 * @param num
+	 * @param player number of player
+	 * @param command command to perform fortification
+	 * @return done if successful else error
 	 */
 	@Override
 	public String fortify(int player,String ...command) {
@@ -101,7 +111,19 @@ class HumanFortify implements FortifyType,Serializable{
 	}
 }
 
+/**
+ * This class contains the business logic for aggressive fortify type
+ * @author Arjuman Mansuri
+ *
+ */
 class AggresiveFortify implements FortifyType,Serializable{
+	
+	/**
+	 * This method would help making the fortification move if it is valid
+	 * @param player number of player
+	 * @param command command to perform fortification
+	 * @return done if successful else error
+	 */
 	@Override
 	public String fortify(int player,String ...command) {
 		// TODO Auto-generated method stub
@@ -144,8 +166,19 @@ class AggresiveFortify implements FortifyType,Serializable{
 	
 }
 
+/**
+ * This class contains the business logic for benevolent fortify type
+ * @author Arjuman Mansuri
+ *
+ */
 class BenevolentFortify implements FortifyType,Serializable{
 
+	/**
+	 * This method would help making the fortification move if it is valid
+	 * @param player number of player
+	 * @param command command to perform fortification
+	 * @return done if successful else error
+	 */
 	@Override
 	public String fortify(int player,String ...command) {
 		// TODO Auto-generated method stub
@@ -190,8 +223,19 @@ class BenevolentFortify implements FortifyType,Serializable{
 
 }
 
+/**
+ * This class contains the business logic for cheater fortify type
+ * @author Arjuman Mansuri
+ *
+ */
 class CheaterFortify implements FortifyType,Serializable{
 
+	/**
+	 * This method would help making the fortification move if it is valid
+	 * @param player number of player
+	 * @param command command to perform fortification
+	 * @return done if successful else error
+	 */
 	@Override
 	public String fortify(int playerIndex,String ...command) {
 		Player p = Game.getPlayersList().get(playerIndex);
@@ -219,14 +263,23 @@ class CheaterFortify implements FortifyType,Serializable{
 		}
 		return String.valueOf(fortifiedCheater);
 	}
-
-
 }
 
+/**
+ * This class contains the business logic for random fortify type
+ * @author Arjuman Mansuri
+ *
+ */
 class RandomFortify implements FortifyType,Serializable{
 
+	/**
+	 * This method would help making the fortification move if it is valid
+	 * @param player number of player
+	 * @param command command to perform fortification
+	 * @return done if successful else error
+	 */
 	@Override
-  public String fortify(int playerIndex,String ...command) {
+	public String fortify(int playerIndex,String ...command) {
 		Player p = Game.getPlayersList().get(playerIndex);
 
 		// generate random from country and to country
@@ -247,16 +300,31 @@ class RandomFortify implements FortifyType,Serializable{
 		return "true";
 	}
 
+	/**
+	 * This method generates random army count
+	 * @param i bound for generating random army
+	 * @return random number of armies
+	 */
 	public int generateRandomArmyCount(int i) {
 		Random randomArmy = new Random();
 		return randomArmy.nextInt(i);
 	}
 
+	/**
+	 * This method generates fromCountry for fortification
+	 * @param countryList list of countries owned by the player
+	 * @return a suitable fromCountry
+	 */
 	public String generateFromCountry(ArrayList<String> countryList) {
 		Random randomCountry = new Random();
 		return countryList.get(randomCountry.nextInt(countryList.size()));
 	}
-
+	
+	/**
+	 * This method generates toCountry for fortification
+	 * @param countryList list of countries owned by the player
+	 * @return a suitable toCountry
+	 */
 	public String generateToCountry(HashMap<String, Country> countryList) {
 		Random randomCountry = new Random();
 		Object[] values = countryList.values().toArray();
