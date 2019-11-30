@@ -7,9 +7,9 @@ import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
 
-import com.riskGame.Strategies.AttackType;
-import com.riskGame.Strategies.FortifyType;
-import com.riskGame.Strategies.ReinforceType;
+import com.riskGame.strategies.AttackType;
+import com.riskGame.strategies.FortifyType;
+import com.riskGame.strategies.ReinforceType;
 import com.riskGame.controller.AttackPhase;
 import com.riskGame.controller.FortificationPhase;
 import com.riskGame.controller.MapFileEdit;
@@ -24,8 +24,7 @@ import com.riskGame.controller.ReinforcementPhase;
 public class Player extends Observable implements Observer,Serializable {
 
 	private int playerNumber;
-    
-	private String playerName;
+    private String playerName;
     private int playerNumOfArmy;
     private ArrayList<String> ownedCountries;
     private ArrayList<Card> cards;
@@ -176,6 +175,10 @@ public class Player extends Observable implements Observer,Serializable {
 		}
 	}
 	
+	/**
+     * getter method to get list of cards
+     * @return cards list cards
+     */
 	public ArrayList<Card> getCards() {
 		return this.cards;
 	}
