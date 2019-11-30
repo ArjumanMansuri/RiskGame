@@ -1,13 +1,11 @@
 package com.riskGame.controller;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.riskGame.models.Continent;
+import com.riskGame.models.Game;
 import com.riskGame.models.Map;
 import com.riskGame.models.Country;
 
@@ -17,9 +15,14 @@ import com.riskGame.models.Country;
  * 
  */
 public class MapFileParser {
-	
+
 	public static final String MAP_FILE_NAME = "maps/World.map";
 	String fileData;
+	MapFileEdit fileEdit;
+
+	public MapFileParser() {
+		fileEdit = new MapFileEdit();
+	}
 
 	/**
 	 * getter method for file data
@@ -111,7 +114,7 @@ public class MapFileParser {
 	
 	/**
 	 * This method validates if the given filename is a valid map file.
-	 * @param fileName.
+	 * @param fileName
 	 * @return true if the file is a valid map file.
 	 */
 	public boolean validateValidMapFile(String fileName) {		
@@ -154,6 +157,97 @@ public class MapFileParser {
 			countries.put(currentTerritory.getCountryName(), currentTerritory);
 		}		
 		return countries;		
+	}
+
+
+	/**
+	 * This method saves the map object to the filename.
+	 * @param commandInput - command fro the user.
+	 * @return int value for the correct message.
+	 *
+	 */
+	public int saveMap(String[] commandInput) {
+		if(commandInput.length != 2) {
+			return BaseMapFile.SAVE_MAP_COMMAND_ERROR;
+		}
+
+		if(!fileEdit.validateMap()) {
+			MapFileEdit.printMapStatusMessage(false);
+			return BaseMapFile.SAVE_MAP_NO_CONTINENTS;
+		}
+
+		if(Game.getEditMap().getContinents().isEmpty()) {
+			return BaseMapFile.SAVE_MAP_NO_CONTINENTS;
+		}
+
+		String fileName = BaseMapFile.MAP_FILE_DIR + commandInput[1];
+		HashMap<String, Continent> continents = Game.getEditMap().getContinents();
+		String fileContent;
+
+		try {
+			File file = new File(fileName);
+			if(!file.exists()) {
+				file.createNewFile();
+			}
+
+			BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
+			fileContent = getSaveMapFileContent();
+			if(fileContent.length() < 1) {
+				// error in creating the file content
+				writer.close();
+				return BaseMapFile.SAVE_MAP_INVALID;
+			}
+			writer.write(fileContent);
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		Game.setEditMapSet(false); // last statement in this method
+		return BaseMapFile.SAVE_MAP_SUCCESS;
+	}
+
+
+
+	/**
+	 * This method processes the edit Map object and convert to string to save to file.
+	 * @return fileContent .map file content.
+	 *
+	 */
+	public String getSaveMapFileContent() {
+		String fileContent = "[Continents]\n";
+		for(String printContinentKey : Game.getEditMap().getContinents().keySet()) {
+			Continent continent = Game.getEditMap().getContinents().get(printContinentKey);
+			fileContent += continent.getContinentName() + "=" + continent.getControlValue() + "\n";
+		}
+		fileContent += "\n";
+		fileContent += "[Territories]\n";
+
+		for(String printTerritoryContinentKey : Game.getEditMap().getContinents().keySet()) {
+			Continent printContinent = Game.getEditMap().getContinents().get(printTerritoryContinentKey);
+
+			for(Country printCountry : printContinent.getTerritories()) {
+				String countryName = printCountry.getCountryName();
+				String neighborCSV = getNeighborCSV(printCountry.getNeighbours());
+				fileContent += countryName + ",0,0," +  printContinent.getContinentName() + "," + neighborCSV + "\n";
+			}
+			fileContent += "\n";
+		}
+		return fileContent;
+	}
+
+	/**
+	 * Getter method to get a Comma Separated String of neighbor list.
+	 * @return CSV list.
+	 *
+	 */
+	public String getNeighborCSV(HashMap<String,Country> neighbours) {
+		String neighborCSV = "";
+		for(String neighbor : neighbours.keySet()) {
+			neighborCSV += neighbor + ",";
+		}
+		neighborCSV = neighborCSV.replaceAll(",$", "");
+		return neighborCSV;
 	}
 
 }

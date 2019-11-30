@@ -1,16 +1,11 @@
 package com.riskGame.controller;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map.Entry;
 
 import com.riskGame.models.Continent;
 import com.riskGame.models.Country;
@@ -24,18 +19,30 @@ import com.riskGame.models.Map;
  */
 public class MapFileEdit {
 
-	public static final String MAP_FILE_DIR = "maps/";
+	// TEXT COLOR TYPES
+
 	public static final String ANSI_RED = "\u001B[31m";
 	public static final String ANSI_RESET = "\u001B[0m";	
 	public static final String ANSI_GREEN = "\u001B[32m";
-	private static final int SAVE_MAP_COMMAND_ERROR = 0;
-	private static final int SAVE_MAP_NO_CONTINENTS = 1;	
-	private static final int SAVE_MAP_INVALID = 2;
-	private static final int SAVE_MAP_SUCCESS = 3;
+
+	// TYPE OF MAP FILE CONSTANTS
+	private static final int TYPE_CONQUEST_MAP = 1;
+	private static final int TYPE_DOMINATION_MAP = 2;
+	private static final int INVALID_MAP_FILE_TYPE = 0;
+
+	private static final int CONTINENT_ADD = 1;
+	private static final int CONTINENT_REMOVE = 2;
+	private static final int COUNTRY_ADD = 3;
+	private static final int COUNTRY_REMOVE = 4;
+
 	private String editMapFileName;
-		
+
+	// Map parser object - DominationMapFileParser or MapFileParser
+	public static BaseMapFile mapParser;
+
+
 	/**
-	 * Check if the given map file exists.
+	 * Check if the given map file exists - else create
 	 * @param command - command to edit map file.
 	 * 
 	 */
@@ -49,21 +56,21 @@ public class MapFileEdit {
 			return "error";
 		}
 		else {
-			File mapFileCheck = new File(MAP_FILE_DIR + commandInput[1]);
+			File mapFileCheck = new File(BaseMapFile.MAP_FILE_DIR + commandInput[1]);
 			if(mapFileCheck.exists()) {
-				setEditMapFileName(MAP_FILE_DIR + commandInput[1]);
-				if(validateMapOnLoadAndSave(MAP_FILE_DIR + commandInput[1])) {
+				setEditMapFileName(BaseMapFile.MAP_FILE_DIR + commandInput[1]);
+				if(validateMapOnLoadAndSave(BaseMapFile.MAP_FILE_DIR + commandInput[1])) {
 					return "exists";					
 				} else {
 					return "error";
 				}				
 			}else {
 				// create Map file with the name
-				File file = new File(MAP_FILE_DIR + commandInput[1]);
+				File file = new File(BaseMapFile.MAP_FILE_DIR + commandInput[1]);
 				try {
 					if(file.createNewFile()) {	
-						setEditMapFileName(MAP_FILE_DIR + commandInput[1]);
-						if(validateMapOnLoadAndSave(MAP_FILE_DIR + commandInput[1])) {
+						setEditMapFileName(BaseMapFile.MAP_FILE_DIR + commandInput[1]);
+						if(validateMapOnLoadAndSave(BaseMapFile.MAP_FILE_DIR + commandInput[1])) {
 							return commandInput[1];
 						}else {
 							return "error";							
@@ -82,11 +89,10 @@ public class MapFileEdit {
 	 * @return true if file is valid else false
 	 */
 	private boolean validateMapOnLoadAndSave(String fileName) {
-		MapFileParser mapParser = new MapFileParser();
-		
+		selectMapParser(fileName);
 		if(mapParser.validateValidMapFile(fileName)) {			
 			Map editMap = Game.getEditMap();			
-			editMap = mapParser.readFileData(fileName);
+			editMap = mapParser.read(fileName);
 			Game.setEditMapSet(true);
 			Game.setEditMap(editMap);
 			
@@ -106,7 +112,7 @@ public class MapFileEdit {
 	/**
 	 * Validate the command and parse.
 	 * @param command - command input from the user.
-	 * @param fileName - name of the map file.
+	 * @param fileNameInput - name of the map file.
 	 * @return error if incorrect else success if correct.
 	 * 
 	 */
@@ -121,8 +127,8 @@ public class MapFileEdit {
 		if(!Game.isEditMapSet()) {		 
 			String fileName = fileNameInput.split(" ")[1];			
 			if(mapFileExists) {
-				MapFileParser mapParser = new MapFileParser();
-				editMap = mapParser.readFileData(MAP_FILE_DIR + fileName);
+				selectMapParser(fileName);
+				editMap = mapParser.read(BaseMapFile.MAP_FILE_DIR + fileName);
 				Game.setEditMapSet(true);
 				Game.setEditMap(editMap);
 			}			
@@ -162,18 +168,18 @@ public class MapFileEdit {
 					}
 					break;
 				case "savemap":
-					int saveMap = saveMap(commandInput);
+					int saveMap = mapParser.write(commandInput);
 					switch(saveMap) {
-						case SAVE_MAP_COMMAND_ERROR:
+						case BaseMapFile.SAVE_MAP_COMMAND_ERROR:
 							System.out.println("There is an error the save map command. Please try again!");
 							break;
-						case SAVE_MAP_NO_CONTINENTS:
+						case BaseMapFile.SAVE_MAP_NO_CONTINENTS:
 							printMapStatusMessage(false);
 							break;
-						case SAVE_MAP_INVALID:
+						case BaseMapFile.SAVE_MAP_INVALID:
 							printMapStatusMessage(false);
 							break;
-						case SAVE_MAP_SUCCESS:
+						case BaseMapFile.SAVE_MAP_SUCCESS:
 							commandResult = "saved";
 							break;					
 					}
@@ -188,7 +194,7 @@ public class MapFileEdit {
 	 * @param status - status of the map - valid/invalid.
 	 * 
 	 */
-	private void printMapStatusMessage(boolean status) {
+	public static void printMapStatusMessage(boolean status) {
 		if(status) {
 			System.out.println(ANSI_GREEN + "The map you've provided is valid!" + ANSI_RESET);
 		}else {
@@ -207,7 +213,7 @@ public class MapFileEdit {
 		if(Game.getEditMap().getContinents().isEmpty()) {
 			return mapContent;
 		}				
-		mapContent = getSaveMapFileContent();
+		mapContent = mapParser.getSaveMapFileContent();
 		return mapContent;
 	}
 	
@@ -324,6 +330,7 @@ public class MapFileEdit {
 								addCountry.setContinent(continentName);
 								addCountry.setCountryName(countryName);						
 								editMapContinents.get(continentName).getTerritories().add(addCountry);
+								checkParserAndUpdateIndexes(countryName, COUNTRY_ADD);
 							}													
 						}	
 					} else {
@@ -331,9 +338,15 @@ public class MapFileEdit {
 					}
 				} else if(argSplit[0].equals("-remove")) {		
 					String countryName = argSplit[1]; // country Name Value
-					for(String continentKey : editMapContinents.keySet()) {										
-						editMapContinents.get(continentKey).getTerritories().removeIf(country -> country.getCountryName().equals(countryName));	
-							
+					for(String continentKey : editMapContinents.keySet()) {
+						int sizeBefore = editMapContinents.get(continentKey).getTerritories().size();
+						editMapContinents.get(continentKey).getTerritories().removeIf(country -> country.getCountryName().equals(countryName));
+						int sizeAfter = editMapContinents.get(continentKey).getTerritories().size();
+
+						if((sizeAfter + 1) == sizeBefore){
+							checkParserAndUpdateIndexes(countryName, COUNTRY_REMOVE);
+						}
+
 						// Remove country from neighbors list of other countries
 						editMapContinents.get(continentKey).getTerritories().forEach(neighborcountry -> {
 							neighborcountry.getNeighbours().entrySet().removeIf(n -> n.getKey().equals(countryName));
@@ -358,7 +371,6 @@ public class MapFileEdit {
 
 	/**
 	 * This method edits a continent in a map file. Add or remove continent.
-	 * @param editMap map object to be edited.
 	 * @param commandInput Full command entered by the user.
 	 */
 	public boolean editContinent(String[] commandInput) {		
@@ -380,6 +392,7 @@ public class MapFileEdit {
 					addContinent.setControlValue(value);
 					if(!editMapContinents.containsKey(name)) {
 						editMapContinents.put(name, addContinent);
+						checkParserAndUpdateIndexes(name, CONTINENT_ADD);
 					}
 				} catch(NumberFormatException e) {
 					return false;
@@ -387,12 +400,58 @@ public class MapFileEdit {
 			} else if(argSplit[0].equals("-remove")){			
 				if(editMapContinents.containsKey(name)) {
 					editMapContinents.remove(name);
+					checkParserAndUpdateIndexes(name, CONTINENT_REMOVE);
 				}
 			}				
 		}		
 		return true;
 	}
-		
+
+	private void checkParserAndUpdateIndexes(String name, int type) {
+		switch(type){
+			case CONTINENT_ADD:
+				int newContinentIndex = DominationMapParser.continentsIndex.size() + 1;
+				DominationMapParser.continentsIndex.put(name, newContinentIndex);
+				break;
+
+			case CONTINENT_REMOVE:
+				// remove the entry in the continentsindex map
+				DominationMapParser.continentsIndex.remove(name);
+
+				// rearrange the continentsIndex indexes for each continent
+				int continentNewIndexer = 1;
+				HashMap<String, Integer> continentsIndexTemp = new HashMap<String, Integer>();
+				for (java.util.Map.Entry<String, Integer> continent: DominationMapParser.continentsIndex.entrySet()) {
+					continentsIndexTemp.put(continent.getKey(), continentNewIndexer);
+					continentNewIndexer++;
+				}
+
+				DominationMapParser.continentsIndex = continentsIndexTemp;
+				break;
+
+			case COUNTRY_ADD:
+				int newCountryIndex = DominationMapParser.countryIndexes.size() + 1;
+				DominationMapParser.countryIndexes.put(newCountryIndex, name);
+				break;
+
+			case COUNTRY_REMOVE:
+				// remove the entry in the countryindex map
+				DominationMapParser.countryIndexes.remove(name);
+
+				// rearrange the continentsIndex indexes for each continent
+				int countryNewIndexer = 1;
+				HashMap<String, Integer> countryIndexTemp = new HashMap<String, Integer>();
+
+				for (java.util.Map.Entry<String, Integer> continent: DominationMapParser.reverseCountryIndexes().entrySet()) {
+					countryIndexTemp.put(continent.getKey(), countryNewIndexer);
+					countryNewIndexer++;
+				}
+
+				DominationMapParser.countryIndexes = DominationMapParser.reverseCountryIndexes(countryIndexTemp);
+				break;
+		}
+	}
+
 	/**
 	 * Parse the editcontinent command and get the command args as list elements.
 	 * @param commandInput
@@ -418,7 +477,7 @@ public class MapFileEdit {
 	 * @return true/false.
 	 * 
 	 */
-	public boolean validateMap() {				
+	public boolean validateMap() {
 		// Check if the current edit map object has any continents 
 		if(Game.getEditMap().getContinents().isEmpty()) {
 			return false;
@@ -619,96 +678,7 @@ public class MapFileEdit {
 		}	
 		return countryExists;
 	}	
-	
-	/**
-	 * This method saves the map object to the filename.
-	 * @param commandInput - command fro the user.
-	 * @return int value for the correct message.
-	 * 
-	 */
-	public int saveMap(String[] commandInput) {		
-		if(commandInput.length != 2) {
-			return SAVE_MAP_COMMAND_ERROR;
-		}
-		
-		if(!validateMap()) {				
-			printMapStatusMessage(false);
-			return SAVE_MAP_NO_CONTINENTS;
-		}
-		
-		if(Game.getEditMap().getContinents().isEmpty()) {
-			return SAVE_MAP_NO_CONTINENTS;
-		}
-		
-		String fileName = MAP_FILE_DIR + commandInput[1];		 
-		HashMap<String, Continent> continents = Game.getEditMap().getContinents();
-		String fileContent;
-		
-		try {
-			File file = new File(fileName);			
-			if(!file.exists()) {
-				file.createNewFile();
-			}
-			
-			BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
-			fileContent = getSaveMapFileContent();
-			if(fileContent.length() < 1) {
-				// error in creating the file content
-				writer.close();
-				return SAVE_MAP_INVALID;
-			}
-			writer.write(fileContent);
-			writer.close();
-		} catch (IOException e) {			
-			e.printStackTrace();
-		} 
-	    
-		Game.setEditMapSet(false); // last statement in this method 
-		return SAVE_MAP_SUCCESS;
-	}
-	
-	/**
-	 * This method processes the edit Map object and convert to string to save to file.
-	 * @return fileContent .map file content.
-	 * 
-	 */
-	private String getSaveMapFileContent() {
-		String fileContent = "[Continents]\n";
-		for(String printContinentKey : Game.getEditMap().getContinents().keySet()) {			
-			Continent continent = Game.getEditMap().getContinents().get(printContinentKey);				
-			fileContent += continent.getContinentName() + "=" + continent.getControlValue() + "\n";
-		}	
-		fileContent += "\n";
-		fileContent += "[Territories]\n";		
-		
-		for(String printTerritoryContinentKey : Game.getEditMap().getContinents().keySet()) {			
-			Continent printContinent = Game.getEditMap().getContinents().get(printTerritoryContinentKey);				
-			
-			for(Country printCountry : printContinent.getTerritories()) {
-				String countryName = printCountry.getCountryName();
-				String neighborCSV = getNeighborCSV(printCountry.getNeighbours());		
-				fileContent += countryName + ",0,0," +  printContinent.getContinentName() + "," + neighborCSV + "\n";				
-			}			
-			fileContent += "\n";
-		}		
-		return fileContent;		
-	}
-	
-	/**
-	 * Getter method to get a Comma Separated String of neighbor list.
-	 * @param neighbours.
-	 * @return CSV list.
-	 * 
-	 */
-	private String getNeighborCSV(HashMap<String,Country> neighbours) {
-		String neighborCSV = "";
-		for(String neighbor : neighbours.keySet()) {
-			neighborCSV += neighbor + ",";
-		}
-		neighborCSV = neighborCSV.replaceAll(",$", "");
-		return neighborCSV;
-	}
-	
+
 	/**
 	 * Getter method to get edit map file name.
 	 * @return editMapFileName.
@@ -720,7 +690,6 @@ public class MapFileEdit {
 	
 	/**
 	 * Setter method to set edit map file name.
-	 * @param editMapFileName.
 	 * 
 	 */
 	public void setEditMapFileName(String editMapFileName) {
@@ -804,5 +773,47 @@ public class MapFileEdit {
 			}						
 			System.out.println("------------------------------------------------");
 		}		
+	}
+
+	/**
+	 * Select the map file parser between DominationMapParser and MapFileParser and set the static variable in the class
+	 * @param fileName
+	 * @return
+	 */
+	public BaseMapFile selectMapParser(String fileName){
+		int identifyMap = identifyMapType(fileName);
+		switch(identifyMap){
+			case TYPE_CONQUEST_MAP:
+				mapParser = new MapFileParserAdapter();
+				break;
+			case TYPE_DOMINATION_MAP:
+				mapParser = new DominationMapParser();
+				break;
+		}
+		return null;
+	}
+
+	public int identifyMapType(String fileName) {
+		int MapFileType = INVALID_MAP_FILE_TYPE;
+		try {
+			FileReader  identifyMapFileReader =  new FileReader(fileName);
+			BufferedReader readMap = new BufferedReader(identifyMapFileReader);
+			while(readMap.ready()) {
+				String line = readMap.readLine().trim();
+				if(line.isEmpty()) {
+					continue;
+				}
+				if(line.equals("[Territories]")) {
+					 MapFileType = TYPE_CONQUEST_MAP;
+					 break;
+				}
+				if(line.equals("[countries]")) {
+					MapFileType = TYPE_DOMINATION_MAP;
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return MapFileType;
 	}
 }
