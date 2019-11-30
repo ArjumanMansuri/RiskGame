@@ -6,13 +6,13 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.riskGame.Strategies.CheaterPlayer;
+import com.riskGame.strategies.CheaterPlayer;
 import com.riskGame.models.Country;
 import com.riskGame.models.Game;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.riskGame.Strategies.RandomPlayer;
+import com.riskGame.strategies.RandomPlayer;
 import com.riskGame.models.Player;
 
 public class ReinforceTypeTest {

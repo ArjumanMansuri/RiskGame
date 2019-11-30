@@ -1,7 +1,7 @@
 package com.riskTest.Strategies;
 
-import com.riskGame.Strategies.CheaterPlayer;
-import com.riskGame.Strategies.RandomPlayer;
+import com.riskGame.strategies.CheaterPlayer;
+import com.riskGame.strategies.RandomPlayer;
 import com.riskGame.models.Country;
 import com.riskGame.models.Game;
 import com.riskGame.models.Player;

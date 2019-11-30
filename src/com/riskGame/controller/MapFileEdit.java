@@ -11,6 +11,7 @@ import com.riskGame.models.Continent;
 import com.riskGame.models.Country;
 import com.riskGame.models.Game;
 import com.riskGame.models.Map;
+import org.junit.jupiter.params.provider.CsvSource;
 
 /**
  * This class contains the business logic to edit the map file.
@@ -22,7 +23,7 @@ public class MapFileEdit {
 	// TEXT COLOR TYPES
 
 	public static final String ANSI_RED = "\u001B[31m";
-	public static final String ANSI_RESET = "\u001B[0m";	
+	public static final String ANSI_RESET = "\u001B[0m";
 	public static final String ANSI_GREEN = "\u001B[32m";
 
 	// TYPE OF MAP FILE CONSTANTS
@@ -44,14 +45,14 @@ public class MapFileEdit {
 	/**
 	 * Check if the given map file exists - else create
 	 * @param command - command to edit map file.
-	 * 
+	 *
 	 */
-	public String fileExists(String command) {		
+	public String fileExists(String command) {
 		if(command.length() < 1) {
 			return "error";
-		}		
+		}
 		String[] commandInput = command.split(" ");
-		
+
 		if(commandInput.length > 2 || !commandInput[0].equals("editmap")) {
 			return "error";
 		}
@@ -60,25 +61,25 @@ public class MapFileEdit {
 			if(mapFileCheck.exists()) {
 				setEditMapFileName(BaseMapFile.MAP_FILE_DIR + commandInput[1]);
 				if(validateMapOnLoadAndSave(BaseMapFile.MAP_FILE_DIR + commandInput[1])) {
-					return "exists";					
+					return "exists";
 				} else {
 					return "error";
-				}				
+				}
 			}else {
 				// create Map file with the name
 				File file = new File(BaseMapFile.MAP_FILE_DIR + commandInput[1]);
 				try {
-					if(file.createNewFile()) {	
+					if(file.createNewFile()) {
 						setEditMapFileName(BaseMapFile.MAP_FILE_DIR + commandInput[1]);
 						if(validateMapOnLoadAndSave(BaseMapFile.MAP_FILE_DIR + commandInput[1])) {
 							return commandInput[1];
 						}else {
-							return "error";							
-						}						
+							return "error";
+						}
 					}
 				} catch (IOException e) {
 					return "error" + e.getMessage();
-				}				
+				}
 			}
 			return "error";
 		}
@@ -90,23 +91,23 @@ public class MapFileEdit {
 	 */
 	private boolean validateMapOnLoadAndSave(String fileName) {
 		selectMapParser(fileName);
-		if(mapParser.validateValidMapFile(fileName)) {			
-			Map editMap = Game.getEditMap();			
+		if(mapParser.validateValidMapFile(fileName)) {
+			Map editMap = Game.getEditMap();
 			editMap = mapParser.read(fileName);
 			Game.setEditMapSet(true);
 			Game.setEditMap(editMap);
-			
-			if(!validateMap()) {				
+
+			if(!validateMap()) {
 				printMapStatusMessage(false);
 				return false;
-			}else {				
+			}else {
 				printMapStatusMessage(true);
 				return true;
-			}			
+			}
 		}else {
 			printMapStatusMessage(false);
 			return false;
-		}		
+		}
 	}
 
 	/**
@@ -114,27 +115,27 @@ public class MapFileEdit {
 	 * @param command - command input from the user.
 	 * @param fileNameInput - name of the map file.
 	 * @return error if incorrect else success if correct.
-	 * 
+	 *
 	 */
-	public String commandParser(String command, String fileNameInput, boolean mapFileExists) {		
+	public String commandParser(String command, String fileNameInput, boolean mapFileExists) {
 		String[] commands = {"editcontinent", "editcountry", "editneighbor"};
 		String[] commandsNonArgs = {"showmap", "validatemap", "savemap"};
 		Map editMap = Game.getEditMap();
 		String[] commandInput = command.split(" ");
 		String commandResult = "error";
-		
+
 		// instantiate a map object
-		if(!Game.isEditMapSet()) {		 
-			String fileName = fileNameInput.split(" ")[1];			
+		if(!Game.isEditMapSet()) {
+			String fileName = fileNameInput.split(" ")[1];
 			if(mapFileExists) {
 				selectMapParser(fileName);
 				editMap = mapParser.read(BaseMapFile.MAP_FILE_DIR + fileName);
 				Game.setEditMapSet(true);
 				Game.setEditMap(editMap);
-			}			
+			}
 		}
-		
-		// Check if the entered command is a valid command. 
+
+		// Check if the entered command is a valid command.
 		if(Arrays.asList(commands).contains(commandInput[0].trim().toLowerCase())) {
 			if(checkArguments(commandInput)) {
 				// valid arguments exist process the commnd
@@ -145,16 +146,16 @@ public class MapFileEdit {
 					case "editcountry":
 						editCountry(commandInput);
 						break;
-					case "editneighbor":						
+					case "editneighbor":
 						editNeighbor(commandInput);
-						break;					
+						break;
 				}
-			}			
+			}
 		}else if(Arrays.asList(commandsNonArgs).contains(commandInput[0].trim().toLowerCase())) {
 			switch(commandInput[0]) {
-				case "validatemap":					
+				case "validatemap":
 					if(!validateMap()) {
-						printMapStatusMessage(false);												
+						printMapStatusMessage(false);
 					}else {
 						printMapStatusMessage(true);
 					}
@@ -181,162 +182,162 @@ public class MapFileEdit {
 							break;
 						case BaseMapFile.SAVE_MAP_SUCCESS:
 							commandResult = "saved";
-							break;					
+							break;
 					}
 					break;
 			}
-		}		
-		return commandResult;		
+		}
+		return commandResult;
 	}
-	
+
 	/**
 	 * Outputs to console the status of the map.
 	 * @param status - status of the map - valid/invalid.
-	 * 
+	 *
 	 */
 	public static void printMapStatusMessage(boolean status) {
 		if(status) {
 			System.out.println(ANSI_GREEN + "The map you've provided is valid!" + ANSI_RESET);
 		}else {
-			System.out.println(ANSI_RED + "The map you've provided is invalid! Please correct the errors and try again." + ANSI_RESET);			
+			System.out.println(ANSI_RED + "The map you've provided is invalid! Please correct the errors and try again." + ANSI_RESET);
 		}
 	}
-	
+
 	/**
 	 * This method is used to show the contents of the map file.
 	 * @return contents from the map file.
-	 * 
+	 *
 	 */
 	public String showMap() {
 		String mapContent = "";
-		// Check if the current edit map object has any continents 
+		// Check if the current edit map object has any continents
 		if(Game.getEditMap().getContinents().isEmpty()) {
 			return mapContent;
-		}				
+		}
 		mapContent = mapParser.getSaveMapFileContent();
 		return mapContent;
 	}
-	
+
 	/**
 	 * Edit the neighbor of a country.
 	 * @param commandInput - input command from the user.
-	 * 
+	 *
 	 */
-	public void editNeighbor(String[] commandInput) {		
+	public void editNeighbor(String[] commandInput) {
 		if(commandInput.length >= 4) {
-			List<String> processArgs = checkNeighborCommandArgs(commandInput);			
+			List<String> processArgs = checkNeighborCommandArgs(commandInput);
 			HashMap<String, Continent> editMapContinents= Game.getEditMap().getContinents();
-			
+
 			for(String arg : processArgs) {
-				String[] argSplit = arg.split("\\$"); // Split using $ symbol				
+				String[] argSplit = arg.split("\\$"); // Split using $ symbol
 				String countryName = argSplit[1];
-				String neighborCountryName = argSplit[2];				
+				String neighborCountryName = argSplit[2];
 				Country neighbourCountry;
-				
-				if((neighbourCountry = isCountryExists(neighborCountryName)) != null) {						
-					if(argSplit[0].equals("-add")) {			
+
+				if((neighbourCountry = isCountryExists(neighborCountryName)) != null) {
+					if(argSplit[0].equals("-add")) {
 						Country addCountry = new Country();
 						addCountry.setCountryName(neighborCountryName);
-						
-						//  Add neighbor country to main country if the main country exists  
+
+						//  Add neighbor country to main country if the main country exists
 						Country country = isCountryExists(countryName);
 						if(country != null) {
 							country.getNeighbours().put(neighborCountryName, addCountry);
 							neighbourCountry.getNeighbours().put(countryName, country);
-						}					
+						}
 					} else if(argSplit[0].equals("-remove")) {
 						for(String continentKey : editMapContinents.keySet()) {
-							
+
 							for(Country country : editMapContinents.get(continentKey).getTerritories()) {
 								if(country.getCountryName().equalsIgnoreCase(countryName)) {
-									country = isCountryExists(country.getCountryName());								
+									country = isCountryExists(country.getCountryName());
 									country.getNeighbours().entrySet().removeIf(neighbor -> neighbor.getKey().equals(neighborCountryName));
-								}								
+								}
 							}
-							
+
 							for(Country country1 : editMapContinents.get(continentKey).getTerritories()) {
 								if(country1.getCountryName().equalsIgnoreCase(neighborCountryName.trim())) {
 									country1 = isCountryExists(country1.getCountryName());
 									country1.getNeighbours().entrySet().removeIf(n -> n.getKey().equals(countryName));
 								}
-							}																	
-							
-						}								
+							}
+
+						}
 					}
-				}						
-			}			
+				}
+			}
 		}
 	}
-	
+
 	/**
 	 * Parse the editneighbor command and get the command args as list elements.
 	 * @param commandInput
-	 * @return List with Commands - imploded by $ symbol.  
-	 */	
+	 * @return List with Commands - imploded by $ symbol.
+	 */
 	private List<String> checkNeighborCommandArgs(String[] commandInput) {
 		return checkCommandArgs(commandInput, true);
 	}
-	
+
 	/**
 	 * Check if a given country exists in the map.
 	 * @param countryName - name of the country to check existence.
 	 * @return Country object.
-	 * 
+	 *
 	 */
 	public static Country isCountryExists(String countryName){
 		HashMap<String, Continent> editMapContinents= Game.getEditMap().getContinents();
 		Country countryFound = null;
-		
+
 		for(String continentKey : editMapContinents.keySet()) {
 			if(countryFound != null) {
 				break;
 			}
-			Continent currentContinent = editMapContinents.get(continentKey);			
-			for(Country currentCountry : currentContinent.getTerritories()) {	
-				if(currentCountry.getCountryName().equals(countryName)) {							
-					countryFound = currentCountry; 		
+			Continent currentContinent = editMapContinents.get(continentKey);
+			for(Country currentCountry : currentContinent.getTerritories()) {
+				if(currentCountry.getCountryName().equals(countryName)) {
+					countryFound = currentCountry;
 					break;
 				}
-			}			
-		}	
-		return countryFound;		
+			}
+		}
+		return countryFound;
 	}
-	
+
 	/**
 	 * This method allows to edit a country - add or remove.
 	 * @param commandInput - command from the user.
-	 * 
+	 *
 	 */
 	public boolean editCountry(String[] commandInput) {
 		if(commandInput.length > 2) {
-			List<String> processArgs = checkCountryCommandArgs(commandInput);			
+			List<String> processArgs = checkCountryCommandArgs(commandInput);
 			if(processArgs == null) {
 				return false;
 			}
-			HashMap<String, Continent> editMapContinents= Game.getEditMap().getContinents();		
-			
+			HashMap<String, Continent> editMapContinents= Game.getEditMap().getContinents();
+
 			for(String arg : processArgs) {
 				String[] argSplit = arg.split("\\$"); // Split using $ symbol
-				
+
 				if(argSplit[0].equals("-add")) {
-					if(argSplit.length >= 3) {			
+					if(argSplit.length >= 3) {
 						String continentName = argSplit[2]; // Continent Name Value
 						String countryName = argSplit[1]; // country Name Value
-						
-						if(editMapContinents.containsKey(continentName)) {  
+
+						if(editMapContinents.containsKey(continentName)) {
 							// Check if the continent exists to add the given country and check if the given country already exists
 							if(isCountryExists(countryName) == null) {
 								Country addCountry = new Country();
 								addCountry.setContinent(continentName);
-								addCountry.setCountryName(countryName);						
+								addCountry.setCountryName(countryName);
 								editMapContinents.get(continentName).getTerritories().add(addCountry);
 								checkParserAndUpdateIndexes(countryName, COUNTRY_ADD);
-							}													
-						}	
+							}
+						}
 					} else {
 						return false;
 					}
-				} else if(argSplit[0].equals("-remove")) {		
+				} else if(argSplit[0].equals("-remove")) {
 					String countryName = argSplit[1]; // country Name Value
 					for(String continentKey : editMapContinents.keySet()) {
 						int sizeBefore = editMapContinents.get(continentKey).getTerritories().size();
@@ -353,40 +354,40 @@ public class MapFileEdit {
 						});
 					}
 				}
-				
-			}			
+
+			}
 			return true;
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Parse the editcountry command and get the command args as list elements.
 	 * @param commandInput
-	 * @return List with Commands - imploded by $ symbol.  
+	 * @return List with Commands - imploded by $ symbol.
 	 */
 	private List<String> checkCountryCommandArgs(String[] commandInput) {
-		return checkCommandArgs(commandInput,false);		
+		return checkCommandArgs(commandInput,false);
 	}
 
 	/**
 	 * This method edits a continent in a map file. Add or remove continent.
 	 * @param commandInput Full command entered by the user.
 	 */
-	public boolean editContinent(String[] commandInput) {		
-		List<String> processArgs = checkContinentCommandArgs(commandInput);		
+	public boolean editContinent(String[] commandInput) {
+		List<String> processArgs = checkContinentCommandArgs(commandInput);
 		if(processArgs == null) {
 			return false;
-		}		
-		HashMap<String, Continent> editMapContinents = Game.getEditMap().getContinents();		
-		
+		}
+		HashMap<String, Continent> editMapContinents = Game.getEditMap().getContinents();
+
 		for(String arg : processArgs) {
-			String[] argSplit = arg.split("\\$"); // Split using $ symbol			
-			String name = argSplit[1]; // continent name 
-			
+			String[] argSplit = arg.split("\\$"); // Split using $ symbol
+			String name = argSplit[1]; // continent name
+
 			if(argSplit[0].equals("-add")) {
-				try {				
-					int value = Integer.parseInt(argSplit[2]); // continent control value 				
+				try {
+					int value = Integer.parseInt(argSplit[2]); // continent control value
 					Continent addContinent = new Continent();
 					addContinent.setContinentName(name);
 					addContinent.setControlValue(value);
@@ -397,13 +398,13 @@ public class MapFileEdit {
 				} catch(NumberFormatException e) {
 					return false;
 				}
-			} else if(argSplit[0].equals("-remove")){			
+			} else if(argSplit[0].equals("-remove")){
 				if(editMapContinents.containsKey(name)) {
 					editMapContinents.remove(name);
 					checkParserAndUpdateIndexes(name, CONTINENT_REMOVE);
 				}
-			}				
-		}		
+			}
+		}
 		return true;
 	}
 
@@ -455,100 +456,100 @@ public class MapFileEdit {
 	/**
 	 * Parse the editcontinent command and get the command args as list elements.
 	 * @param commandInput
-	 * @return List with Commands - imploded by $ symbol. 
+	 * @return List with Commands - imploded by $ symbol.
 	 */
-	private List<String> checkContinentCommandArgs(String[] commandInput) {		
+	private List<String> checkContinentCommandArgs(String[] commandInput) {
 		return checkCommandArgs(commandInput,false);
 	}
 
 	/**
 	 * @param commandInput - Full command entered by the user.
-	 * 
+	 *
 	 */
-	private boolean checkArguments(String[] commandInput) {		
+	private boolean checkArguments(String[] commandInput) {
 		if(Arrays.asList(commandInput).contains("-add") || Arrays.asList(commandInput).contains("-remove")) {
 			return true;
 		}
-		return false;		
+		return false;
 	}
 
 	/**
 	 * This method validates the loaded map. Run before loading a map/saving a map.
 	 * @return true/false.
-	 * 
+	 *
 	 */
 	public boolean validateMap() {
-		// Check if the current edit map object has any continents 
+		// Check if the current edit map object has any continents
 		if(Game.getEditMap().getContinents().isEmpty()) {
 			return false;
 		}
-		
-		// Make countries hashmap 
+
+		// Make countries hashmap
 		HashMap<String, Country> countries = new HashMap<String, Country>();
-		for(Continent continent : Game.getEditMap().getContinents().values()) {						
-			for(Country currentCountry : continent.getTerritories()) {	
-				countries.put(currentCountry.getCountryName(), currentCountry);	
-			}			
-		}		
-		
+		for(Continent continent : Game.getEditMap().getContinents().values()) {
+			for(Country currentCountry : continent.getTerritories()) {
+				countries.put(currentCountry.getCountryName(), currentCountry);
+			}
+		}
+
 		boolean validNeighbors  = validateNeighbors();
-		
-		MapConnected continentsConnected = new MapConnected(Game.getEditMap().getContinents(),countries);	
+
+		MapConnected continentsConnected = new MapConnected(Game.getEditMap().getContinents(),countries);
 		boolean validContinents = continentsConnected.checkConnectedContinents();
-				
+
 		MapConnected countriesConnected = new MapConnected(countries);
 		boolean validCountries  = countriesConnected.checkConnectedCountries();
-				
+
 		if(validContinents && validCountries && validNeighbors) {
 			return true;
 		}
-		return false;		
+		return false;
 	}
-	
+
 	/**
 	 * This method validates a country's neighbor's list is synchronized.
 	 * @return true/false.
-	 * 
+	 *
 	 */
 	public boolean validateNeighbors() {
 		boolean validNeighbors = true;
 		for(String continentKey: Game.getEditMap().getContinents().keySet()) {
 			if(!validNeighbors) {
 				return false;
-			}			
-			Continent currentContinent = Game.getEditMap().getContinents().get(continentKey);								
-			for(Country currentCountry : currentContinent.getTerritories()) {	
-				 if(!checkNeighborsHasCountry(currentCountry, currentCountry.getNeighbours())) {
-					 validNeighbors = false;
-				 }
-			}			
-		}		
-		return validNeighbors;				
+			}
+			Continent currentContinent = Game.getEditMap().getContinents().get(continentKey);
+			for(Country currentCountry : currentContinent.getTerritories()) {
+				if(!checkNeighborsHasCountry(currentCountry, currentCountry.getNeighbours())) {
+					validNeighbors = false;
+				}
+			}
+		}
+		return validNeighbors;
 	}
-		
+
 	/**
 	 *This method checks if the neighbor countries have the given country as their neighbors.
 	 * @param country
 	 * @param neighbours
-	 * @return true/false 
+	 * @return true/false
 	 */
 	public boolean checkNeighborsHasCountry(Country country, HashMap<String,Country> neighbours) {
 		int neighbourCount = 0;
-		
-		// neighborCountry doesn't have neighbors set in the object. 
+
+		// neighborCountry doesn't have neighbors set in the object.
 		for(String neighborCountryName: neighbours.keySet()) {
 			Country neighborCountry	= isCountryExists(neighborCountryName);
-			if(neighborCountry == null) {				
+			if(neighborCountry == null) {
 				break;
 			}
-			
-			for(String neighborOfNeighborName : neighborCountry.getNeighbours().keySet()) {	
+
+			for(String neighborOfNeighborName : neighborCountry.getNeighbours().keySet()) {
 				Country neighborOfNeighbor	= isCountryExists(neighborOfNeighborName);
-				if(neighborOfNeighbor.getCountryName() == country.getCountryName()) {					
+				if(neighborOfNeighbor.getCountryName() == country.getCountryName()) {
 					neighbourCount++;
 				}
-			}		
-		}		
+			}
+		}
 		if(neighbourCount == neighbours.size()) {
 			return true;
 		}
@@ -557,42 +558,42 @@ public class MapFileEdit {
 
 	/**
 	 * This method validates all the countries in a continent are connected.
-	 * @return true - if all countries are connected / 
+	 * @return true - if all countries are connected /
 	 * 				  false if a country is not connected to any country.
-	 * 
+	 *
 	 */
 	public boolean validateCountryConnections(){
 		int continentsConnected = 0;
 		for(String continentKey: Game.getEditMap().getContinents().keySet()) {
 			Continent currentContinent = Game.getEditMap().getContinents().get(continentKey);
-			
+
 			/**
 			 * Iterate all the countries in the continent and check if either of them.
 			 * doesn't have a neighbor which is from the same continent.
-			 * 
+			 *
 			 */
 			int countriesConnected = 0;
-			for(Country currentCountry : currentContinent.getTerritories()) {				
+			for(Country currentCountry : currentContinent.getTerritories()) {
 				if(countrySameContinentNeighbor(currentCountry.getNeighbours(), getCountryNames(currentContinent.getTerritories()))) {
 					countriesConnected++;
 				}
-			}			
+			}
 			if(countriesConnected == currentContinent.getTerritories().size()) {
 				continentsConnected++;
 			}
-		}		
+		}
 		if(continentsConnected == Game.getEditMap().getContinents().size()) {
 			return true;
 		}
-		return false;		
+		return false;
 	}
-	
+
 	/**
 	 * This method Checks if neighbors are from the countriesInContinent
 	 * @param neighbors
 	 * @param countriesInContinent
 	 * @return neighbourFromCountryFound true if neighbor is found from same continent.
-	 * 
+	 *
 	 */
 	private boolean countrySameContinentNeighbor(HashMap<String,Country> neighbors, String[] countriesInContinent) {
 		boolean neighbourFromCountryFound = false;
@@ -603,19 +604,19 @@ public class MapFileEdit {
 			}
 		}
 		return neighbourFromCountryFound;
-	}	
-	
+	}
+
 	/**
 	 * Method to get country names from Country array list
 	 * @param continentCountries
 	 * @return countryNames
-	 * 
+	 *
 	 */
 	private String[] getCountryNames(List<Country> continentCountries) {
 		String[] countryNames = new String[continentCountries.size()];
-		int countryIndex = 0;		
+		int countryIndex = 0;
 		for(Country country : continentCountries) {
-			countryNames[countryIndex] = country.getCountryName();			
+			countryNames[countryIndex] = country.getCountryName();
 			countryIndex++;
 		}
 		return countryNames;
@@ -625,25 +626,25 @@ public class MapFileEdit {
 	 * This method validates if a given continent is connected to at least one other continent in
 	 * the graph.
 	 * @return true - if all continents are connected, else false.
-	 * 
+	 *
 	 */
 	public boolean validateContinentConnections() {
 		int connectedContinents = 0;
-				
+
 		for(String currentContinentKey: Game.getEditMap().getContinents().keySet()) {
 			boolean continentConnected = false;
-			if(continentConnected) {				
+			if(continentConnected) {
 				continue;
-			}			
-			Continent currentContinent = Game.getEditMap().getContinents().get(currentContinentKey);			
-			for(Country currentContinentCountry : currentContinent.getTerritories()) {			
-				if(isCountryExistInOtherContinents(currentContinentKey, currentContinentCountry)) {					
+			}
+			Continent currentContinent = Game.getEditMap().getContinents().get(currentContinentKey);
+			for(Country currentContinentCountry : currentContinent.getTerritories()) {
+				if(isCountryExistInOtherContinents(currentContinentKey, currentContinentCountry)) {
 					continentConnected = true;
 					connectedContinents++;
 					break;
 				}
 			}
-		}		
+		}
 		if(connectedContinents != Game.getEditMap().getContinents().size()) {
 			return false;
 		}
@@ -655,15 +656,15 @@ public class MapFileEdit {
 	 * neighbor list.
 	 * @param ignoreContinentKey - Ignores this continent while checking for the country check.
 	 * @param checkCountry - Checks this country in all other continents excepts the ignoreContinentKey.
-	 * 
+	 *
 	 */
 	private boolean isCountryExistInOtherContinents(String ignoreContinentKey, Country checkCountry) {
-		boolean countryExists = false;		
+		boolean countryExists = false;
 		for(String otherContinentKey : Game.getEditMap().getContinents().keySet()) {
 			if(countryExists) {
 				break;
-			}			
-			Continent otherContinent = Game.getEditMap().getContinents().get(otherContinentKey);			
+			}
+			Continent otherContinent = Game.getEditMap().getContinents().get(otherContinentKey);
 			if(!otherContinentKey.equals(ignoreContinentKey)) {
 				for(Country otherContinentCountry : otherContinent.getTerritories()) {
 					for(String neighborCountryName : otherContinentCountry.getNeighbours().keySet()) {
@@ -673,33 +674,33 @@ public class MapFileEdit {
 							break;
 						}
 					}
-				}			
-			}			
-		}	
+				}
+			}
+		}
 		return countryExists;
-	}	
+	}
 
 	/**
 	 * Getter method to get edit map file name.
 	 * @return editMapFileName.
-	 * 
+	 *
 	 */
 	public String getEditMapFileName() {
 		return editMapFileName;
 	}
-	
+
 	/**
 	 * Setter method to set edit map file name.
-	 * 
+	 *
 	 */
 	public void setEditMapFileName(String editMapFileName) {
 		this.editMapFileName = editMapFileName;
 	}
-		
+
 	/**
 	 * Method for checking command args for editcontinent and editcountry
 	 * @param commandInput
-	 * @return List - command parsed and imploded by $ 
+	 * @return List - command parsed and imploded by $
 	 */
 	private List<String> checkCommandArgs(String[] commandInput, boolean isNeighborCheck) {
 		List<String> commandList = new ArrayList<String>(Arrays.asList(commandInput));
@@ -713,7 +714,7 @@ public class MapFileEdit {
 					processArgList.add(commandList.get(addIndex) + "$" + commandList.get(addIndex + 1) + "$" + commandList.get(addIndex + 2));
 					commandList.remove(addIndex);
 					commandList.remove(addIndex);
-					commandList.remove(addIndex);	
+					commandList.remove(addIndex);
 				} catch(IndexOutOfBoundsException e) {
 					return null;
 				}
@@ -723,9 +724,9 @@ public class MapFileEdit {
 			for (int i = 0; i < removeFrequency; i++) {
 				try {
 					int removeIndex = commandList.indexOf("-remove");
-					
-					// If the check and parsing is for editneighbor command - the commandlist processing is different, needs to consider 3 indexes as done below 
-					if(isNeighborCheck) {						
+
+					// If the check and parsing is for editneighbor command - the commandlist processing is different, needs to consider 3 indexes as done below
+					if(isNeighborCheck) {
 						processArgList.add(commandList.get(removeIndex) + "$" + commandList.get(removeIndex + 1) + "$" + commandList.get(removeIndex + 2));
 						commandList.remove(removeIndex);
 						commandList.remove(removeIndex);
@@ -741,8 +742,8 @@ public class MapFileEdit {
 			}
 		}
 		return processArgList;
-	}	
-	
+	}
+
 	/**
 	 * Show the map anytime during the game play.
 	 */
@@ -753,8 +754,8 @@ public class MapFileEdit {
 		for(Continent showContinent : Game.getMap().getContinents().values()) {
 			System.out.println(showContinent.getContinentName() + " = " + showContinent.getControlValue());
 		}
-			
-		// Print countries and armies 
+
+		// Print countries and armies
 		for(Country showCountry : Country.getListOfCountries().values()) {
 			System.out.println("Country Name : " + showCountry.getCountryName());
 			System.out.println("Armies 	: " + showCountry.getNumberOfArmies());
@@ -762,17 +763,17 @@ public class MapFileEdit {
 			try {
 				ownerName = "Owner  	: " + Game.getPlayersList().get(showCountry.getOwner()).getPlayerName();
 			} catch(Exception e) {
-				// 
-			} finally {				
+				//
+			} finally {
 				System.out.println(ownerName);
 			}
-			
-			System.out.println("-------------- \n Neighbors : \n--------------");			
+
+			System.out.println("-------------- \n Neighbors : \n--------------");
 			for(Country showCountryNeighbor : showCountry.getNeighbours().values()) {
 				System.out.println(showCountryNeighbor.getCountryName());
-			}						
+			}
 			System.out.println("------------------------------------------------");
-		}		
+		}
 	}
 
 	/**
@@ -781,16 +782,21 @@ public class MapFileEdit {
 	 * @return
 	 */
 	public BaseMapFile selectMapParser(String fileName){
-		int identifyMap = identifyMapType(fileName);
+		int identifyMap = identifyMapType(BaseMapFile.MAP_FILE_DIR + fileName);
+		boolean response = false;
 		switch(identifyMap){
 			case TYPE_CONQUEST_MAP:
 				mapParser = new MapFileParserAdapter();
+				response = true;
 				break;
 			case TYPE_DOMINATION_MAP:
 				mapParser = new DominationMapParser();
+				response = true;
 				break;
+			default:
+				response = false;
 		}
-		return null;
+		return response == true ? mapParser : null;
 	}
 
 	public int identifyMapType(String fileName) {
@@ -803,14 +809,16 @@ public class MapFileEdit {
 				if(line.isEmpty()) {
 					continue;
 				}
-				if(line.equals("[Territories]")) {
-					 MapFileType = TYPE_CONQUEST_MAP;
-					 break;
+				if(line.equalsIgnoreCase("[Territories]")) {
+					MapFileType = TYPE_CONQUEST_MAP;
+					break;
 				}
-				if(line.equals("[countries]")) {
+				if(line.equalsIgnoreCase("[countries]")) {
 					MapFileType = TYPE_DOMINATION_MAP;
 				}
 			}
+		} catch(FileNotFoundException e){
+			//
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
