@@ -502,7 +502,11 @@ public class GameLaunch {
 	private static void isValidTournamentCmdValue(String type, String commandItem) {
     	switch (type){
 			case "-M":
-
+                MapFileEdit mapEditor = new MapFileEdit();
+                String mapFileName = commandItem;
+                if(mapEditor.selectMapParser(mapFileName) == null){
+                    System.out.printf("Wrong file");
+                }
 				break;
 		}
 	}
