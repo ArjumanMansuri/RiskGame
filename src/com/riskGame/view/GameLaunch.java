@@ -3,12 +3,7 @@ package com.riskGame.view;
 import java.io.IOException;
 import java.util.*;
 
-import com.riskGame.controller.AttackPhase;
-import com.riskGame.controller.FortificationPhase;
-import com.riskGame.controller.GameLoadSave;
-import com.riskGame.controller.MapFileEdit;
-import com.riskGame.controller.ReinforcementPhase;
-import com.riskGame.controller.StartUpPhase;
+import com.riskGame.controller.*;
 import com.riskGame.models.Country;
 import com.riskGame.models.Game;
 import com.riskGame.models.Map;
@@ -69,10 +64,11 @@ public class GameLaunch {
                         } while (!result.equals("done"));
                         loadGame = true;
                     }
+
                     if (!loadGame) {
 
                         if (gameOpt == 3) {
-                            tournamentCommandInput();
+                            TournamentMode.tournamentCommandInput();
                         }
 
                         StartUpPhase startUpPhase = new StartUpPhase();
@@ -196,11 +192,11 @@ public class GameLaunch {
 
                             Game.setPlayerTurn(i);    // saving player turn in case game is saved
                             System.out.println("Player : " + Game.getPlayersList().get(i).getPlayerName());
+
                             if (currentPhase.length() == 0 || currentPhase.equals("reinforce")) {
                                 currentPhase = "";
                                 Game.setPhase("reinforce");  // saving player phase in case game is saved
                                 System.out.println("Reinforcement phase starts");
-                                rp.notifyObserver("Initiating reinforcement phase...");
                                 // calculating reinforcement armies
                                 rp.calculateReinforcementArmies(i);
 
@@ -233,8 +229,6 @@ public class GameLaunch {
                                     Game.getPlayersList().get(i).getReinforceType().reinforce(i);
                                     GameLaunch.printPlayerInformation(i);
                                 }
-                                rp.notifyObserver("End of reinforcement phase for the player : " + Game.getPlayersList().get(i).getPlayerName());
-                                rp.notifyDominationObserver(Game.getPlayersList().get(i).computeDominationViewData());
                             }
                             // Attack Phase starts
                             if (currentPhase.length() == 0 || currentPhase.equals("attack")) {
@@ -242,11 +236,10 @@ public class GameLaunch {
                                 Game.setPhase("attack");  // saving player phase in case game is saved
                                 System.out.println("Attack phase starts...");
                                 AttackPhase ap = new AttackPhase();
-                                ap.notifyObserver("Initiating attack phase for " + Game.getPlayersList().get(i).getPlayerName());
                                 response = "";
                                 int defender = 0;
-                                if (Game.getPlayersList().get(i).getPlayerType().equals("human")) {
 
+                                if (Game.getPlayersList().get(i).getPlayerType().equals("human")) {
                                     boolean reAttack = false;
                                     do {
                                         do {
@@ -348,8 +341,6 @@ public class GameLaunch {
                                     GameLaunch.printPlayerInformation(i);
                                     GameLaunch.printPlayerInformation(AttackPhase.getDefenderPlayer());
                                 }
-                                ap.notifyObserver("End of Attack phase for the player : " + Game.getPlayersList().get(i).getPlayerName());
-                                ap.notifyDominationObserver(Game.getPlayersList().get(i).computeDominationViewData());
                             }
 
 
@@ -358,7 +349,6 @@ public class GameLaunch {
                                 currentPhase = "";
                                 Game.setPhase("fortify");  // saving player phase in case game is saved
                                 System.out.println("Fortification phase starts");
-                                fp.notifyObserver("Initiating fortification phase for " + Game.getPlayersList().get(i).getPlayerName());
                                 if (Game.getPlayersList().get(i).getPlayerType().equals("human")) {
                                     response = "";
 
@@ -397,7 +387,6 @@ public class GameLaunch {
                                     Game.getPlayersList().get(i).getFortifyType().fortify(i);
                                     GameLaunch.printPlayerInformation(i);
                                 }
-                                fp.notifyObserver("End of fortification phase for " + Game.getPlayersList().get(i).getPlayerName());
                                 System.out.println("Player " + i + "'s turn ends");
                             }
                         }
@@ -442,85 +431,6 @@ public class GameLaunch {
         } while (optionMain != 3);
     }
 
-    // Take tournament command input and process
-    private static void tournamentCommandInput() {
-        Scanner sc = new Scanner(System.in);
-        boolean response = false;
-
-        do {
-            System.out.println("Enter the command:  `tournament -M listofmapfiles -P listofplayerstrategies -G numberofgames -D maxnumberofturns`");
-            String tournamentCmdInput = sc.nextLine().trim();
-            response = checkCommandArgs(tournamentCmdInput);
-        } while (!response);
-    }
-
-    //	List<String>
-    private static boolean checkCommandArgs(String commandInput) {
-        List<String> commandList = new ArrayList<String>(Arrays.asList(commandInput.split(" "))); // commands split by space
-        List<String> processArgList = new ArrayList<String>();
-
-        int numMapFrequency = Collections.frequency(commandList, "-M");
-        int numPlayersFrequency = Collections.frequency(commandList, "-P");
-        int numGamesFrequency = Collections.frequency(commandList, "-G");
-        int numTurnsFrequency = Collections.frequency(commandList, "-D");
-
-        // Check if the user entered all the required command arguments
-        if (numGamesFrequency + numPlayersFrequency + numMapFrequency + numTurnsFrequency == 4) {
-
-            try {
-                // Check if the list of map files provided are legit
-                int mapListArgStartIndex = commandList.indexOf("-M"); // index of -M
-                int mapListEndIndex = getTournamentCmdListEndIndex(mapListArgStartIndex, commandList); // end index for the map list inclusive
-                processArgList = getTournamentCmdValues(mapListArgStartIndex, mapListEndIndex, commandList, processArgList, "-M");
-
-                // Check if the list of players provided are legit
-                int playerListArgStartIndex = commandList.indexOf("-P"); // index of -M
-                int playerListEndIndex = getTournamentCmdListEndIndex(playerListArgStartIndex, commandList); // end index for the map list inclusive
-                processArgList = getTournamentCmdValues(playerListArgStartIndex, playerListEndIndex, commandList, processArgList, "-M");
-
-
-            } catch (IndexOutOfBoundsException e) {
-
-            }
-            return true;
-        }
-        return false;
-    }
-
-    // get the command list values and format for later use
-    private static List<String> getTournamentCmdValues(int startIndex, int endIndex, List<String> commandList, List<String> processArgList, String type) {
-        String commandItem = "";
-        for (int index = startIndex; index <= endIndex ; index++) {
-            commandItem = commandList.get(index).trim();
-            isValidTournamentCmdValue(type, commandItem);
-            commandItem += "$";
-        }
-        processArgList.add(commandItem);
-        return processArgList;
-    }
-
-    private static void isValidTournamentCmdValue(String type, String commandItem) {
-        switch (type){
-            case "-M":
-
-                break;
-        }
-    }
-
-    // get the end index of the command argument starting the parameter `start`
-    private static int getTournamentCmdListEndIndex(int startIndex, List<String> commandList) {
-        for (int index = startIndex + 1; index < commandList.size(); index++) {
-            String commandItem = commandList.get(index).trim();
-
-            // Break out of the loop if the next command item is found => -G or -D or -P or -M
-            if (commandItem.equalsIgnoreCase("-D") || commandItem.equalsIgnoreCase("-P") || commandItem.equalsIgnoreCase("-G") || commandItem.equalsIgnoreCase("-M")) {
-                // process the values and return the index
-                return index - 1;
-            }
-        }
-        return -1;
-    }
-
     /**
      * This method prints the countries and the neighboring countries
      * along with number of armies in each countries.
@@ -543,4 +453,4 @@ public class GameLaunch {
     }
 }
 
-//tournament -M a.map b.map c.map -P -G -D
+//tournament -M World.map -P aggressive random  -G 4 -D 10

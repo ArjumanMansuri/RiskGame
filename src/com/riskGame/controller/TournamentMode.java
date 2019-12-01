@@ -1,13 +1,19 @@
 package com.riskGame.controller;
 
+import com.riskGame.models.*;
+import com.riskGame.models.Map;
+import com.riskGame.strategies.*;
+import com.riskGame.view.GameLaunch;
+
 import java.util.*;
 
 public class TournamentMode {
 
-//    static HashMap<String, >
+    static HashMap<String,String> gameWinnerList;
 
     // Take tournament command input and process
     public static void tournamentCommandInput() {
+        gameWinnerList = new HashMap<String,String>();
 
         Scanner sc = new Scanner(System.in);
         boolean response = false;
@@ -48,9 +54,9 @@ public class TournamentMode {
                 // Check if the list of players provided are legit
                 int playerListArgStartIndex = commandList.indexOf("-P"); // index of -P
                 int playerListEndIndex = getTournamentCmdListEndIndex(playerListArgStartIndex, commandList); // end index for the map list inclusive
-                processArgList = getTournamentCmdValues(playerListArgStartIndex + 1, playerListEndIndex - 1, commandList, processArgList, "-P");
-//                boolean strategyDuplicatesExist = checkPlayerStrategyDuplicates(processArgList.get(1)); // ## check later
-                if (processArgList == null) {
+                processArgList = getTournamentCmdValues(playerListArgStartIndex + 1, playerListEndIndex, commandList, processArgList, "-P");
+                boolean strategyDuplicatesExist = checkPlayerStrategyDuplicates(processArgList.get(1));
+                if (processArgList == null || strategyDuplicatesExist) {
                     return false;
                 }
 
@@ -84,20 +90,207 @@ public class TournamentMode {
     }
 
     private static void processTournamentCommandArgs(List<String> processArgList) {
-        // outer loop : maps - each map
-        // inner loop : game - eachg game
-        // until number of turns all the  player complete
+        processArgList.removeAll(Arrays.asList(null, ""));
+        while (processArgList.remove(" ")) ;
+        System.out.println(processArgList);
 
+        String[] tournamentMaps = processArgList.get(0).split("\\$");
+        String[] tournamentStrategies = processArgList.get(1).split("\\$");
+        int tournamentGamesNum = Integer.parseInt(processArgList.get(2).split("\\$")[0]);
+        int tournamentTurnsNum = Integer.parseInt(processArgList.get(3).split("\\$")[0]);
 
-        //
-
+        // Map Iterator
+        for (String mapFileName : tournamentMaps) {
+            for (int gameIndex = 0; gameIndex < tournamentGamesNum; gameIndex++) {
+                setupGameAndPlayers(mapFileName, tournamentStrategies, tournamentTurnsNum);
+                startPlaying(tournamentStrategies, tournamentTurnsNum, gameIndex, mapFileName);
+            }
+        }
     }
 
+    private static void startPlaying(String[] tournamentStrategies, int tournamentTurnsNum, int gameIndex, String map) {
+        boolean stopGame = false;
+        for (int turnIndex = 1; turnIndex <= tournamentTurnsNum; turnIndex++) {
+            if(stopGame){
+                break;
+            }
+
+            for (int playerNumber = 1; playerNumber <= Game.getPlayersList().size(); playerNumber++) {
+
+                System.out.println("Player : " + Game.getPlayersList().get(playerNumber).getPlayerName());
+                calculateReinforcementArmies(playerNumber);
+
+                /* Reinforce for the current player */
+                System.out.println("Reinforcement phase starts...");
+                Game.getPlayersList().get(playerNumber).getReinforceType().reinforce(playerNumber);
+                GameLaunch.printPlayerInformation(playerNumber);
+
+                /* Attack phase for the current player */
+                System.out.println("Attack phase starts...");
+                Game.getPlayersList().get(playerNumber).getAttackType().attackSetup(playerNumber);
+                GameLaunch.printPlayerInformation(playerNumber);
+                GameLaunch.printPlayerInformation(AttackPhase.getDefenderPlayer());
+
+                if (hasPlayerWon(playerNumber)) {
+                    setGameWinner(gameIndex, map, Game.getPlayersList().get(playerNumber).getPlayerName());
+                    stopGame = true;
+                    break;
+                }
+
+                /* Fortify phase for the current player */
+                System.out.println("Fortification phase starts...");
+                Game.getPlayersList().get(playerNumber).getFortifyType().fortify(playerNumber);
+                GameLaunch.printPlayerInformation(playerNumber);
+
+                System.out.println("Player : " + tournamentStrategies[playerNumber] + "'s turn ends");
+            }
+        }
+
+        /* turns ended set the game to draw */
+        gameWinnerList.put(map, "Game " + gameIndex + "$Draw");
+    }
+
+    private static void setGameWinner(int gameIndex, String map, String playerName) {
+        gameWinnerList.put(map, "Game " + gameIndex + "$" + playerName);
+    }
+
+    /**
+     * This method checks if the player has won the game
+     *
+     * @param player number indicating player
+     * @return true if the player has won else false
+     */
+    public static boolean hasPlayerWon(int player) {
+        return Country.getListOfCountries().size() == Game.getPlayersList().get(player).getOwnedCountries().size();
+    }
+
+    private static void calculateReinforcementArmies(int playerNumber) {
+        Player currentPlayer = Game.getPlayersList().get(playerNumber);
+        int newArmies = currentPlayer.getOwnedCountries().size() / 3;
+
+        for (java.util.Map.Entry<String, Continent> entry : Game.getMap().getContinents().entrySet()) {
+            String key = entry.getKey();
+            Continent value = entry.getValue();
+
+            if (value.checkOwnership(currentPlayer) == true) {
+                newArmies += value.getControlValue();
+            }
+        }
+
+        currentPlayer.setPlayerNumOfArmy(newArmies);
+    }
+
+    private static void setupGameAndPlayers(String mapFileName, String[] tournamentStrategies, int tournamentTurnsNum) {
+        loadTournamentMap(mapFileName);
+        addTournamentPlayers(tournamentStrategies);
+        populateCountries(tournamentStrategies.length);
+        placeTournamentPlayerArmies(tournamentStrategies.length);
+    }
+
+    private static void placeTournamentPlayerArmies(int noOfPlayers) {
+        for (int playerNumber = 1; playerNumber <= noOfPlayers; playerNumber++) {
+            Player currentPlayer = Game.getPlayersList().get(playerNumber);
+            ArrayList<String> countries = currentPlayer.getOwnedCountries();
+
+            // get countries with zero armies
+            for (String country : countries) {
+                if (Country.getListOfCountries().get(country).getNumberOfArmies() == 0) {
+                    Country.getListOfCountries().get(country).setNumberOfArmies(1);
+                    currentPlayer.setPlayerNumOfArmy(currentPlayer.getPlayerNumOfArmy() - 1);
+                }
+            }
+            while (currentPlayer.getPlayerNumOfArmy() != 0) {
+                for (String country : countries) {
+                    if (currentPlayer.getPlayerNumOfArmy() == 0) {
+                        break;
+                    }
+                    Country.getListOfCountries().get(country).setNumberOfArmies(Country.getListOfCountries().get(country).getNumberOfArmies() + 1);
+                    currentPlayer.setPlayerNumOfArmy(currentPlayer.getPlayerNumOfArmy() - 1);
+                }
+            }
+            GameLaunch.printPlayerInformation(playerNumber);
+        }
+    }
+
+    public boolean checkIfArmiesPlaced() {
+        boolean allPlayerDone = true;
+        HashMap<Integer, Player> playerList = Game.getPlayersList();
+
+        for (int playerNumber = 1; playerNumber <= playerList.size(); playerNumber++) {
+            if (playerList.get(playerNumber).getPlayerNumOfArmy() == 0) {
+                allPlayerDone = true && allPlayerDone;
+            } else {
+                allPlayerDone = false && allPlayerDone;
+            }
+        }
+        if (allPlayerDone) {
+//            this.notifyObserver("All armies for all the players has been placed");
+            return true;
+        }
+        return false;
+    }
+
+    private static void populateCountries(int noOfPlayers) {
+        ArrayList<String> countries = new ArrayList<>();
+
+        for (String country : Country.getListOfCountries().keySet()) {
+            countries.add(country);
+        }
+
+        while (countries.size() > 0) {
+            for (int index = 1; index <= noOfPlayers; index++) {
+                if (countries.size() > 0) {
+                    Country.getListOfCountries().get(countries.get(0)).setOwner(index);
+                    Game.getPlayersList().get(index).getOwnedCountries().add(countries.get(0)); // assign country to players
+                    countries.remove(0);
+                }
+            }
+        }
+    }
+
+    private static void addTournamentPlayers(String[] tournamentStrategies) {
+        HashMap<Integer, Player> playersData = new HashMap<Integer, Player>();
+        int playerId = 1;
+        int army[] = {60, 35, 30, 25, 20};
+        int noOfPlayers = tournamentStrategies.length;
+
+        for (int index = 1; index < tournamentStrategies.length; index++) {
+            Player currentPlayer;
+            String playerStrategy = tournamentStrategies[index];
+
+            if (playerStrategy.equals("aggressive")) {
+                currentPlayer = new AggressivePlayer();
+            } else if (playerStrategy.equals("benevolent")) {
+                currentPlayer = new BenevolentPlayer();
+            } else if (playerStrategy.equals("random")) {
+                currentPlayer = new RandomPlayer();
+            } else {
+                currentPlayer = new CheaterPlayer();
+            }
+
+            currentPlayer.setPlayerName(playerStrategy);
+            currentPlayer.setPlayerNumOfArmy(army[noOfPlayers - 2]); //
+            currentPlayer.setPlayerType(playerStrategy);
+            playersData.put(playerId, currentPlayer);
+            playerId++;
+        }
+
+        Game.setPlayersList(playersData); // add the tournament players to the game class static variable
+    }
+
+    // Load the tournament map file and convert to Map object
+    private static void loadTournamentMap(String mapFileName) {
+        MapFileEdit mapEditor = new MapFileEdit();
+        mapEditor.selectMapParser(mapFileName);
+        Map mapObject = MapFileEdit.mapParser.read(BaseMapFile.MAP_FILE_DIR + mapFileName);
+        Game.setMap(mapObject);
+    }
+
+    // check if there are duplicate player strategies input
     private static boolean checkPlayerStrategyDuplicates(String argList) {
-        String[] playerStrategyArray = argList.split("$");
+        String[] playerStrategyArray = argList.split("\\$");
         List<String> playerList = Arrays.asList(playerStrategyArray);
         Set<String> set = new HashSet<String>(playerList);
-
         if (set.size() < playerList.size()) {
             return true;
         }
@@ -106,7 +299,7 @@ public class TournamentMode {
 
     // get the command list values and format for later use
     private static List<String> getTournamentCmdValues(int startIndex, int endIndex, List<String> commandList, List<String> processArgList, String type) {
-        String commandItemValue = type + "$";
+        String commandItemValue = "";
         String commandItem = "";
 
         for (int index = startIndex; index <= endIndex; index++) {
@@ -126,13 +319,13 @@ public class TournamentMode {
             if (Integer.parseInt(commandList.get(startIndex).trim()) < 0 || Integer.parseInt(commandList.get(startIndex).trim()) > 5) {
                 return null;
             }
-            processArgList.add(type + "$" + commandList.get(startIndex).trim() + "$");
+            processArgList.add(commandList.get(startIndex).trim() + "$");
         }
         if (type.equalsIgnoreCase("-D")) {
             if (Integer.parseInt(commandList.get(startIndex).trim()) < 10 || Integer.parseInt(commandList.get(startIndex).trim()) > 50) {
                 return null;
             }
-            processArgList.add(type + "$" + commandList.get(startIndex).trim() + "$");
+            processArgList.add(commandList.get(startIndex).trim() + "$");
         } else {
             processArgList.add(commandItemValue);
         }
