@@ -19,7 +19,7 @@ public class StartupPhaseObserver extends PhaseViewObserver{
 		this.gamePhaseName = "STARTUP PHASE";
 	}
 	static public String startupViewData;
-	GameView view = new GameView();
+	static GameView view = new GameView();
 
 	/**
 	 * Override method of update which handles the complete logs of the phase.

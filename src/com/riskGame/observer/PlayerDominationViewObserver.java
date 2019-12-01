@@ -13,13 +13,12 @@ public  class PlayerDominationViewObserver {
 	 *String domniationViewData to display the domination details.
 	 */
 	 public String dominationViewData; 
-	 GameView view = new GameView();
 	 
 	 /**
 	 *UpdateDomination method for updating the log message.
 	 */
 	 public void updateDomination(String action) {
 		 dominationViewData = action;
-		 view.display();
+		 StartupPhaseObserver.view.display();
 		}
 }
