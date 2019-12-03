@@ -2,6 +2,8 @@ package com.riskGame.strategies;
 
 import java.util.*;
 import java.io.Serializable;
+import java.security.KeyStore.Entry;
+
 import com.riskGame.controller.AttackPhase;
 import com.riskGame.controller.MapFileEdit;
 import com.riskGame.controller.ReinforcementPhase;
@@ -343,10 +345,12 @@ class HumanAttack implements AttackType,Serializable{
 	 @Override
 	 public String attackSetup(int player, String... command) {
 		 conqueredList = new ArrayList<String>();
-		 Player p = Game.getPlayersList().get(player);
+		 Player p = Game.getPlayersList().get(player);		 
+		 HashMap<String,ArrayList> possibleNeighbors = new HashMap<String,ArrayList>();		 
 		 Iterator ownCountryIter = p.getOwnedCountries().iterator();
-
+		 
 		 while(ownCountryIter.hasNext()){
+			 ArrayList<Country> neighborCountriesList = new ArrayList<Country>();
 			 String ownCountry = (String) ownCountryIter.next();
 			 HashMap<String, Country> ownCountryNeighbors = Country.getListOfCountries().get(ownCountry).getNeighbours();
 
@@ -354,12 +358,24 @@ class HumanAttack implements AttackType,Serializable{
 				 if(!conqueredList.contains(neighbor.getKey())) {
 					 Country neighborCountry = Country.getListOfCountries().get(neighbor.getValue().getCountryName());
 					 if (neighborCountry.getOwner() != player) {
-						 moveArmies(ownCountry, neighborCountry, player);
+						 neighborCountriesList.add(neighborCountry);						 	 
 						 break;
 					 }
 				 }
 			 }
+			 
+			 possibleNeighbors.put(ownCountry, neighborCountriesList);
 		 }
+		 
+		 for(java.util.Map.Entry<String, ArrayList> neighborEntry : possibleNeighbors.entrySet()) {
+			 String ownCountry = neighborEntry.getKey();
+			 ArrayList<Country> neighborCountries = neighborEntry.getValue();
+			 
+			 for(Country neighborCountry : neighborCountries) {
+				 moveArmies(ownCountry, neighborCountry, player);
+			 }			 
+		 }	 
+		 
 		 return "done";
 	 }
 

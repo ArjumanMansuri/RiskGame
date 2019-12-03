@@ -82,7 +82,7 @@ public class TournamentMode {
                 processTournamentCommandArgs(processArgList);
 
             } catch (IndexOutOfBoundsException e) {
-
+            	return false;
             }
             return true;
         }
@@ -128,8 +128,7 @@ public class TournamentMode {
                 System.out.println("Attack phase starts...");
                 Game.getPlayersList().get(playerNumber).getAttackType().attackSetup(playerNumber);
                 GameLaunch.printPlayerInformation(playerNumber);
-                GameLaunch.printPlayerInformation(AttackPhase.getDefenderPlayer());
-
+                
                 if (hasPlayerWon(playerNumber)) {
                 	System.out.println("Player "+Game.getPlayersList().get(playerNumber).getPlayerName()+" won..!!!");
                     setGameWinner(gameIndex, map, Game.getPlayersList().get(playerNumber).getPlayerName());
@@ -147,7 +146,7 @@ public class TournamentMode {
         }
 
         /* turns ended set the game to draw */
-        gameWinnerList.put(map, "Game " + gameIndex + "$Draw");
+        gameWinnerList.put(map, "Game " + gameIndex + "$Draw");        
     }
 
     private static void setGameWinner(int gameIndex, String map, String playerName) {
@@ -254,9 +253,9 @@ public class TournamentMode {
         int army[] = {60, 35, 30, 25, 20};
         int noOfPlayers = tournamentStrategies.length;
 
-        for (int index = 1; index < tournamentStrategies.length+1; index++) {
+        for (int index = 1; index <= tournamentStrategies.length; index++) {
             Player currentPlayer;
-            String playerStrategy = tournamentStrategies[index];
+            String playerStrategy = tournamentStrategies[index - 1];
 
             if (playerStrategy.equals("aggressive")) {
                 currentPlayer = new AggressivePlayer();
