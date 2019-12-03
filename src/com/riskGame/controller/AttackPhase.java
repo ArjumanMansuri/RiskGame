@@ -230,7 +230,7 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 			defenderDiceRolls.remove((Integer)defenderMax);
 		}
 		if(Country.getListOfCountries().get(AttackPhase.getDefenderCountry()).getNumberOfArmies()==0) {
-			Player p = Game.getPlayersList().get(Country.getListOfCountries().get(AttackPhase.getDefenderCountry()).getOwner());
+			Player p = Game.getPlayersList().get(Country.getListOfCountries().get(AttackPhase.getAttackerCountry()).getOwner());
 			Game.assignRandomCard(p);
 			boolean controlsContinent = true;
 			String continentOfConqueredCountry = Country.getListOfCountries().get(AttackPhase.getAttackerCountry()).getContinent();

@@ -92,8 +92,7 @@ public class TournamentMode {
     private static void processTournamentCommandArgs(List<String> processArgList) {
         processArgList.removeAll(Arrays.asList(null, ""));
         while (processArgList.remove(" ")) ;
-        System.out.println(processArgList);
-
+        
         String[] tournamentMaps = processArgList.get(0).split("\\$");
         String[] tournamentStrategies = processArgList.get(1).split("\\$");
         int tournamentGamesNum = Integer.parseInt(processArgList.get(2).split("\\$")[0]);
@@ -132,6 +131,7 @@ public class TournamentMode {
                 GameLaunch.printPlayerInformation(AttackPhase.getDefenderPlayer());
 
                 if (hasPlayerWon(playerNumber)) {
+                	System.out.println("Player "+Game.getPlayersList().get(playerNumber).getPlayerName()+" won..!!!");
                     setGameWinner(gameIndex, map, Game.getPlayersList().get(playerNumber).getPlayerName());
                     stopGame = true;
                     break;
@@ -254,7 +254,7 @@ public class TournamentMode {
         int army[] = {60, 35, 30, 25, 20};
         int noOfPlayers = tournamentStrategies.length;
 
-        for (int index = 1; index < tournamentStrategies.length; index++) {
+        for (int index = 1; index < tournamentStrategies.length+1; index++) {
             Player currentPlayer;
             String playerStrategy = tournamentStrategies[index];
 

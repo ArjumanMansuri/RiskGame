@@ -60,7 +60,7 @@ class HumanFortify implements FortifyType,Serializable{
 		}
 		// fortify none
 		if(commandComponents.length == 2) {
-			if(commandComponents[1].equalsIgnoreCase("none")) {
+			if(commandComponents[1].equalsIgnoreCase("-none")) {
 				return "done";
 			}
 		}
@@ -207,7 +207,7 @@ class BenevolentFortify implements FortifyType,Serializable{
 			}
 			if(ownedCountries.size() == minTriedCountries.size()) {
 				System.out.println("Fortification skipped");
-				break;
+				return "done";
 																																		   
 							
 			}

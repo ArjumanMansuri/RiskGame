@@ -184,7 +184,7 @@ public class Player extends Observable implements Observer,Serializable {
 	}
 	
 	public String computeDominationViewData() {
-		int percentage = this.getOwnedCountries().size() * 100 / Country.getListOfCountries().size();
+		float percentage = this.getOwnedCountries().size() * 100 / Country.getListOfCountries().size();
 		String finalStr = "World Domination View of player: " +this.getPlayerName()+"\n";
 		finalStr = finalStr + "Percentage of world controlled : "+percentage+"%\n";
 		finalStr = finalStr + "Continents owned : "+this.getOwnedContinents()+"\n";

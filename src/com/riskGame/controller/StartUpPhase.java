@@ -200,7 +200,8 @@ public class StartUpPhase implements PhaseViewPublisher, PlayerDominationViewPub
 			if(Country.getListOfCountries().get(country).getNumberOfArmies()==0) {
 				Country.getListOfCountries().get(country).setNumberOfArmies(1);
 				p.setPlayerNumOfArmy(p.getPlayerNumOfArmy()-1);
-				this.notifyObserver("Placed 1 army to the country " + country + "for " + p.getPlayerName());
+				this.notifyObserver("Placed 1 army to the country " + country + " for " + p.getPlayerName());
+				this.notifyObserver("Total number of unallocated armies for " + p.getPlayerName() + " is decreased to " + p.getPlayerNumOfArmy());
 			}
 		}
 		while(p.getPlayerNumOfArmy()!=0) {
@@ -209,9 +210,9 @@ public class StartUpPhase implements PhaseViewPublisher, PlayerDominationViewPub
 					break;
 				}
 				Country.getListOfCountries().get(country).setNumberOfArmies(Country.getListOfCountries().get(country).getNumberOfArmies()+1);
-				this.notifyObserver("Placed 1 army to the country " + country + "for " + p.getPlayerName());
+				this.notifyObserver("Placed 1 army to the country " + country + " for " + p.getPlayerName());
 				p.setPlayerNumOfArmy(p.getPlayerNumOfArmy()-1);
-				this.notifyObserver("Total number of armies for " + p.getPlayerName() + "is increased to " + p.getPlayerNumOfArmy());
+				this.notifyObserver("Total number of unallocated armies for " + p.getPlayerName() + " is decreased to " + p.getPlayerNumOfArmy());
 			}
 		}
 		this.notifyDominationObserver(p.computeDominationViewData());

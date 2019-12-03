@@ -59,7 +59,7 @@ class HumanAttack implements AttackType,Serializable{
 			}
 			// attack noattack
 			if(commandComponents.length == 2) {
-				if(commandComponents[1].equalsIgnoreCase("noattack")) {
+				if(commandComponents[1].equalsIgnoreCase("-noattack")) {
 					return "done";
 				}
 			}
@@ -318,13 +318,13 @@ class HumanAttack implements AttackType,Serializable{
 	  */
 	 private void moveArmies(String attackerCountry, Country defenderCountry, int player) {
 		 int numOfArmiesCanBeMoved = Country.getListOfCountries().get(attackerCountry).getNumberOfArmies() / 2;
-
+		 
 		 // Set number of armies
 		 Country.getListOfCountries().get(attackerCountry).setNumberOfArmies(Country.getListOfCountries().get(attackerCountry).getNumberOfArmies() - numOfArmiesCanBeMoved);
-		 Country.getListOfCountries().get(defenderCountry).setNumberOfArmies(Country.getListOfCountries().get(defenderCountry.getCountryName()).getNumberOfArmies() + numOfArmiesCanBeMoved);
+		 Country.getListOfCountries().get(defenderCountry.getCountryName()).setNumberOfArmies(Country.getListOfCountries().get(defenderCountry.getCountryName()).getNumberOfArmies() + numOfArmiesCanBeMoved);
 
 		 // change ownership of defender country
-		 Country.getListOfCountries().get(defenderCountry).setOwner(player);
+		 Country.getListOfCountries().get(defenderCountry.getCountryName()).setOwner(player);
 
 		 Game.getPlayersList().get(player).getOwnedCountries().add(defenderCountry.getCountryName());
 		 Game.getPlayersList().get(defenderCountry.getOwner()).getOwnedCountries().remove(defenderCountry.getCountryName());
@@ -352,9 +352,9 @@ class HumanAttack implements AttackType,Serializable{
 
 			 for(Map.Entry<String, Country> neighbor : ownCountryNeighbors.entrySet()){
 				 if(!conqueredList.contains(neighbor.getKey())) {
-					 int neighborOwner = neighbor.getValue().getOwner();
-					 if (neighborOwner != player) {
-						 moveArmies(ownCountry, neighbor.getValue(), player);
+					 Country neighborCountry = Country.getListOfCountries().get(neighbor.getValue().getCountryName());
+					 if (neighborCountry.getOwner() != player) {
+						 moveArmies(ownCountry, neighborCountry, player);
 						 break;
 					 }
 				 }

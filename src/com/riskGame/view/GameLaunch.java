@@ -253,7 +253,7 @@ public class GameLaunch {
                                             String command = "";
                                             if (!reAttack) {
                                                 System.out.println("Use command for allout mode : attack 'countrynamefrom' 'countynameto' allout");
-                                                System.out.println("Or to skip attack use command : attack noattack");
+                                                System.out.println("Or to skip attack use command : attack -noattack");
                                                 System.out.println("To quit and save the game, use command : savegame 'filename'");
                                                 String result = "";
                                                 command = sc.nextLine().trim();
@@ -313,6 +313,7 @@ public class GameLaunch {
                                                 reAttack = false;
                                             } while (!response.contains("done"));
                                             if (ap.hasPlayerWon(i)) {
+                                            	System.out.println("Player "+Game.getPlayersList().get(i).getPlayerName()+" won..!!!");
                                                 break game;
                                             }
                                         } else {
@@ -336,13 +337,20 @@ public class GameLaunch {
                                         GameLaunch.printPlayerInformation(i);
                                         GameLaunch.printPlayerInformation(defender);
                                     }
-                                } else {
+                                }
+                                 else {
                                     Game.getPlayersList().get(i).getAttackType().attackSetup(i);
                                     GameLaunch.printPlayerInformation(i);
-                                    GameLaunch.printPlayerInformation(AttackPhase.getDefenderPlayer());
+                                    if(!Game.getPlayersList().get(i).getPlayerType().equals("benevolent")) {
+                                    	GameLaunch.printPlayerInformation(AttackPhase.getDefenderPlayer());
+                                    }
+                                    if (ap.hasPlayerWon(i)) {
+                                    	System.out.println("Player "+Game.getPlayersList().get(i).getPlayerName()+" won..!!!");
+                                        break game;
+                                    }
                                 }
+                            
                             }
-
 
                             // fortification phase starts
                             if (currentPhase.length() == 0 || currentPhase.equals("fortify")) {
@@ -360,7 +368,7 @@ public class GameLaunch {
                                         GameLaunch.printPlayerInformation(i);
 
                                         System.out.println("Use command : fortify 'fromcountry' 'tocountry' 'num'");
-                                        System.out.println("Or use command : fortify none");
+                                        System.out.println("Or use command : fortify -none");
                                         System.out.println("To quit and save the game, use command : savegame");
                                         String command = sc.nextLine().trim();
                                         if (command.contains("savegame")) {
@@ -390,9 +398,9 @@ public class GameLaunch {
                                 System.out.println("Player " + i + "'s turn ends");
                             }
                         }
-                        System.out.println("Do you want to continue the game? 'y' or 'n'");
-                        continueGame = sc.nextLine().trim().charAt(0);
-                        //continueGame = 'y';
+                        //System.out.println("Do you want to continue the game? 'y' or 'n'");
+                        //continueGame = sc.nextLine().trim().charAt(0);
+                        continueGame = 'y';
                     }
                     break;
 
