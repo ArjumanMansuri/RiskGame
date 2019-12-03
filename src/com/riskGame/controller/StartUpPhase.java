@@ -106,8 +106,9 @@ public class StartUpPhase implements PhaseViewPublisher, PlayerDominationViewPub
 				this.notifyObserver(fileName + " Map is been loaded...");
 				File mapFileCheck = new File("maps/"+fileName);
 				if(mapFileCheck.exists()) {
-					MapFileParser m = new MapFileParser();
-					mapObject = m.readFileData("maps/"+fileName);
+					MapFileEdit mapEditor = new MapFileEdit();
+					mapEditor.selectMapParser(fileName);
+					mapObject = MapFileEdit.mapParser.read(BaseMapFile.MAP_FILE_DIR + fileName);
 					Game.setMap(mapObject);
 					return "exit";
 				}
