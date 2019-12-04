@@ -27,7 +27,7 @@ public class StartUpPhase implements PhaseViewPublisher, PlayerDominationViewPub
 	private HashMap<Integer,Player> playersData;
 	private int noOfPlayers;
 	private PhaseViewObserver newObserver;
-	private PlayerDominationViewObserver newDomiantionObserver;
+	 PlayerDominationViewObserver newDomiantionObserver;
 	
 	/**
 	 * Constructor of this class
@@ -216,7 +216,7 @@ public class StartUpPhase implements PhaseViewPublisher, PlayerDominationViewPub
 				this.notifyObserver("Total number of unallocated armies for " + p.getPlayerName() + " is decreased to " + p.getPlayerNumOfArmy());
 			}
 		}
-		this.notifyDominationObserver(p.computeDominationViewData());
+		//this.notifyObserver(p.computeDominationViewData());
 		return "donePlaceall";
 	}
 	/**
@@ -418,7 +418,7 @@ public class StartUpPhase implements PhaseViewPublisher, PlayerDominationViewPub
 	 * @param action string to notify the observer
 	 */
 	public void notifyDominationObserver(String action) {
-		this.newDomiantionObserver.updateDomination(action);
+	//	this.newDomiantionObserver.updateDomination(action);
 	}
 }
 

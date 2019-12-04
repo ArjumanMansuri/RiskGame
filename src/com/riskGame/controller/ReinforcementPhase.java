@@ -295,6 +295,6 @@ public class ReinforcementPhase implements PhaseViewPublisher, PlayerDominationV
 	 * @param action string to notify the observer
 	 */
 	public void notifyDominationObserver(String action) {
-		this.newDomiantionObserver.updateDomination(action);
+		//this.newDomiantionObserver.updateDomination(action);
 	}
 }

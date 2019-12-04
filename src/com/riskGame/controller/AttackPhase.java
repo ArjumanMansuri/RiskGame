@@ -423,6 +423,8 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 	 * @param action string to notify the observer
 	 */
 	public void notifyDominationObserver(String action) {
-		this.newDomiantionObserver.updateDomination(action);
+		if(action.contains("Domination")) {
+		this.newObserver.update(action);
+		}
 	}
 }

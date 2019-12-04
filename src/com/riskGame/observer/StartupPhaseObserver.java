@@ -19,6 +19,7 @@ public class StartupPhaseObserver extends PhaseViewObserver{
 		this.gamePhaseName = "STARTUP PHASE";
 	}
 	static public String startupViewData;
+	static public String dominationViewData;
 	static GameView view = new GameView();
 
 	/**
@@ -27,11 +28,20 @@ public class StartupPhaseObserver extends PhaseViewObserver{
 	@Override
 	public void update(String action) {
 		if(! (action == null)) {
-			startupViewData = action;
+			if(action.contains("Domination")) {
+				dominationViewData = action;
+			}
+			else {
+				startupViewData = action;
+			}
 			view.display();	
+			dominationViewData="";
 		}
-		else
+		
+		else {
 			startupViewData = "";
+			dominationViewData="";
+		}
 	}
 
 	/**
