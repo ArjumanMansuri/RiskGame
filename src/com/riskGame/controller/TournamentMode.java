@@ -453,7 +453,7 @@ public class TournamentMode {
             case "-M":
                 MapFileEdit mapEditor = new MapFileEdit();
                 String mapFileName = commandItem;
-                if (mapEditor.selectMapParser(mapFileName) == null) {
+                if (mapEditor.selectMapParser(BaseMapFile.MAP_FILE_DIR + mapFileName) == null) {
                     return false;
                 }
                 break;
