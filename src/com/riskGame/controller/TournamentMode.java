@@ -6,14 +6,17 @@ import com.riskGame.strategies.*;
 import com.riskGame.view.GameLaunch;
 
 import java.util.*;
+import java.util.Map.Entry;
 
 public class TournamentMode {
 
     static HashMap<String,String> gameWinnerList;
+    static HashMap<Integer,Boolean> removeList;
 
     // Take tournament command input and process
     public static void tournamentCommandInput() {
         gameWinnerList = new HashMap<String,String>();
+        removeList = new HashMap<Integer,Boolean>(); // holds the numbers of the removed players
 
         Scanner sc = new Scanner(System.in);
         boolean response = false;
@@ -41,7 +44,7 @@ public class TournamentMode {
         // Check if the user entered all the required command arguments
         if (numGamesFrequency + numPlayersFrequency + numMapFrequency + numTurnsFrequency == 4) {
 
-            try {
+//            try {
                 // Check if the list of map files provided are legit
                 int mapListArgStartIndex = commandList.indexOf("-M"); // index of -M
                 int mapListEndIndex = getTournamentCmdListEndIndex(mapListArgStartIndex, commandList); // end index for the map list inclusive
@@ -81,9 +84,11 @@ public class TournamentMode {
                 // Process the command Values - at this stage all the command argument input values are valid
                 processTournamentCommandArgs(processArgList);
 
-            } catch (IndexOutOfBoundsException e) {
-            	return false;
-            }
+//            } 
+//            catch (IndexOutOfBoundsException e) {
+//            	System.out.println(e.getMessage());
+//            	return false;
+//            }
             return true;
         }
         return false;
@@ -100,7 +105,9 @@ public class TournamentMode {
 
         // Map Iterator
         for (String mapFileName : tournamentMaps) {
-            for (int gameIndex = 0; gameIndex < tournamentGamesNum; gameIndex++) {
+            for (int gameIndex = 1; gameIndex <= tournamentGamesNum; gameIndex++) {
+            	System.out.println("Starting Game " + gameIndex);
+            	System.out.println("-------------------------------");
                 setupGameAndPlayers(mapFileName, tournamentStrategies, tournamentTurnsNum);
                 startPlaying(tournamentStrategies, tournamentTurnsNum, gameIndex, mapFileName);
             }
@@ -109,13 +116,21 @@ public class TournamentMode {
 
     private static void startPlaying(String[] tournamentStrategies, int tournamentTurnsNum, int gameIndex, String map) {
         boolean stopGame = false;
-        for (int turnIndex = 1; turnIndex <= tournamentTurnsNum; turnIndex++) {
+        boolean playerWon = false;
+        for (int turnIndex = 1; turnIndex <= tournamentTurnsNum; turnIndex++) {        	
             if(stopGame){
                 break;
             }
 
             for (int playerNumber = 1; playerNumber <= Game.getPlayersList().size(); playerNumber++) {
-
+            	
+            	// If this player number is in the remove list - do not process it 
+            	if(removeList.size() > 0) {            		
+            		if(removeList.containsKey(playerNumber)) {
+            			continue;
+            		}
+            	}
+            	
                 System.out.println("Player : " + Game.getPlayersList().get(playerNumber).getPlayerName());
                 calculateReinforcementArmies(playerNumber);
 
@@ -133,23 +148,59 @@ public class TournamentMode {
                 	System.out.println("Player "+Game.getPlayersList().get(playerNumber).getPlayerName()+" won..!!!");
                     setGameWinner(gameIndex, map, Game.getPlayersList().get(playerNumber).getPlayerName());
                     stopGame = true;
+                    playerWon = true;
                     break;
                 }
-
+                
+                checkPlayerStatus(); // Check if a player has 0 countries - if true - remove the player from the list 
+                
+                System.out.println("Player Number " + playerNumber);
+                
+        		if(removeList.containsKey(playerNumber)) {
+        			System.out.println("Skipping fortification phase for this player..");
+        			continue;	
+        		}
+        	            	
+            	System.out.println(removeList);
+                
                 /* Fortify phase for the current player */
                 System.out.println("Fortification phase starts...");
                 Game.getPlayersList().get(playerNumber).getFortifyType().fortify(playerNumber);
                 GameLaunch.printPlayerInformation(playerNumber);
 
-                System.out.println("Player : " + tournamentStrategies[playerNumber] + "'s turn ends");
+                System.out.println("Player : " + tournamentStrategies[playerNumber-1] + "'s turn ends");
+                System.out.println("------------------------------------------------------------------");
             }
         }
-
-        /* turns ended set the game to draw */
-        gameWinnerList.put(map, "Game " + gameIndex + "$Draw");        
+        
+        if(!playerWon) {
+            /* turns ended set the game to draw */
+            gameWinnerList.put(map, "Game " + gameIndex + "$Draw");
+        }        
+        
+        System.out.println("Game  " + gameIndex + " has ended.");
+        System.out.println("-------------------------------");
     }
 
-    private static void setGameWinner(int gameIndex, String map, String playerName) {
+    /**
+     * Remove player from the player list if he has 0 countries after an attack  
+     */
+    private static void checkPlayerStatus() {    	     	
+    	for(Entry<Integer, Player> player : Game.getPlayersList().entrySet()) {
+    		if(player.getValue().getOwnedCountries().size() == 0) {
+    			System.out.println("------------------------------------------------------------------");
+    			System.out.println("Removing player " + player.getValue().getPlayerName() + " due to insufficient owned nunmber countries.");
+    			removeList.put(player.getKey(), true);
+    			System.out.println("------------------------------------------------------------------");
+    		}
+    	}
+    	
+//    	for(int removePlayerNumber : removeList) {
+//    		Game.getPlayersList().remove(removePlayerNumber);
+//    	}
+	}
+
+	private static void setGameWinner(int gameIndex, String map, String playerName) {
         gameWinnerList.put(map, "Game " + gameIndex + "$" + playerName);
     }
 
@@ -239,7 +290,7 @@ public class TournamentMode {
         while (countries.size() > 0) {
             for (int index = 1; index <= noOfPlayers; index++) {
                 if (countries.size() > 0) {
-                    Country.getListOfCountries().get(countries.get(0)).setOwner(index);
+                    Country.getListOfCountries().get(countries.get(0)).setOwner(index);                    
                     Game.getPlayersList().get(index).getOwnedCountries().add(countries.get(0)); // assign country to players
                     countries.remove(0);
                 }
@@ -267,8 +318,9 @@ public class TournamentMode {
                 currentPlayer = new CheaterPlayer();
             }
 
-            currentPlayer.setPlayerName(playerStrategy);
+            currentPlayer.setPlayerName(playerStrategy);            
             currentPlayer.setPlayerNumOfArmy(army[noOfPlayers - 2]); //
+            
             currentPlayer.setPlayerType(playerStrategy);
             playersData.put(playerId, currentPlayer);
             playerId++;

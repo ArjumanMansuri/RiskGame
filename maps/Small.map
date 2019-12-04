@@ -1,0 +1,10 @@
+[Continents]
+South East Asia=4
+Arabian Peninsula=2
+
+[Territories]
+Myanmar,0,0,South East Asia,Thailand
+Thailand,0,0,South East Asia,Myanmar,Kuwait
+
+Saudi Arabia,0,0,Arabian Peninsula,Kuwait
+Kuwait,0,0,Arabian Peninsula,Saudi Arabia,Thailand
