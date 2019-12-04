@@ -161,6 +161,11 @@ class RandomReinforce implements ReinforceType,Serializable{
 
 		// generate a random number of army count for reinforcing
 		int initialArmyCount = p.getPlayerNumOfArmy();
+		
+		if(initialArmyCount < 1) {
+			return "false";
+		}
+		
 		int randomArmyCount = generateRandomArmyCount(initialArmyCount);
 		p.setPlayerNumOfArmy(initialArmyCount - randomArmyCount);
 
