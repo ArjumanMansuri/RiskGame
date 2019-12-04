@@ -20,7 +20,7 @@ public class StartupPhaseObserver extends PhaseViewObserver{
 	}
 	static public String startupViewData;
 	static public String dominationViewData;
-	static GameView view = new GameView();
+	static public GameView view = new GameView();
 
 	/**
 	 * Override method of update which handles the complete logs of the phase.

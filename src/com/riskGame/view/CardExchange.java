@@ -4,8 +4,11 @@ import java.util.Observer;
 
 import com.riskGame.models.Card;
 import com.riskGame.models.Player;
+import com.riskGame.observer.StartupPhaseObserver;
 
 public class CardExchange implements Observer {
+	
+	static public String cardViewData;
 	
 	@Override
 	public void update(Observable o, Object arg) {
@@ -26,13 +29,23 @@ public class CardExchange implements Observer {
 			}
 		}
 		
+		String showData = "";
+		
 		if(((String)arg).equals("added")) {
-			System.out.println(p.getPlayerName() + " received a new card.");
+			showData  = p.getPlayerName() + " received a new card.";			
 		}
 		else if(((String)arg).equals("removed")) {
-			System.out.println(p.getPlayerName() + " used a card.");
+			showData =  p.getPlayerName() + " used a card.";			
 		}
+		
+		// Display to Window 
+		System.out.println(showData);
+		cardViewData = showData;
+		StartupPhaseObserver.view.display();
 
-		System.out.println("Number of Artillary Cards = " + a + "\nNumber of Cavalry Cards = " + ca + "\nNumber of Infantry Cards = " + i);
+		showData = "Number of Artillary Cards = " + a + "\nNumber of Cavalry Cards = " + ca + "\nNumber of Infantry Cards = " + i;
+		System.out.println(showData);
+		cardViewData = showData;
+		StartupPhaseObserver.view.display();			
 	}
 }
