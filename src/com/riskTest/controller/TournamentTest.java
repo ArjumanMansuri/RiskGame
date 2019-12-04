@@ -48,7 +48,7 @@ public class TournamentTest {
 		Game.setPlayersList(playerList);
 
 	}
-	
+
 	/**
 	 * Test if the arguments are correct or not.
 	 */

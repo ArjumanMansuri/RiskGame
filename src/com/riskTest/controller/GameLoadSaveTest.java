@@ -51,6 +51,7 @@ public class GameLoadSaveTest {
 		try {
 			sg.buildGame("savegame abc");
 		} catch (IOException e) {
+			// test
 			e.printStackTrace();
 		}
 		try {
