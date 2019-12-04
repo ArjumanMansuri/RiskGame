@@ -32,10 +32,10 @@ public class CardExchange implements Observer {
 		String showData = "";
 		
 		if(((String)arg).equals("added")) {
-			showData  = p.getPlayerName() + " received a new card.";			
+			showData  = "\n"+ p.getPlayerName() + " received a new card.";			
 		}
 		else if(((String)arg).equals("removed")) {
-			showData =  p.getPlayerName() + " used a card.";			
+			showData =  "\n" + p.getPlayerName() + " used a card.";			
 		}
 		
 		// Display to Window 

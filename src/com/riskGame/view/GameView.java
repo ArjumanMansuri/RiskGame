@@ -1,8 +1,10 @@
 package com.riskGame.view;
 
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import javax.swing.JFrame;
-
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -22,10 +24,14 @@ public class GameView {
 	JPanel dominationPanel = new JPanel();
 	JPanel startupPanel = new JPanel();
 	JPanel cardsPanel = new JPanel();
+	JLabel dominationLabel = new JLabel("WORLD DOMINATION VIEW");
+	JLabel startupLabel = new JLabel("GAME PLAY VIEW");
+	JLabel cardsLabel = new JLabel("CARD EXCHANGE VIEW");
 	JScrollPane scrollPane = new JScrollPane();
 	JScrollPane scrollPane2 = new JScrollPane();
 	JScrollPane scrollPane3 = new JScrollPane();
 	JFrame frame = new JFrame();
+	GridBagConstraints gbc = new GridBagConstraints();
 	
 	public void display() {
 		String dominationData =StartupPhaseObserver.dominationViewData;
@@ -50,18 +56,42 @@ public class GameView {
 			cardsText.setWrapStyleWord(true);
 			cardsText.setEditable(false);
 		}
-		dominationPanel.add(dominationText);
-		startupPanel.add(startupText);
-		cardsPanel.add(cardsText);
+		
+		dominationPanel.setLayout(new GridBagLayout());
+		gbc.gridx = 0;
+	    gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        dominationPanel.add(dominationLabel,gbc);
+        gbc.gridy++;
+        dominationPanel.add(dominationText,gbc);
+		gbc.gridy++;
+		
+		startupPanel.setLayout(new GridBagLayout());
+		gbc.gridx = 0;
+	    gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        startupPanel.add(startupLabel,gbc);
+        gbc.gridy++;
+        startupPanel.add(startupText,gbc);
+		gbc.gridy++;
+		
+		cardsPanel.setLayout(new GridBagLayout());
+		gbc.gridx = 0;
+	    gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        cardsPanel.add(cardsLabel,gbc);
+        gbc.gridy++;
+        cardsPanel.add(cardsText,gbc);
+		gbc.gridy++;
 		
 		scrollPane.setViewportView(dominationPanel);
 		scrollPane2.setViewportView(startupPanel);
 		scrollPane3.setViewportView(cardsPanel);
 		
-		
 		mainPanel.add(scrollPane);
 		mainPanel.add(scrollPane2);
 		mainPanel.add(scrollPane3);
+		
 		
 		frame.setContentPane(mainPanel);
 		frame.setVisible(true);
