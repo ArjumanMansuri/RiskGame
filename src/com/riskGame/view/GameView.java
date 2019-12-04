@@ -43,20 +43,22 @@ public class GameView {
 			startupText.setWrapStyleWord(true);
 			startupText.setEditable(false);
 		}
-		String cardData = StartupPhaseObserver.startupViewData;
+		String cardData = CardExchange.cardViewData;
 		if(cardData!=null && (!cardData.isEmpty())) {
 			cardsText.append(cardData);
 			cardsText.setLineWrap(true);
 			cardsText.setWrapStyleWord(true);
 			cardsText.setEditable(false);
 		}
+		dominationPanel.add(dominationText);
 		startupPanel.add(startupText);
 		cardsPanel.add(cardsText);
 		
-		scrollPane2.setViewportView(startupPanel);
-		scrollPane3.add(cardsPanel);
-		dominationPanel.add(dominationText);
 		scrollPane.setViewportView(dominationPanel);
+		scrollPane2.setViewportView(startupPanel);
+		scrollPane3.setViewportView(cardsPanel);
+		
+		
 		mainPanel.add(scrollPane);
 		mainPanel.add(scrollPane2);
 		mainPanel.add(scrollPane3);

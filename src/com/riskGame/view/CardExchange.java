@@ -43,7 +43,7 @@ public class CardExchange implements Observer {
 		cardViewData = showData;
 		StartupPhaseObserver.view.display();
 
-		showData = "Number of Artillary Cards = " + a + "\nNumber of Cavalry Cards = " + ca + "\nNumber of Infantry Cards = " + i;
+		showData = "\n Number of Artillary Cards = " + a + "\n Number of Cavalry Cards = " + ca + "\n Number of Infantry Cards = " + i;
 		System.out.println(showData);
 		cardViewData = showData;
 		StartupPhaseObserver.view.display();			
