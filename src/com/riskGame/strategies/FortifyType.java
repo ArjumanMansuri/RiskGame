@@ -287,8 +287,15 @@ class RandomFortify implements FortifyType,Serializable{
 		// generate random from country and to country
 		String fromCountry = generateFromCountry(p.getOwnedCountries());
 		String toCountry = generateToCountry(Country.getListOfCountries().get(fromCountry).getNeighbours());
-		int numArmiesToMove = generateRandomArmyCount(Country.getListOfCountries().get(fromCountry).getNumberOfArmies() - 1);
-
+		
+		int armiesToMoveCalc = Country.getListOfCountries().get(fromCountry).getNumberOfArmies() - 1;
+		
+		if(armiesToMoveCalc < 1) {
+			return "false";
+		}
+		
+		int numArmiesToMove = generateRandomArmyCount(armiesToMoveCalc);
+		
 		// move armies
 		int fromCountBeforeFortify = Country.getListOfCountries().get(fromCountry).getNumberOfArmies();
 		int toCountBeforeFortify = Country.getListOfCountries().get(toCountry).getNumberOfArmies();

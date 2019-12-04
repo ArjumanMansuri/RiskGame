@@ -43,7 +43,7 @@ public class GameView {
 			startupText.setWrapStyleWord(true);
 			startupText.setEditable(false);
 		}
-		String cardData = StartupPhaseObserver.startupViewData;
+		String cardData = CardExchange.cardViewData;
 		if(cardData!=null && (!cardData.isEmpty())) {
 			cardsText.append(cardData);
 			cardsText.setLineWrap(true);

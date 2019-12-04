@@ -323,21 +323,22 @@ class HumanAttack implements AttackType,Serializable{
 	  * @param attackerCountry current player's owned country
 	  * @param defenderCountry neighbor country of the owner country
 	  */
-	 private void moveArmies(String attackerCountry, Country defenderCountry, int player) {
+	 private void moveArmies(String attackerCountry, String defenderCountry, int player, int defenderPlayer) {
 		 int numOfArmiesCanBeMoved = Country.getListOfCountries().get(attackerCountry).getNumberOfArmies() / 2;
 		 
 		 // Set number of armies
 		 Country.getListOfCountries().get(attackerCountry).setNumberOfArmies(Country.getListOfCountries().get(attackerCountry).getNumberOfArmies() - numOfArmiesCanBeMoved);
-		 Country.getListOfCountries().get(defenderCountry.getCountryName()).setNumberOfArmies(Country.getListOfCountries().get(defenderCountry.getCountryName()).getNumberOfArmies() + numOfArmiesCanBeMoved);
+		 Country.getListOfCountries().get(defenderCountry).setNumberOfArmies(Country.getListOfCountries().get(defenderCountry).getNumberOfArmies() + numOfArmiesCanBeMoved);
 
-		 // change ownership of defender country
-		 Country.getListOfCountries().get(defenderCountry.getCountryName()).setOwner(player);
-
-		 Game.getPlayersList().get(player).getOwnedCountries().add(defenderCountry.getCountryName());
-		 Game.getPlayersList().get(defenderCountry.getOwner()).getOwnedCountries().remove(defenderCountry.getCountryName());
+		 // change ownership of defender country		 		 
+		 Country.getListOfCountries().get(defenderCountry).setOwner(player);
+		 System.out.println("Player " + player + " conquered " + defenderCountry);		 
+		 
+		 Game.getPlayersList().get(player).getOwnedCountries().add(defenderCountry);
+		 Game.getPlayersList().get(defenderPlayer).getOwnedCountries().remove(defenderCountry);
 
 		 // add defender country to the conquered list (so that it is skipped in the next iteration)
-		 conqueredList.add(defenderCountry.getCountryName());
+		 conqueredList.add(defenderCountry);
 	 }
 
 	 /**
@@ -367,8 +368,7 @@ class HumanAttack implements AttackType,Serializable{
 						 break;
 					 }
 				 }
-			 }
-			 
+			 }			 
 			 possibleNeighbors.put(ownCountry, neighborCountriesList);
 		 }
 		 
@@ -377,7 +377,8 @@ class HumanAttack implements AttackType,Serializable{
 			 ArrayList<Country> neighborCountries = neighborEntry.getValue();
 			 
 			 for(Country neighborCountry : neighborCountries) {
-				 moveArmies(ownCountry, neighborCountry, player);
+				 int neighborDefendPlayer = neighborCountry.getOwner();
+				 moveArmies(ownCountry, neighborCountry.getCountryName(), player, neighborDefendPlayer);
 			 }			 
 		 }	 
 		 
