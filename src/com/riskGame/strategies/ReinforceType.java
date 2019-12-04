@@ -8,6 +8,7 @@ import com.riskGame.controller.ReinforcementPhase;
 import com.riskGame.models.Country;
 import com.riskGame.models.Game;
 import com.riskGame.models.Player;
+import com.riskGame.observer.StartupPhaseObserver;
 
 /**
  * This interface helps implement strategy pattern for fortify type
@@ -95,11 +96,19 @@ class BenevolentReinforce implements ReinforceType,Serializable{
 		// reinforce weakest countries with approximately half armies on each
 		int totalArmies = Game.getPlayersList().get(player).getPlayerNumOfArmy();
 		String[] commandComponents = {"reinforce",minArmyCountries.get(0),String.valueOf(totalArmies/2)};
-		System.out.println("Reinforced "+minArmyCountries.get(0)+" with "+String.valueOf(totalArmies/2)+" armies");
+		String viewData = "Reinforced "+minArmyCountries.get(0)+" with "+String.valueOf(totalArmies/2)+" armies";
+		System.out.println(viewData);
+		StartupPhaseObserver.startupViewData = viewData;
+		StartupPhaseObserver.view.display();
 		rp.processReinforceCmd(player, commandComponents);
 		
 		String[] commandComponents2 = {"reinforce",minArmyCountries.get(1),String.valueOf(totalArmies - totalArmies/2)};
-		System.out.println("Reinforced "+minArmyCountries.get(1)+" with "+String.valueOf(totalArmies - totalArmies/2)+" armies");
+		
+		viewData = "Reinforced "+minArmyCountries.get(1)+" with "+String.valueOf(totalArmies - totalArmies/2)+" armies";
+		System.out.println(viewData);
+		StartupPhaseObserver.startupViewData = viewData;
+		StartupPhaseObserver.view.display();
+		
 		rp.processReinforceCmd(player, commandComponents2);
 		return "";
 	}
@@ -133,7 +142,11 @@ class AggresiveReinforce implements ReinforceType,Serializable{
 		}
 		// reinforce it
 		String[] commandComponents = {"reinforce",countryWithMaxArmies,String.valueOf(Game.getPlayersList().get(player).getPlayerNumOfArmy())};
-		System.out.println("Reinforced "+countryWithMaxArmies+" with "+String.valueOf(Game.getPlayersList().get(player).getPlayerNumOfArmy())+" armies");
+		String viewData = "Reinforced "+countryWithMaxArmies+" with "+String.valueOf(Game.getPlayersList().get(player).getPlayerNumOfArmy())+" armies";
+		System.out.println(viewData);
+		StartupPhaseObserver.startupViewData = viewData;
+		StartupPhaseObserver.view.display();
+		
 		rp.processReinforceCmd(player, commandComponents);
 		return "";
 	}
@@ -173,6 +186,12 @@ class RandomReinforce implements ReinforceType,Serializable{
 		int newNumberOfArmies = Country.getListOfCountries().get(countryName).getNumberOfArmies() + randomArmyCount;
 		Country.getListOfCountries().get(countryName).setNumberOfArmies(newNumberOfArmies);
 
+		String viewData = "Reinforced "+countryName+" with " + newNumberOfArmies +" armies";
+		System.out.println(viewData);
+		StartupPhaseObserver.startupViewData = viewData;
+		StartupPhaseObserver.view.display();
+		
+		
 		if(countryName.length() < 1 || newNumberOfArmies < 1){
 			return "false";
 		}
@@ -224,6 +243,11 @@ class CheaterReinforce implements ReinforceType,Serializable{
 			int beforeDouble = Country.getListOfCountries().get(countryName).getNumberOfArmies();
 			Country.getListOfCountries().get(countryName).setNumberOfArmies(beforeDouble * 2);
 
+			String viewData = "Reinforced "+countryName+" with " + beforeDouble * 2 +" armies";
+			System.out.println(viewData);
+			StartupPhaseObserver.startupViewData = viewData;
+			StartupPhaseObserver.view.display();
+			
 			if(Country.getListOfCountries().get(countryName).getNumberOfArmies() != (beforeDouble * 2)){
 				reinforceValid = false;
 			}

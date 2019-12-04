@@ -251,6 +251,11 @@ class HumanAttack implements AttackType,Serializable{
 		
 		int defenderPlayer = Country.getListOfCountries().get(toCountry).getOwner();
 
+		ap.notifyObserver("Attacker is player : " + Game.getPlayersList().get(player).getPlayerName());
+		ap.notifyObserver("Defender is player : " + Game.getPlayersList().get(Country.getListOfCountries().get(toCountry).getOwner()).getPlayerName());
+		ap.notifyObserver("Attacker country name is " + fromCountry);
+		ap.notifyObserver("Defender country name is " + toCountry);
+		
 		System.out.println("Attacker " + Game.getPlayersList().get(player).getPlayerName() + " has " + attackerArmies + " armies");
 		ap.notifyObserver("Attacker " + Game.getPlayersList().get(player).getPlayerName() + " has " + attackerArmies + " armies");
 		System.out.println("Defender " + Game.getPlayersList().get(defenderPlayer).getPlayerName()+ " has " +defenderArmies+  " armies");
@@ -281,6 +286,8 @@ class HumanAttack implements AttackType,Serializable{
 		if(result.contains("canConquer")) {
 			// conquer defender country by moving all armies except one to it
 			String moveArmiesCommand = "attackmove "+ String.valueOf(attackerArmies-1);
+			ap.notifyObserver(Game.getPlayersList().get(AttackPhase.getAttackerPlayer()).computeDominationViewData());
+			ap.notifyObserver(Game.getPlayersList().get(AttackPhase.getDefenderPlayer()).computeDominationViewData());
 			return ap.moveArmies(AttackPhase.getAttackerPlayer(), moveArmiesCommand);
 		}
 		else {
@@ -306,6 +313,7 @@ class HumanAttack implements AttackType,Serializable{
 	public String attackSetup(int player,String ...command) {
 		// TODO Auto-generated method stub
 		System.out.println("Attack skipped");
+		ap.notifyObserver("Benevolent attack skipped");
 		return "done";
 	}
  }
@@ -323,21 +331,28 @@ class HumanAttack implements AttackType,Serializable{
 	  * @param attackerCountry current player's owned country
 	  * @param defenderCountry neighbor country of the owner country
 	  */
-	 private void moveArmies(String attackerCountry, Country defenderCountry, int player) {
+	 private void moveArmies(String attackerCountry, String defenderCountry, int player, int defenderPlayer) {
 		 int numOfArmiesCanBeMoved = Country.getListOfCountries().get(attackerCountry).getNumberOfArmies() / 2;
 		 
 		 // Set number of armies
 		 Country.getListOfCountries().get(attackerCountry).setNumberOfArmies(Country.getListOfCountries().get(attackerCountry).getNumberOfArmies() - numOfArmiesCanBeMoved);
-		 Country.getListOfCountries().get(defenderCountry.getCountryName()).setNumberOfArmies(Country.getListOfCountries().get(defenderCountry.getCountryName()).getNumberOfArmies() + numOfArmiesCanBeMoved);
+		 Country.getListOfCountries().get(defenderCountry).setNumberOfArmies(Country.getListOfCountries().get(defenderCountry).getNumberOfArmies() + numOfArmiesCanBeMoved);
 
-		 // change ownership of defender country
-		 Country.getListOfCountries().get(defenderCountry.getCountryName()).setOwner(player);
+		 // change ownership of defender country		 		 
+		 Country.getListOfCountries().get(defenderCountry).setOwner(player);
+		 System.out.println("Player " + player + " conquered " + defenderCountry);		 
+		 
+		 Game.getPlayersList().get(player).getOwnedCountries().add(defenderCountry);
+		 Game.getPlayersList().get(defenderPlayer).getOwnedCountries().remove(defenderCountry);
 
-		 Game.getPlayersList().get(player).getOwnedCountries().add(defenderCountry.getCountryName());
-		 Game.getPlayersList().get(defenderCountry.getOwner()).getOwnedCountries().remove(defenderCountry.getCountryName());
-
+		 ap.notifyObserver("Attacker is player : " + Game.getPlayersList().get(player).getPlayerName());
+		 ap.notifyObserver("Defender is player : " + Game.getPlayersList().get(Country.getListOfCountries().get(defenderCountry).getOwner()).getPlayerName());
+		 ap.notifyObserver("Attacker country name is " + attackerCountry);
+		 ap.notifyObserver("Defender country name is " + defenderCountry);
+		 ap.notifyObserver(Game.getPlayersList().get(player).computeDominationViewData());
+		ap.notifyObserver(Game.getPlayersList().get(defenderPlayer).computeDominationViewData());
 		 // add defender country to the conquered list (so that it is skipped in the next iteration)
-		 conqueredList.add(defenderCountry.getCountryName());
+		 conqueredList.add(defenderCountry);
 	 }
 
 	 /**
@@ -367,8 +382,7 @@ class HumanAttack implements AttackType,Serializable{
 						 break;
 					 }
 				 }
-			 }
-			 
+			 }			 
 			 possibleNeighbors.put(ownCountry, neighborCountriesList);
 		 }
 		 
@@ -377,7 +391,8 @@ class HumanAttack implements AttackType,Serializable{
 			 ArrayList<Country> neighborCountries = neighborEntry.getValue();
 			 
 			 for(Country neighborCountry : neighborCountries) {
-				 moveArmies(ownCountry, neighborCountry, player);
+				 int neighborDefendPlayer = neighborCountry.getOwner();
+				 moveArmies(ownCountry, neighborCountry.getCountryName(), player, neighborDefendPlayer);
 			 }			 
 		 }	 
 		 
@@ -409,10 +424,13 @@ class HumanAttack implements AttackType,Serializable{
 		String attackCountries = "";
 		int attackCounter = generateRandomCount(MAX_LIMIT_ATTACK_RANDOM);
 		System.out.println("Attack will happen "+attackCounter+" times.");
+		ap.notifyObserver("Attack will happen "+attackCounter+" times.");
 		while (attackCounter > 0) {
 			System.out.println("Main Attack "+attackCounter);
+			ap.notifyObserver("Main Attack "+attackCounter);
 			attackCountries = generateRandomAttackerAndDefender(p.getOwnedCountries()); // generating a random attacker and defender country for attack
 			if(attackCountries.trim().length()==0) {
+				ap.notifyObserver("Main Attack "+attackCounter+" skipped");
 				System.out.println("Main Attack "+attackCounter+" skipped");
 				System.out.println();
 				attackCounter--;
@@ -423,6 +441,7 @@ class HumanAttack implements AttackType,Serializable{
 			String defenderCountry = attackCountries.split(",")[1];
 			
 			if(attackerCountry.trim().length()==0 || defenderCountry.trim().length()==0) {
+				ap.notifyObserver("Main Attack "+attackCounter+" skipped");
 				System.out.println("Main Attack "+attackCounter+" skipped");
 				System.out.println();
 				attackCounter--;
@@ -444,12 +463,16 @@ class HumanAttack implements AttackType,Serializable{
 			AttackPhase.setDefenderDiceNum(defenderDiceNum);
 			int singleAttackCounter = generateRandomCount(MAX_LIMIT_ATTACK_RANDOM);
 			System.out.println("Will try to attack "+singleAttackCounter+" times each.");
+			ap.notifyObserver("Will try to attack "+singleAttackCounter+" times each.");
 			int attackerArmies = Country.getListOfCountries().get(attackerCountry).getNumberOfArmies();
 			int defenderArmies = Country.getListOfCountries().get(defenderCountry).getNumberOfArmies();
 			while(attackerArmies>1 && singleAttackCounter>0 && defenderArmies>0) {
 				System.out.println("Sub Attack "+singleAttackCounter);
+				ap.notifyObserver("Sub Attack "+singleAttackCounter);
 				System.out.println("Attacker Country : "+attackerCountry);
+				ap.notifyObserver("Attacker Country : "+attackerCountry);
 				System.out.println("Defender Country : "+defenderCountry);
+				ap.notifyObserver("Defender Country : "+defenderCountry);
 				System.out.println("Attacker " + Game.getPlayersList().get(player).getPlayerName() + " has " + attackerArmies + " armies");
 				ap.notifyObserver("Attacker " + Game.getPlayersList().get(player).getPlayerName() + " has " + attackerArmies + " armies");
 				System.out.println("Defender " + Game.getPlayersList().get(defenderPlayer).getPlayerName()+ " has " +defenderArmies+  " armies");
@@ -464,7 +487,9 @@ class HumanAttack implements AttackType,Serializable{
 					int moveArmies = generateRandomCount(attackerArmies-1);
 					String moveArmiesCommand = "attackmove "+ String.valueOf(moveArmies);
 					ap.moveArmies(AttackPhase.getAttackerPlayer(), moveArmiesCommand);
-					
+					ap.notifyObserver(Game.getPlayersList().get(AttackPhase.getAttackerPlayer()).computeDominationViewData());
+					ap.notifyObserver(Game.getPlayersList().get(AttackPhase.getDefenderPlayer()).computeDominationViewData());
+					ap.notifyObserver("Ending main attack "+attackCounter);
 					System.out.println("Ending main attack "+attackCounter);
 					attackCounter--;
 					continue;

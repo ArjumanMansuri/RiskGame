@@ -90,7 +90,7 @@ public class MapFileEdit {
 	 * @return true if file is valid else false
 	 */
 	private boolean validateMapOnLoadAndSave(String fileName) {
-		selectMapParser(fileName);
+		selectMapParser(fileName);		
 		if(mapParser.validateValidMapFile(fileName)) {
 			Map editMap = Game.getEditMap();
 			editMap = mapParser.read(fileName);
@@ -782,14 +782,14 @@ public class MapFileEdit {
 	 * @return
 	 */
 	public BaseMapFile selectMapParser(String fileName){
-		int identifyMap = identifyMapType(BaseMapFile.MAP_FILE_DIR + fileName);
+		int identifyMap = identifyMapType(fileName);
 		boolean response = false;
 		switch(identifyMap){
-			case TYPE_CONQUEST_MAP:
+			case TYPE_CONQUEST_MAP:				
 				mapParser = new MapFileParserAdapter();
 				response = true;
 				break;
-			case TYPE_DOMINATION_MAP:
+			case TYPE_DOMINATION_MAP:				
 				mapParser = new DominationMapParser();
 				response = true;
 				break;
@@ -803,9 +803,9 @@ public class MapFileEdit {
 		int MapFileType = INVALID_MAP_FILE_TYPE;
 		try {
 			FileReader  identifyMapFileReader =  new FileReader(fileName);
-			BufferedReader readMap = new BufferedReader(identifyMapFileReader);
+			BufferedReader readMap = new BufferedReader(identifyMapFileReader);			
 			while(readMap.ready()) {
-				String line = readMap.readLine().trim();
+				String line = readMap.readLine().trim();				
 				if(line.isEmpty()) {
 					continue;
 				}
@@ -818,7 +818,7 @@ public class MapFileEdit {
 				}
 			}
 		} catch(FileNotFoundException e){
-			//
+			System.out.println("Sorry there was an error" + e.getMessage());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

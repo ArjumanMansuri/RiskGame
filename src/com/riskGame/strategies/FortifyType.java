@@ -106,6 +106,8 @@ class HumanFortify implements FortifyType,Serializable{
 			// move armies
 			Country.getListOfCountries().get(fromCountry).setNumberOfArmies(Country.getListOfCountries().get(fromCountry).getNumberOfArmies()-num);
 			Country.getListOfCountries().get(toCountry).setNumberOfArmies(Country.getListOfCountries().get(toCountry).getNumberOfArmies()+num);
+			
+			fp.notifyObserver("Fortified "+toCountry+" from "+fromCountry+" with "+num+" armies.");
 		}
 		return "done";
 	}
@@ -164,6 +166,7 @@ class AggresiveFortify implements FortifyType,Serializable{
 		Country.getListOfCountries().get(fromCountry).setNumberOfArmies(Country.getListOfCountries().get(fromCountry).getNumberOfArmies()-armiesToMove);
 		Country.getListOfCountries().get(toCountry).setNumberOfArmies(Country.getListOfCountries().get(toCountry).getNumberOfArmies()+armiesToMove);
 		System.out.println("Fortified from "+fromCountry+" to "+toCountry+" with "+String.valueOf(armiesToMove)+" armies");
+		fp.notifyObserver("Fortified "+toCountry+" from "+fromCountry+" with "+armiesToMove+" armies.");
 		return "done";
 	}
 
@@ -220,6 +223,7 @@ class BenevolentFortify implements FortifyType,Serializable{
 		Country.getListOfCountries().get(fromCountry).setNumberOfArmies(Country.getListOfCountries().get(fromCountry).getNumberOfArmies()-armiesToMove);
 		Country.getListOfCountries().get(toCountry).setNumberOfArmies(Country.getListOfCountries().get(toCountry).getNumberOfArmies()+armiesToMove);
 		System.out.println("Fortified from "+fromCountry+" to "+toCountry+" with "+String.valueOf(armiesToMove)+" armies");
+		fp.notifyObserver("Fortified "+toCountry+" from "+fromCountry+" with "+armiesToMove+" armies.");
 		return "done";
 	}
 
@@ -260,6 +264,7 @@ class CheaterFortify implements FortifyType,Serializable{
 			// if eligible - Double the army count
 			if(shouldDoubleFortify){
 				Country.getListOfCountries().get(ownCountry).setNumberOfArmies( Country.getListOfCountries().get(ownCountry).getNumberOfArmies() * 2 );
+				fp.notifyObserver("Fortified "+ownCountry+" by doubling it's armies.");
 				fortifiedCheater = true;
 			}
 		}
@@ -301,7 +306,7 @@ class RandomFortify implements FortifyType,Serializable{
 		int toCountBeforeFortify = Country.getListOfCountries().get(toCountry).getNumberOfArmies();
 		Country.getListOfCountries().get(fromCountry).setNumberOfArmies(fromCountBeforeFortify - numArmiesToMove);
 		Country.getListOfCountries().get(toCountry).setNumberOfArmies(toCountBeforeFortify + numArmiesToMove);
-
+		fp.notifyObserver("Fortified "+toCountry+" from "+fromCountry+" with "+numArmiesToMove+" armies.");
 		// check if before fortify and after fortify values are same
 		if(fromCountBeforeFortify == Country.getListOfCountries().get(fromCountry).getNumberOfArmies() && Country.getListOfCountries().get(toCountry).getNumberOfArmies() == toCountBeforeFortify){
 			return "false";
