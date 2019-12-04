@@ -12,6 +12,7 @@ public class DominationMapParser implements BaseMapFile {
     static HashMap<Integer,String> countryIndexes = new HashMap<Integer,String>();  // variable to retain the country indexes
     static HashMap<String,String> countryContinentIndexes = new HashMap<String,String>();  // variable to retain the country continents
     static HashMap<String, Integer> continentsIndex = new HashMap<String, Integer>();
+    static HashMap<Integer, String> continentsIndexName = new HashMap<Integer, String>();
     MapFileEdit fileEdit;
 
     public DominationMapParser() {
@@ -41,6 +42,8 @@ public class DominationMapParser implements BaseMapFile {
                 if(line.isEmpty()) {
                     continue;
                 }
+                
+                
                 if(line.equals("[continents]")) {
                     continentsLineFound = true;
                     countriesLineFound = false;
@@ -70,13 +73,14 @@ public class DominationMapParser implements BaseMapFile {
 
                     // temporary storage of continent and the index
                     continentsIndex.put(continentLine[0], continentCounter);
+                    continentsIndexName.put(continentCounter, continentLine[0]);
 
                     // this counter is the continent index used in the countries list
                     continentCounter++;
                 }
 
                 // countries lines parser
-                if(countriesLineFound) {
+                if(countriesLineFound) {                	
                     String[] countryLine = line.split(" ");
 
                     /**
@@ -84,9 +88,9 @@ public class DominationMapParser implements BaseMapFile {
                      */
                     String countryContinent = countryLine[2]; // continent line
 
-                    if(!continentsIndex.containsValue(countryContinent)){
+                    if(!continentsIndex.containsValue(Integer.parseInt(countryContinent.trim()))){
                         // Continent doesn't exist - throw invalid map error
-                    } else {
+                    } else {                    	
                         int countryIndex = Integer.parseInt(countryLine[0]);
                         String countryName = countryLine[1];
 
@@ -102,7 +106,8 @@ public class DominationMapParser implements BaseMapFile {
 
                     int countryIndex = Integer.parseInt(countryBorderLine[0]);
                     String countryName = countryIndexes.get(countryIndex);
-                    String countryContinent = countryContinentIndexes.get(countryName); // continent line
+                    String countryContinent = countryContinentIndexes.get(countryName); // continent line - this is numeric index 
+                    String countryContinentName = continentsIndexName.get(Integer.parseInt(countryContinent));
                     HashMap<String,Country> neighbors = convertToTerritories(countryBorderLine);
 
                     // make the country object and push to the country static list and continent list
@@ -111,8 +116,8 @@ public class DominationMapParser implements BaseMapFile {
                     currentCountry.setContinent(countryContinent);
                     currentCountry.setNeighbours(neighbors);
 
-                    // Update country to continent
-                    Continent continentToUpdate = continents.get(countryContinent);
+                    // Update country to continent                    
+                    Continent continentToUpdate = continents.get(countryContinentName);                    
                     continentToUpdate.pushTerritory(currentCountry);
 
                     // Add country to static map in Country
