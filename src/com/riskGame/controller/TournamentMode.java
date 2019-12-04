@@ -225,7 +225,14 @@ public class TournamentMode {
         
         if(!playerWon) {
             /* turns ended set the game to draw */
-        	String gameResult = gameWinnerList.get(map) + " \t Draw";        	
+        	String gameResult = "";
+        	if(gameWinnerList.containsKey(map) && !gameWinnerList.get(map).trim().isEmpty()) {
+//    			gameResult = gameWinnerList.get(map).trim() + " \t " + playerName;
+    			gameResult = gameWinnerList.get(map) + " \t Draw";
+    		}else {
+    			gameResult = "Draw \t ";    			
+    		}		
+        	
         	gameWinnerList.put(map, gameResult);            
         }        
         
