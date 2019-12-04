@@ -82,6 +82,7 @@ public class GameLaunch {
 
                         if (gameOpt == 3) {
                             TournamentMode.tournamentCommandInput();
+                            return;
                         }
 
                         StartUpPhase startUpPhase = new StartUpPhase();
