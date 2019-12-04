@@ -31,7 +31,7 @@ public class StartUpTest {
 	 */
 	@Test
 	public void testInputValidator(){
-		assertEquals(1, st.inputValidator("gameplayer -add a -add b"));
+		assertEquals(1, st.inputValidator("gameplayer -add a human -add b cheater"));
 	}
 	/**
 	 * This method tests if the player gets the armies assigned correctly.
@@ -44,7 +44,7 @@ public class StartUpTest {
 		temp.put(1,playerTest);
 		temp.put(2,p2);
 
-		assertEquals("done",st.allPlayerArmies());
+		assertEquals("",st.allPlayerArmies());
 	}
 
 	/**
@@ -63,4 +63,8 @@ public class StartUpTest {
 		assertEquals("done", st.parser("5"));
 	}
 
+	@Test
+	public void testIsNumberOfArgumentsCorrect(){
+		st.isNumberOfArgumentsCorrect(new String[]{"gameplayer -add a human -remove n"});
+	}
 }

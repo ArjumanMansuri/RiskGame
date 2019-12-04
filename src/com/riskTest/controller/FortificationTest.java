@@ -30,6 +30,8 @@ public class FortificationTest {
 		HashMap<String, Country> countriesMap = new HashMap<String, Country>();
 		ArrayList<String> p1OwnedCountries = new ArrayList<String>();
 		String[] countries = {"Iran", "Japan", "canada","Germany", "France", "Siberia"};
+
+
 		for(String countryName: countries) {
 			Country newCountry = new Country();
 			newCountry.setCountryName(countryName);
@@ -51,10 +53,34 @@ public class FortificationTest {
 	}
 	
 	/**
-	 * This method is to test if fortification is done properly
+	 * This method is to test if countries exist or not
 	 */
 	@Test
-	public void testFortification() {
-		//assertEquals(true,p1.fortify(1, "fortify Iran Japan 3").contains("done"));
+	public void testdoCountriesExist() {
+		ArrayList<String> country = new ArrayList<String>();
+		country.add("India");
+		country.add("China");
+		country.add("Iran");
+		assertEquals(true,fp.doCountriesExist(country,"India","Iran"));
+	}
+
+	@Test
+	public void testAreArmiesSufficiantToMove(){
+
+		assertEquals(true, fp.areArmiesSufficientToMove("Japan",4));
+	}
+
+	@Test
+	public void testAreCountriesNotOwnedByPlayer(){
+		ArrayList<String> country = new ArrayList<String>();
+		country.add("India");
+		country.add("China");
+		country.add("Iran");
+		assertEquals(false,fp.areCountriesNotOwnedByPlayer(country,"India","China"));
+	}
+
+	@Test
+	public void testAreCountriesAdjacent(){
+		assertEquals(false, fp.areCountriesAdjacent("Japan","Iran"));
 	}
 }

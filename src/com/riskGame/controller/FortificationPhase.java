@@ -40,7 +40,6 @@ public class FortificationPhase implements PhaseViewPublisher {
 
 	/**
 	 * This method checks if the countries provided as parameters are adjacent
-	 * @param ownedCountries List of countries owned by the player
 	 * @param fromCountry Name of the country from which player wants to move his army/armies
 	 * @param toCountry Name of the country to which player wants to move his army/armies
 	 * @return true if the countries are adjacent else false

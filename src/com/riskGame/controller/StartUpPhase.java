@@ -219,6 +219,7 @@ public class StartUpPhase implements PhaseViewPublisher, PlayerDominationViewPub
 		this.notifyDominationObserver(p.computeDominationViewData());
 		return "donePlaceall";
 	}
+
 	/**
 	 * This method checks if all armies for all the players are placed.
 	 * @return string value.
@@ -391,6 +392,7 @@ public class StartUpPhase implements PhaseViewPublisher, PlayerDominationViewPub
 			return false;
 		}
 	}
+
 	/**
 	 * This method checks if the hashmap contains the string or not.
 	 * @param temp Hashmap with the data.
