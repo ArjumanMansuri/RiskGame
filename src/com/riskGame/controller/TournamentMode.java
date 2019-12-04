@@ -160,9 +160,7 @@ public class TournamentMode {
         			System.out.println("Skipping fortification phase for this player..");
         			continue;	
         		}
-        	            	
-            	System.out.println(removeList);
-                
+        	    
                 /* Fortify phase for the current player */
                 System.out.println("Fortification phase starts...");
                 Game.getPlayersList().get(playerNumber).getFortifyType().fortify(playerNumber);
