@@ -286,7 +286,9 @@ public class StartUpPhase implements PhaseViewPublisher, PlayerDominationViewPub
 					p.setPlayerName(parsedString[i+1]);
 					p.setPlayerNumOfArmy(army[noOfPlayers-2]);
 					p.setPlayerType(behaviour);
+
 					playersData.put(playerId,p);
+
 					i+=2;
 					playerId++;
 				}
@@ -301,16 +303,18 @@ public class StartUpPhase implements PhaseViewPublisher, PlayerDominationViewPub
 
 						if(temp.getPlayerName().equals(parsedString[i+1])) {
 							if(x==noOfPlayers) {
+
 								playersData.remove(x);
 								i++;
 							}
 							else
 							{
-								for(int y=x; y<playersData.size();y++) {
+								int y;
+								for(y=x; y<playersData.size();y++) {
 									playersData.put(y,playersData.get(y+1));
 									i++;
 								}
-								playersData.remove(noOfPlayers);
+								playersData.remove(y);
 								x=noOfPlayers+1;
 							}
 						}
