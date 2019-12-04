@@ -14,42 +14,53 @@ public class GameView {
 	static PlayerDominationViewObserver domination = new PlayerDominationViewObserver();
 	static StartupPhaseObserver startup = new StartupPhaseObserver();
 	
-	JPanel mainPanel  = new JPanel(new GridLayout(1,2));
-	JTextArea textArea = new JTextArea(30,40);
-	JTextArea textArea2 = new JTextArea(30,40);
-	JPanel jpanelNorth = new JPanel();
-	JPanel jpanelSouth = new JPanel();
+	JPanel mainPanel  = new JPanel(new GridLayout(1,3));
+	JTextArea dominationText = new JTextArea(30,40);
+	JTextArea startupText = new JTextArea(30,40);
+	JTextArea cardsText = new JTextArea(30,40);
+	JPanel dominationPanel = new JPanel();
+	JPanel startupPanel = new JPanel();
+	JPanel cardsPanel = new JPanel();
 	JScrollPane scrollPane = new JScrollPane();
 	JScrollPane scrollPane2 = new JScrollPane();
+	JScrollPane scrollPane3 = new JScrollPane();
 	JFrame frame = new JFrame();
 	
 	public void display() {
 		String dominationData =domination.dominationViewData;
 		if(dominationData!=null && (!dominationData.isEmpty())) {
-		textArea.append(dominationData);
-		textArea.append("\n-------------------------\n");
-		textArea.setLineWrap(true);
-		textArea.setWrapStyleWord(true);
-		textArea.setEditable(false);
+			dominationText.append(dominationData);
+			dominationText.setLineWrap(true);
+			dominationText.setWrapStyleWord(true);
+			dominationText.setEditable(false);
 		}
-		String startupData = startup.startupViewData;
+		String startupData = StartupPhaseObserver.startupViewData;
 		if(startupData!=null && (!startupData.isEmpty())) {
-		textArea2.append(startupData);
-		textArea2.append("\n-------------------------\n");
-		textArea2.setLineWrap(true);
-		textArea2.setWrapStyleWord(true);
-		textArea2.setEditable(false);
-		jpanelNorth.add(textArea);
-		jpanelSouth.add(textArea2);
+			startupText.append(startupData);
+			startupText.setLineWrap(true);
+			startupText.setWrapStyleWord(true);
+			startupText.setEditable(false);
 		}
-		scrollPane.setViewportView(jpanelNorth);
-		scrollPane2.setViewportView(jpanelSouth);
+		String cardData = StartupPhaseObserver.startupViewData;
+		if(cardData!=null && (!cardData.isEmpty())) {
+			cardsText.append(cardData);
+			cardsText.setLineWrap(true);
+			cardsText.setWrapStyleWord(true);
+			cardsText.setEditable(false);
+		}
+		dominationPanel.add(dominationText);
+		startupPanel.add(startupText);
+		cardsPanel.add(cardsText);
+		scrollPane.setViewportView(dominationPanel);
+		scrollPane2.setViewportView(startupPanel);
+		scrollPane3.add(cardsPanel);
 		mainPanel.add(scrollPane);
 		mainPanel.add(scrollPane2);
+		mainPanel.add(scrollPane3);
 		
 		frame.setContentPane(mainPanel);
 		frame.setVisible(true);
-		frame.setSize(1000, 1000);
+		frame.setSize(1300, 1300);
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		frame.setResizable(false);
 		frame.pack();

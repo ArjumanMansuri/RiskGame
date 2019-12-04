@@ -32,6 +32,7 @@ public class ReinforcementPhaseObserver extends PhaseViewObserver{
 		if(! (action == null))
 		{
 			StartupPhaseObserver.startupViewData= action;
+			StartupPhaseObserver.view.display();
 		}	
 		else
 			StartupPhaseObserver.startupViewData ="";
