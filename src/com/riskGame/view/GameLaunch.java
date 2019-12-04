@@ -151,7 +151,7 @@ public class GameLaunch {
                                                 response = startUpPhase.placeArmy(i, sc.nextLine().toString());
                                                 if (response.equals("donePlaceArmy")) {
                                                     GameLaunch.printPlayerInformation(i);
-                                                    startUpPhase.notifyDominationObserver(Game.getPlayersList().get(i).computeDominationViewData());
+                                                    startUpPhase.notifyObserver(Game.getPlayersList().get(i).computeDominationViewData());
                                                 }
                                             } while (!response.equals("donePlaceArmy"));
                                         } else {
@@ -165,7 +165,7 @@ public class GameLaunch {
                                                 response = startUpPhase.placeAll(i, command);
                                                 if (response.equals("donePlaceall")) {
                                                     GameLaunch.printPlayerInformation(i);
-                                                    startUpPhase.notifyDominationObserver(Game.getPlayersList().get(i).computeDominationViewData());
+                                                    startUpPhase.notifyObserver(Game.getPlayersList().get(i).computeDominationViewData());
                                                 }
                                             } while (!response.equals("donePlaceall"));
                                         }
