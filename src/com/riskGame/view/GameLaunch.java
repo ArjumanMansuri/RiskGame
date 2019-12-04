@@ -374,6 +374,7 @@ public class GameLaunch {
                                         op = GameLaunch.printPlayerInformation(defender);
                                         System.out.println(op);
                                         startUpPhase.notifyObserver(op);
+                                        startUpPhase.notifyObserver(Game.getPlayersList().get(i).computeDominationViewData());
                                     }
                                 }
                                  else {
@@ -381,10 +382,12 @@ public class GameLaunch {
                                     String op = GameLaunch.printPlayerInformation(i);
                                     System.out.println(op);
                                     startUpPhase.notifyObserver(op);
+                                    startUpPhase.notifyObserver(Game.getPlayersList().get(i).computeDominationViewData());
                                     if(!Game.getPlayersList().get(i).getPlayerType().equals("benevolent")) {
                                     	op = GameLaunch.printPlayerInformation(AttackPhase.getDefenderPlayer());
                                         System.out.println(op);
                                         startUpPhase.notifyObserver(op);
+                                       
                                     }
                                     if (ap.hasPlayerWon(i)) {
                                     	System.out.println("Player "+Game.getPlayersList().get(i).getPlayerName()+" won..!!!");
