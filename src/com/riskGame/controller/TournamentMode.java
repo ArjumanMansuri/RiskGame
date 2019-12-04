@@ -112,6 +112,19 @@ public class TournamentMode {
                 startPlaying(tournamentStrategies, tournamentTurnsNum, gameIndex, mapFileName);
             }
         }
+        
+        // Display the winner list table        
+        System.out.print("Map     \t");
+        for (int gameIndex = 1; gameIndex <= tournamentGamesNum; gameIndex++) {
+        	System.out.print("Game " + gameIndex + " \t ");
+        }
+        
+        System.out.println("");
+        
+        for(Entry<String, String> gameWinner : gameWinnerList.entrySet()) {
+        	String map = gameWinner.getKey();        	   
+        	System.out.println(map + " \t " + gameWinner.getValue());
+        }
     }
 
     private static void startPlaying(String[] tournamentStrategies, int tournamentTurnsNum, int gameIndex, String map) {
@@ -171,7 +184,8 @@ public class TournamentMode {
         
         if(!playerWon) {
             /* turns ended set the game to draw */
-            gameWinnerList.put(map, "Game " + gameIndex + "$Draw");
+        	String gameResult = gameWinnerList.get(map) + " \t Draw";        	
+        	gameWinnerList.put(map, gameResult);            
         }        
         
         System.out.println("Game  " + gameIndex + " has ended.");
@@ -197,7 +211,13 @@ public class TournamentMode {
 	}
 
 	private static void setGameWinner(int gameIndex, String map, String playerName) {
-        gameWinnerList.put(map, "Game " + gameIndex + "$" + playerName);
+		String gameResult = "";
+		if(gameWinnerList.containsKey(map) && !gameWinnerList.get(map).trim().isEmpty()) {
+			gameResult = gameWinnerList.get(map).trim() + " \t " + playerName;			
+		}else {
+			gameResult  = playerName;
+		}		    	
+    	gameWinnerList.put(map, gameResult);        
     }
 
     /**

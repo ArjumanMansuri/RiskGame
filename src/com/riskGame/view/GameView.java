@@ -54,7 +54,7 @@ public class GameView {
 		cardsPanel.add(cardsText);
 		
 		scrollPane2.setViewportView(startupPanel);
-		scrollPane3.add(cardsPanel);
+		scrollPane3.setViewportView(cardsPanel);
 		dominationPanel.add(dominationText);
 		scrollPane.setViewportView(dominationPanel);
 		mainPanel.add(scrollPane);
