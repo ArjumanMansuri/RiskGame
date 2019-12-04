@@ -31,7 +31,7 @@ public class TournamentMode {
     }
 
     //	List<String>
-    private static boolean checkTournamentCommandArgs(String commandInput) {
+    public static boolean checkTournamentCommandArgs(String commandInput) {
         List<String> commandList = new ArrayList<String>(Arrays.asList(commandInput.split(" "))); // commands split by space
         List<String> processArgList = new ArrayList<String>();
 
