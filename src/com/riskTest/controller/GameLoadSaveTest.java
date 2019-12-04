@@ -2,6 +2,7 @@ package com.riskTest.controller;
 
 import com.riskGame.controller.*;
 import com.riskGame.models.*;
+import com.riskGame.builder.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -12,7 +13,9 @@ import java.util.HashMap;
 import static org.junit.Assert.assertEquals;
 
 public class GameLoadSaveTest {
-	GameLoadSave gls = new GameLoadSave();
+	LoadGame lg = new LoadGame();
+	SaveGame sg = new SaveGame();
+
 	/**
 	 * Test if the card type is correctly set.
 	 */
@@ -28,7 +31,7 @@ public class GameLoadSaveTest {
 		Game.setPlayerTurn(1);
 		Country.setListOfCountries(new HashMap<String, Country>());
 		try {
-			assertEquals("done", GameLoadSave.save("savegame filename"));
+			assertEquals("done", sg.buildGame("savegame filename"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -46,16 +49,15 @@ public class GameLoadSaveTest {
 		Game.setPlayerTurn(1);
 		Country.setListOfCountries(new HashMap<String, Country>());
 		try {
-			gls.save("savegame abc");
+			sg.buildGame("savegame abc");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		try {
-			assertEquals("done",gls.load("loadgame abc"));
+			assertEquals("done",lg.buildGame("loadgame abc"));
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
 		}
+
 	}
 }
