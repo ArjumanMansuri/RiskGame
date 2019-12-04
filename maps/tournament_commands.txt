@@ -1,0 +1,28 @@
+##########################################
+##           2 Player Strategies         #
+##########################################
+
+
+tournament -M Small.map -P random aggressive -G 2 -D 30
+
+tournament -M Small.map -P random benevolent -G 2 -D 30
+
+tournament -M Small.map -P random cheater -G 2 -D 30
+
+tournament -M Small.map -P aggressive cheater -G 2 -D 30
+
+
+##########################################
+##           3 Player Strategies         #
+##########################################
+
+
+tournament -M Small.map -P cheater random aggressive -G 2 -D 30
+
+
+##########################################
+##           4 Player Strategy           #
+##########################################
+
+
+tournament -M Small.map -P random cheater aggressive benevolent -G 2 -D 30
