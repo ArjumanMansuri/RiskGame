@@ -3,6 +3,11 @@ package com.riskGame.view;
 import java.io.IOException;
 import java.util.*;
 
+import com.riskGame.builder.Director;
+import com.riskGame.builder.LoadGame;
+import com.riskGame.builder.Product;
+import com.riskGame.builder.ProductBuilder;
+import com.riskGame.builder.SaveGame;
 import com.riskGame.controller.*;
 import com.riskGame.models.Country;
 import com.riskGame.models.Game;
@@ -25,6 +30,11 @@ public class GameLaunch {
      */
     public static void main(String[] args) throws IOException, ClassNotFoundException {
 
+    	Director director;
+    	Product game;
+    	ProductBuilder loadBuilder = new LoadGame();
+    	ProductBuilder saveBuilder = new SaveGame();
+    	director = new Director();
         int optionMain;
         String noOfPlayers;
         do {
@@ -60,7 +70,10 @@ public class GameLaunch {
                                 System.out.println("To load a saved game, use command : loadgame 'fileName'");
                                 command = sc.nextLine().trim();
                             }
-                            result = GameLoadSave.load(command);
+                            
+                            director.setBuilder(loadBuilder); 
+                            result = director.constructProduct(command);
+                  
                         } while (!result.equals("done"));
                         loadGame = true;
                     }
@@ -208,7 +221,7 @@ public class GameLaunch {
                                         GameLaunch.printPlayerInformation(i);
                                         System.out.println("Use command : reinforce 'countryname' 'num'");
                                         System.out.println("Number of reinforcement armies available : " + Game.getPlayersList().get(i).getPlayerNumOfArmy());
-                                        System.out.println("To quit and save the game, use command : savegame");
+                                        System.out.println("To quit and save the game, use command : savegame 'filename'");
                                         String command = sc.nextLine().trim();
                                         if (command.contains("savegame")) {
                                             String result = "";
@@ -218,12 +231,14 @@ public class GameLaunch {
                                                     System.out.println("To quit and save the game, use command : savegame 'filename'");
                                                     command = sc.nextLine().trim();
                                                 }
-                                                result = GameLoadSave.save(command);
+                                                director.setBuilder(saveBuilder); 
+                                                result = director.constructProduct(command);
                                             } while (!result.equals("done"));
                                             System.exit(0);
                                         }
 
                                         response = Game.getPlayersList().get(i).getReinforceType().reinforce(i, command);
+                                        GameLaunch.printPlayerInformation(i);
                                     }
                                 } else {
                                     Game.getPlayersList().get(i).getReinforceType().reinforce(i);
@@ -264,7 +279,8 @@ public class GameLaunch {
                                                             System.out.println("To quit and save the game, use command : savegame 'filename'");
                                                             command = sc.nextLine().trim();
                                                         }
-                                                        result = GameLoadSave.save(command);
+                                                        director.setBuilder(saveBuilder); 
+                                                        result = director.constructProduct(command);
                                                     } while (!result.equals("done"));
                                                     System.exit(0);
                                                 }
@@ -379,7 +395,8 @@ public class GameLaunch {
                                                     System.out.println("To quit and save the game, use command : savegame 'filename'");
                                                     command = sc.nextLine().trim();
                                                 }
-                                                result = GameLoadSave.save(command);
+                                                director.setBuilder(saveBuilder); 
+                                                result = director.constructProduct(command);
                                             } while (!result.equals("done"));
                                             System.exit(0);
                                         }

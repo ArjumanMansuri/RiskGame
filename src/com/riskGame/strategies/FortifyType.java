@@ -151,10 +151,14 @@ class AggresiveFortify implements FortifyType,Serializable{
 			}
 			if(ownedCountries.size() == maxTriedCountries.size()) {
 				System.out.println("Fortification skipped");
-				break;
+				return "done";
 			}											  
 		}while(fromCountry.length()==0);
 		
+		if(fromCountry.trim().length()==0 || toCountry.trim().length()==0){
+			System.out.println("Fortification skipped");
+			return "done";
+		}
 		int armiesToMove = Country.getListOfCountries().get(fromCountry).getNumberOfArmies() - 1;
 		// move armies
 		Country.getListOfCountries().get(fromCountry).setNumberOfArmies(Country.getListOfCountries().get(fromCountry).getNumberOfArmies()-armiesToMove);
@@ -208,8 +212,6 @@ class BenevolentFortify implements FortifyType,Serializable{
 			if(ownedCountries.size() == minTriedCountries.size()) {
 				System.out.println("Fortification skipped");
 				return "done";
-																																		   
-							
 			}
 		}while(fromCountry.length()==0);
 		
