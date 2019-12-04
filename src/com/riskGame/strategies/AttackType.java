@@ -235,6 +235,11 @@ class HumanAttack implements AttackType,Serializable{
 				break;
 			}											  
 		}while(toCountry.length()==0);
+		
+		if(fromCountry.length()==0 || toCountry.length()==0) {
+			return "done";
+		}
+		
 		System.out.println(fromCountry + " and " + toCountry + " exist in countries list which are owned by neighbouring country players");	
 		ap.notifyObserver(fromCountry + " and " + toCountry + " exist in countries list which are owned by neighbouring country players" );
 
@@ -318,22 +323,21 @@ class HumanAttack implements AttackType,Serializable{
 	  * @param attackerCountry current player's owned country
 	  * @param defenderCountry neighbor country of the owner country
 	  */
-	 private void moveArmies(String attackerCountry, String defenderCountry, int player, int defenderPlayer) {
+	 private void moveArmies(String attackerCountry, Country defenderCountry, int player) {
 		 int numOfArmiesCanBeMoved = Country.getListOfCountries().get(attackerCountry).getNumberOfArmies() / 2;
 		 
 		 // Set number of armies
 		 Country.getListOfCountries().get(attackerCountry).setNumberOfArmies(Country.getListOfCountries().get(attackerCountry).getNumberOfArmies() - numOfArmiesCanBeMoved);
-		 Country.getListOfCountries().get(defenderCountry).setNumberOfArmies(Country.getListOfCountries().get(defenderCountry).getNumberOfArmies() + numOfArmiesCanBeMoved);
+		 Country.getListOfCountries().get(defenderCountry.getCountryName()).setNumberOfArmies(Country.getListOfCountries().get(defenderCountry.getCountryName()).getNumberOfArmies() + numOfArmiesCanBeMoved);
 
-		 // change ownership of defender country		 		 
-		 Country.getListOfCountries().get(defenderCountry).setOwner(player);
-		 System.out.println("Player " + player + " conquered " + defenderCountry);		 
-		 
-		 Game.getPlayersList().get(player).getOwnedCountries().add(defenderCountry);
-		 Game.getPlayersList().get(defenderPlayer).getOwnedCountries().remove(defenderCountry);
+		 // change ownership of defender country
+		 Country.getListOfCountries().get(defenderCountry.getCountryName()).setOwner(player);
+
+		 Game.getPlayersList().get(player).getOwnedCountries().add(defenderCountry.getCountryName());
+		 Game.getPlayersList().get(defenderCountry.getOwner()).getOwnedCountries().remove(defenderCountry.getCountryName());
 
 		 // add defender country to the conquered list (so that it is skipped in the next iteration)
-		 conqueredList.add(defenderCountry);
+		 conqueredList.add(defenderCountry.getCountryName());
 	 }
 
 	 /**
@@ -363,7 +367,8 @@ class HumanAttack implements AttackType,Serializable{
 						 break;
 					 }
 				 }
-			 }			 
+			 }
+			 
 			 possibleNeighbors.put(ownCountry, neighborCountriesList);
 		 }
 		 
@@ -372,8 +377,7 @@ class HumanAttack implements AttackType,Serializable{
 			 ArrayList<Country> neighborCountries = neighborEntry.getValue();
 			 
 			 for(Country neighborCountry : neighborCountries) {
-				 int neighborDefendPlayer = neighborCountry.getOwner();
-				 moveArmies(ownCountry, neighborCountry.getCountryName(), player, neighborDefendPlayer);
+				 moveArmies(ownCountry, neighborCountry, player);
 			 }			 
 		 }	 
 		 
@@ -417,6 +421,14 @@ class HumanAttack implements AttackType,Serializable{
 
 			String attackerCountry = attackCountries.split(",")[0];
 			String defenderCountry = attackCountries.split(",")[1];
+			
+			if(attackerCountry.trim().length()==0 || defenderCountry.trim().length()==0) {
+				System.out.println("Main Attack "+attackCounter+" skipped");
+				System.out.println();
+				attackCounter--;
+				continue;
+			}
+			
 			// Attack with attackerCountry and randomSelectedDefenderCountry
 			int attackerDiceNum = generateAttackerDiceNum(attackerCountry);
 			int defenderDiceNum = generateDefenderDiceNum(defenderCountry);
