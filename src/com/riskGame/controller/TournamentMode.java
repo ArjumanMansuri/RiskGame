@@ -154,8 +154,6 @@ public class TournamentMode {
                 
                 checkPlayerStatus(); // Check if a player has 0 countries - if true - remove the player from the list 
                 
-                System.out.println("Player Number " + playerNumber);
-                
         		if(removeList.containsKey(playerNumber)) {
         			System.out.println("Skipping fortification phase for this player..");
         			continue;	
