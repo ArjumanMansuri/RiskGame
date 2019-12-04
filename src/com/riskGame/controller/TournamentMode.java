@@ -2,6 +2,7 @@ package com.riskGame.controller;
 
 import com.riskGame.models.*;
 import com.riskGame.models.Map;
+import com.riskGame.observer.StartupPhaseObserver;
 import com.riskGame.strategies.*;
 import com.riskGame.view.GameLaunch;
 
@@ -12,6 +13,7 @@ public class TournamentMode {
 
     static HashMap<String,String> gameWinnerList;
     static HashMap<Integer,Boolean> removeList;
+    static String viewData;
 
     // Take tournament command input and process
     public static void tournamentCommandInput() {
@@ -44,7 +46,7 @@ public class TournamentMode {
         // Check if the user entered all the required command arguments
         if (numGamesFrequency + numPlayersFrequency + numMapFrequency + numTurnsFrequency == 4) {
 
-//            try {
+            try {
                 // Check if the list of map files provided are legit
                 int mapListArgStartIndex = commandList.indexOf("-M"); // index of -M
                 int mapListEndIndex = getTournamentCmdListEndIndex(mapListArgStartIndex, commandList); // end index for the map list inclusive
@@ -84,11 +86,10 @@ public class TournamentMode {
                 // Process the command Values - at this stage all the command argument input values are valid
                 processTournamentCommandArgs(processArgList);
 
-//            } 
-//            catch (IndexOutOfBoundsException e) {
-//            	System.out.println(e.getMessage());
-//            	return false;
-//            }
+            } 
+            catch (IndexOutOfBoundsException e) {            	
+            	return false;
+            }
             return true;
         }
         return false;
@@ -106,7 +107,12 @@ public class TournamentMode {
         // Map Iterator
         for (String mapFileName : tournamentMaps) {
             for (int gameIndex = 1; gameIndex <= tournamentGamesNum; gameIndex++) {
-            	System.out.println("Starting Game " + gameIndex);
+            	viewData = "Starting Game " + gameIndex;
+            	System.out.println(viewData);
+            	
+            	StartupPhaseObserver.startupViewData = viewData;
+            	StartupPhaseObserver.view.display();
+            	
             	System.out.println("-------------------------------");
                 setupGameAndPlayers(mapFileName, tournamentStrategies, tournamentTurnsNum);
                 startPlaying(tournamentStrategies, tournamentTurnsNum, gameIndex, mapFileName);
@@ -144,21 +150,44 @@ public class TournamentMode {
             		}
             	}
             	
-                System.out.println("Player : " + Game.getPlayersList().get(playerNumber).getPlayerName());
-                calculateReinforcementArmies(playerNumber);
+            	viewData = "Player : " + Game.getPlayersList().get(playerNumber).getPlayerName();
+                System.out.println(viewData);
+                
+                // Printing to View 
+            	StartupPhaseObserver.startupViewData = viewData;
+            	StartupPhaseObserver.view.display();
+                
+            	calculateReinforcementArmies(playerNumber);
 
                 /* Reinforce for the current player */
-                System.out.println("Reinforcement phase starts...");
+            	viewData = "Tournament Reinforcement phase starts..."; 
+                System.out.println(viewData);
+//                
+//                // Printing to View 
+//             	StartupPhaseObserver.startupViewData = viewData;
+//             	StartupPhaseObserver.view.display();
+                
                 Game.getPlayersList().get(playerNumber).getReinforceType().reinforce(playerNumber);
                 GameLaunch.printPlayerInformation(playerNumber);
 
-                /* Attack phase for the current player */
-                System.out.println("Attack phase starts...");
+                /* Attack phase for the current player */                
+                viewData = "Attack phase starts...";
+                System.out.println(viewData);
+                
+                // Printing to View 
+             	StartupPhaseObserver.startupViewData = viewData;
+             	StartupPhaseObserver.view.display();
+                
                 Game.getPlayersList().get(playerNumber).getAttackType().attackSetup(playerNumber);
                 GameLaunch.printPlayerInformation(playerNumber);
                 
                 if (hasPlayerWon(playerNumber)) {
-                	System.out.println("Player "+Game.getPlayersList().get(playerNumber).getPlayerName()+" won..!!!");
+                	// Printing to View
+                	viewData  = "Player "+Game.getPlayersList().get(playerNumber).getPlayerName()+" won..!!!";
+                 	StartupPhaseObserver.startupViewData = viewData;
+                 	StartupPhaseObserver.view.display();                 	
+                	System.out.println(viewData);
+                	
                     setGameWinner(gameIndex, map, Game.getPlayersList().get(playerNumber).getPlayerName());
                     stopGame = true;
                     playerWon = true;
@@ -168,16 +197,28 @@ public class TournamentMode {
                 checkPlayerStatus(); // Check if a player has 0 countries - if true - remove the player from the list 
                 
         		if(removeList.containsKey(playerNumber)) {
-        			System.out.println("Skipping fortification phase for this player..");
+        			viewData = "Skipping fortification phase for this player..";
+        			StartupPhaseObserver.startupViewData = viewData;
+                 	StartupPhaseObserver.view.display();                 	
+                	System.out.println(viewData);
+                	
         			continue;	
         		}
         	    
                 /* Fortify phase for the current player */
-                System.out.println("Fortification phase starts...");
+        		viewData = "Fortification phase starts...";
+        		StartupPhaseObserver.startupViewData = viewData;
+             	StartupPhaseObserver.view.display();                 	
+            	System.out.println(viewData);
+                
                 Game.getPlayersList().get(playerNumber).getFortifyType().fortify(playerNumber);
                 GameLaunch.printPlayerInformation(playerNumber);
 
-                System.out.println("Player : " + tournamentStrategies[playerNumber-1] + "'s turn ends");
+                viewData = "Player : " + tournamentStrategies[playerNumber-1] + "'s turn ends";
+                StartupPhaseObserver.startupViewData = viewData;
+             	StartupPhaseObserver.view.display();
+             	
+            	System.out.println(viewData);            	
                 System.out.println("------------------------------------------------------------------");
             }
         }
@@ -188,7 +229,11 @@ public class TournamentMode {
         	gameWinnerList.put(map, gameResult);            
         }        
         
-        System.out.println("Game  " + gameIndex + " has ended.");
+        viewData = "Game  " + gameIndex + " has ended."; 
+        StartupPhaseObserver.startupViewData = viewData;
+     	StartupPhaseObserver.view.display();
+     	
+        System.out.println(viewData);
         System.out.println("-------------------------------");
     }
 
@@ -199,7 +244,10 @@ public class TournamentMode {
     	for(Entry<Integer, Player> player : Game.getPlayersList().entrySet()) {
     		if(player.getValue().getOwnedCountries().size() == 0) {
     			System.out.println("------------------------------------------------------------------");
-    			System.out.println("Removing player " + player.getValue().getPlayerName() + " due to insufficient owned nunmber countries.");
+    			viewData = "Removing player " + player.getValue().getPlayerName() + " due to insufficient owned nunmber countries.";    			
+    	        StartupPhaseObserver.startupViewData = viewData;
+    	     	StartupPhaseObserver.view.display();
+    	     	System.out.println(viewData);
     			removeList.put(player.getKey(), true);
     			System.out.println("------------------------------------------------------------------");
     		}
