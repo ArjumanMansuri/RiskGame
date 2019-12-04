@@ -402,7 +402,7 @@ public class TournamentMode {
     }
 
     // check if there are duplicate player strategies input
-    private static boolean checkPlayerStrategyDuplicates(String argList) {
+    public static boolean checkPlayerStrategyDuplicates(String argList) {
         String[] playerStrategyArray = argList.split("\\$");
         List<String> playerList = Arrays.asList(playerStrategyArray);
         Set<String> set = new HashSet<String>(playerList);

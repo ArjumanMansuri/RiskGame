@@ -818,7 +818,7 @@ public class MapFileEdit {
 				}
 			}
 		} catch(FileNotFoundException e){
-			System.out.println("Sorry there was an error" + e.getMessage());
+			//System.out.println("Sorry there was an error" + e.getMessage());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
