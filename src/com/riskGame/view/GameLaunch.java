@@ -37,7 +37,14 @@ public class GameLaunch {
             System.out.println("3.Exit");
 
             Scanner sc = new Scanner(System.in);
-            optionMain = Integer.parseInt(sc.nextLine());
+            String optionM = sc.nextLine();
+            if(optionM.trim().isEmpty() || optionM.trim().length()==0){
+                optionMain = 0;
+            }
+            else{
+                optionMain = Integer.parseInt(optionM);
+            }
+
             String response = "";
             switch (optionMain) {
                 case 1:
@@ -47,7 +54,51 @@ public class GameLaunch {
                     System.out.println("2.Load saved game");
                     System.out.println("3.Start a Tournament");
 
-                    int gameOpt = Integer.parseInt(sc.nextLine().trim());
+                    int gameOpt=0;
+                    String gameOptString = sc.nextLine().trim();
+
+                    if(gameOptString.isEmpty() || gameOptString.length()==0){
+                        int flag = 0;
+                        while(flag==0){
+                            System.out.println("Wrong input\nPlese try again");
+                            System.out.println("Select from the following options:");
+                            System.out.println("1.Play new game");
+                            System.out.println("2.Load saved game");
+                            System.out.println("3.Start a Tournament");
+                            gameOptString = sc.nextLine().trim();
+                            if(gameOptString.isEmpty() || gameOptString.length()==0){
+                                flag=0;
+                            }
+                            else{
+                                gameOpt = Integer.parseInt(gameOptString);
+                                if(gameOpt<=3 && gameOpt>=1)
+                                    flag=1;
+                            }
+                        }
+                    }
+                    else{
+                        gameOpt = Integer.parseInt(gameOptString);
+                        if(gameOpt>3 || gameOpt<1) {
+                            int flag = 0;
+                            while(flag==0) {
+                                System.out.println("Wrong input\nPlese try again");
+                                System.out.println("Select from the following options:");
+                                System.out.println("1.Play new game");
+                                System.out.println("2.Load saved game");
+                                System.out.println("3.Start a Tournament");
+                                gameOptString = sc.nextLine().trim();
+                                if (gameOptString.isEmpty() || gameOptString.length() == 0) {
+                                    flag = 0;
+                                }
+                                else {
+                                    gameOpt = Integer.parseInt(gameOptString);
+                                    if (gameOpt <= 3 && gameOpt >= 1)
+                                        flag = 1;
+                                }
+                            }
+                        }
+                    }
+
                     boolean loadGame = false;
 
                     if (gameOpt == 2) {
@@ -78,8 +129,10 @@ public class GameLaunch {
                             System.out.println("Enter number of players ranging from 2 to 6:");
                             noOfPlayers = sc.nextLine().trim();
                             response = startUpPhase.parser(noOfPlayers);
-                            //System.out.println(response);
-                        } while (response.equals("error"));
+                            if (response.equals("error")) {
+                                System.out.println("Incorrect Number of Players!!!\nTry Again");
+                            }
+                        } while (!response.toLowerCase().equals("done"));
 
                         // choose map phase
                         System.out.println("Choose Map :");
@@ -435,6 +488,12 @@ public class GameLaunch {
                         } while (!response.equals("saved"));
                     } while (fileExistsResponse.equals("error"));
                     break;
+
+                case 3:
+                    break;
+
+                default:
+                    System.out.println("Wrong Input!!!\nPlease try again\n");
             }
         } while (optionMain != 3);
     }

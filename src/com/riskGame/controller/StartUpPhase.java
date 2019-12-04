@@ -294,7 +294,6 @@ public class StartUpPhase implements PhaseViewPublisher, PlayerDominationViewPub
 			}
 
 			else if(parsedString[i].equals("-remove")) {
-
 				if(ifContains(playersData,parsedString[i+1])) {
 					for(int x=1;x<=noOfPlayers;x++) {
 						Player temp;
@@ -303,7 +302,6 @@ public class StartUpPhase implements PhaseViewPublisher, PlayerDominationViewPub
 						if(temp.getPlayerName().equals(parsedString[i+1])) {
 							if(x==noOfPlayers) {
 								playersData.remove(x);
-								noOfPlayers--;
 								i++;
 							}
 							else
@@ -313,7 +311,6 @@ public class StartUpPhase implements PhaseViewPublisher, PlayerDominationViewPub
 									i++;
 								}
 								playersData.remove(noOfPlayers);
-								noOfPlayers--;
 								x=noOfPlayers+1;
 							}
 						}
@@ -324,9 +321,9 @@ public class StartUpPhase implements PhaseViewPublisher, PlayerDominationViewPub
 				}
 			}
 		}
-
-		if(playersData.size()<noOfPlayers)
+		if(playersData.size()<noOfPlayers){
 			return "addmore";
+		}
 		else{
 			Game.setPlayersList(playersData);
 			return "exit";
@@ -365,7 +362,9 @@ public class StartUpPhase implements PhaseViewPublisher, PlayerDominationViewPub
 				}
 				return 1;
 			}
-			else return 0;
+			else{
+				return 0;
+			}
 		}
 		catch (ArrayIndexOutOfBoundsException e){
 			return 0;
@@ -378,7 +377,7 @@ public class StartUpPhase implements PhaseViewPublisher, PlayerDominationViewPub
 	 * @return trues if number of arguments is correct else false
 	 */
 	public boolean isNumberOfArgumentsCorrect(String[] parsedString) {
-		 List<String>parsedStringList = Arrays.asList(parsedString);
+		List<String>parsedStringList = Arrays.asList(parsedString);
 		int addFrequency = Collections.frequency(parsedStringList, "-add");
 		int removeFrequency = Collections.frequency(parsedStringList, "-remove");
 		if(parsedStringList.size()-1 == (addFrequency*3)+(removeFrequency*2)) {
