@@ -211,6 +211,7 @@ public class AttackPhase implements PhaseViewPublisher, PlayerDominationViewPubl
 
 		AttackPhase.setDefenderDiceRollsString(tempString);
 		System.out.println("Attacker Dice Rolls: "+AttackPhase.getAttackerDiceRollsString()+"\n"+"Defender Dice Rolls: "+AttackPhase.getDefenderDiceRollsString());
+		notifyObserver("Attacker Dice Rolls: "+AttackPhase.getAttackerDiceRollsString()+"\n"+"Defender Dice Rolls: "+AttackPhase.getDefenderDiceRollsString());
 		while(attackerDiceRolls.size()!=0 && defenderDiceRolls.size()!=0){
 			// check if attacker wins
 			int attackerMax = Collections.max(attackerDiceRolls);

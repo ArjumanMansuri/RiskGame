@@ -43,7 +43,7 @@ public class GameView {
 			startupText.setWrapStyleWord(true);
 			startupText.setEditable(false);
 		}
-		String cardData = CardExchange.cardViewData;
+		String cardData = StartupPhaseObserver.startupViewData;
 		if(cardData!=null && (!cardData.isEmpty())) {
 			cardsText.append(cardData);
 			cardsText.setLineWrap(true);
@@ -54,7 +54,7 @@ public class GameView {
 		cardsPanel.add(cardsText);
 		
 		scrollPane2.setViewportView(startupPanel);
-		scrollPane3.setViewportView(cardsPanel);
+		scrollPane3.add(cardsPanel);
 		dominationPanel.add(dominationText);
 		scrollPane.setViewportView(dominationPanel);
 		mainPanel.add(scrollPane);
@@ -63,7 +63,7 @@ public class GameView {
 		
 		frame.setContentPane(mainPanel);
 		frame.setVisible(true);
-		frame.setSize(1300, 1300);
+		frame.setSize(800, 1000);
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		frame.setResizable(false);
 		frame.pack();

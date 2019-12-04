@@ -30,8 +30,8 @@ public class GameLaunch {
      */
     public static void main(String[] args) throws IOException, ClassNotFoundException {
 
+    	StartUpPhase startUpPhase = new StartUpPhase();
     	Director director;
-    	Product game;
     	ProductBuilder loadBuilder = new LoadGame();
     	ProductBuilder saveBuilder = new SaveGame();
     	director = new Director();
@@ -82,10 +82,9 @@ public class GameLaunch {
 
                         if (gameOpt == 3) {
                             TournamentMode.tournamentCommandInput();
-                            return;
                         }
 
-                        StartUpPhase startUpPhase = new StartUpPhase();
+                        
                         startUpPhase.notifyObserver("Start up Phase started...");
 
                         do {
@@ -124,7 +123,9 @@ public class GameLaunch {
                         // Show what countries belong to which player
                         for (int i = 1; i <= Integer.parseInt(noOfPlayers); i++) {
                             System.out.println("Country population :");
-                            GameLaunch.printPlayerInformation(i);
+                            String op = GameLaunch.printPlayerInformation(i);
+                            System.out.println(op);
+                            startUpPhase.notifyObserver(op);
                         }
                         // Army assignment starts
                         System.out.println("Army assignment starts");
@@ -135,7 +136,9 @@ public class GameLaunch {
                                 //if a player is non-human, place all its armies automatically
                                 if (!Game.getPlayersList().get(i).getPlayerType().toLowerCase().equals("human") && Game.getPlayersList().get(i).getPlayerNumOfArmy() != 0) {
                                     startUpPhase.placeAll(i, "placeall");
-                                    GameLaunch.printPlayerInformation(i);
+                                    String op = GameLaunch.printPlayerInformation(i);
+                                    System.out.println(op);
+                                    startUpPhase.notifyObserver(op);
                                 } else {
                                     if (Game.getPlayersList().get(i).getPlayerNumOfArmy() != 0) {
                                         System.out.println("Player : " + Game.getPlayersList().get(i).getPlayerName());
@@ -151,7 +154,9 @@ public class GameLaunch {
                                                 System.out.println("Enter command as : placearmy 'countryname'");
                                                 response = startUpPhase.placeArmy(i, sc.nextLine().toString());
                                                 if (response.equals("donePlaceArmy")) {
-                                                    GameLaunch.printPlayerInformation(i);
+                                                	String op = GameLaunch.printPlayerInformation(i);
+                                                    System.out.println(op);
+                                                    startUpPhase.notifyObserver(op);
                                                     startUpPhase.notifyObserver(Game.getPlayersList().get(i).computeDominationViewData());
                                                 }
                                             } while (!response.equals("donePlaceArmy"));
@@ -165,7 +170,9 @@ public class GameLaunch {
 
                                                 response = startUpPhase.placeAll(i, command);
                                                 if (response.equals("donePlaceall")) {
-                                                    GameLaunch.printPlayerInformation(i);
+                                                	String op = GameLaunch.printPlayerInformation(i);
+                                                    System.out.println(op);
+                                                    startUpPhase.notifyObserver(op);
                                                     startUpPhase.notifyObserver(Game.getPlayersList().get(i).computeDominationViewData());
                                                 }
                                             } while (!response.equals("donePlaceall"));
@@ -219,7 +226,9 @@ public class GameLaunch {
                                         if (response.contains("Error")) {
                                             System.out.println(response);
                                         }
-                                        GameLaunch.printPlayerInformation(i);
+                                        String op = GameLaunch.printPlayerInformation(i);
+                                        System.out.println(op);
+                                        startUpPhase.notifyObserver(op);
                                         System.out.println("Use command : reinforce 'countryname' 'num'");
                                         System.out.println("Number of reinforcement armies available : " + Game.getPlayersList().get(i).getPlayerNumOfArmy());
                                         System.out.println("To quit and save the game, use command : savegame 'filename'");
@@ -239,11 +248,14 @@ public class GameLaunch {
                                         }
 
                                         response = Game.getPlayersList().get(i).getReinforceType().reinforce(i, command);
-                                        GameLaunch.printPlayerInformation(i);
+                                        op = GameLaunch.printPlayerInformation(i);
+                                        System.out.println(op);
                                     }
                                 } else {
                                     Game.getPlayersList().get(i).getReinforceType().reinforce(i);
-                                    GameLaunch.printPlayerInformation(i);
+                                    String op = GameLaunch.printPlayerInformation(i);
+                                    System.out.println(op);
+                                    startUpPhase.notifyObserver(op);
                                 }
                             }
                             // Attack Phase starts
@@ -263,11 +275,14 @@ public class GameLaunch {
                                                 System.out.println(response);
                                             }
 
-                                            GameLaunch.printPlayerInformation(i);
+                                            String op = GameLaunch.printPlayerInformation(i);
+                                            System.out.println(op);
+                                            startUpPhase.notifyObserver(op);
 
-                                            System.out.println("Use command : attack 'countrynamefrom' 'countynameto' 'numdice'");
+                                            
                                             String command = "";
                                             if (!reAttack) {
+                                            	System.out.println("Use command : attack 'countrynamefrom' 'countynameto' 'numdice'");
                                                 System.out.println("Use command for allout mode : attack 'countrynamefrom' 'countynameto' allout");
                                                 System.out.println("Or to skip attack use command : attack -noattack");
                                                 System.out.println("To quit and save the game, use command : savegame 'filename'");
@@ -288,6 +303,8 @@ public class GameLaunch {
                                             }
 
                                             if (reAttack) {
+                                            	System.out.println("Use command : attack 'countrynamefrom' 'countynameto' 'numdice'");
+                                            	command = sc.nextLine().trim();
                                                 command = command + "reattack";
                                             }
                                             response = Game.getPlayersList().get(i).getAttackType().attackSetup(i, command);
@@ -351,15 +368,23 @@ public class GameLaunch {
 
                                     if (!response.equalsIgnoreCase("noAttack")) {
                                         System.out.println("Attack Phase ends");
-                                        GameLaunch.printPlayerInformation(i);
-                                        GameLaunch.printPlayerInformation(defender);
+                                        String op = GameLaunch.printPlayerInformation(i);
+                                        System.out.println(op);
+                                        startUpPhase.notifyObserver(op);
+                                        op = GameLaunch.printPlayerInformation(defender);
+                                        System.out.println(op);
+                                        startUpPhase.notifyObserver(op);
                                     }
                                 }
                                  else {
                                     Game.getPlayersList().get(i).getAttackType().attackSetup(i);
-                                    GameLaunch.printPlayerInformation(i);
+                                    String op = GameLaunch.printPlayerInformation(i);
+                                    System.out.println(op);
+                                    startUpPhase.notifyObserver(op);
                                     if(!Game.getPlayersList().get(i).getPlayerType().equals("benevolent")) {
-                                    	GameLaunch.printPlayerInformation(AttackPhase.getDefenderPlayer());
+                                    	op = GameLaunch.printPlayerInformation(AttackPhase.getDefenderPlayer());
+                                        System.out.println(op);
+                                        startUpPhase.notifyObserver(op);
                                     }
                                     if (ap.hasPlayerWon(i)) {
                                     	System.out.println("Player "+Game.getPlayersList().get(i).getPlayerName()+" won..!!!");
@@ -382,11 +407,13 @@ public class GameLaunch {
                                             System.out.println(response);
                                         }
 
-                                        GameLaunch.printPlayerInformation(i);
+                                        String op = GameLaunch.printPlayerInformation(i);
+                                        System.out.println(op);
+                                        startUpPhase.notifyObserver(op);
 
                                         System.out.println("Use command : fortify 'fromcountry' 'tocountry' 'num'");
                                         System.out.println("Or use command : fortify -none");
-                                        System.out.println("To quit and save the game, use command : savegame");
+                                        System.out.println("To quit and save the game, use command : savegame 'filename'");
                                         String command = sc.nextLine().trim();
                                         if (command.contains("savegame")) {
                                             String result = "";
@@ -405,19 +432,21 @@ public class GameLaunch {
 
                                         response = Game.getPlayersList().get(i).getFortifyType().fortify(i, command);
                                         if (response.equals("done")) {
-                                            GameLaunch.printPlayerInformation(i);
+                                        	op = GameLaunch.printPlayerInformation(i);
+                                            System.out.println(op);
+                                            startUpPhase.notifyObserver(op);
                                         }
 
                                     } while (!response.equals("done"));
                                 } else {
                                     Game.getPlayersList().get(i).getFortifyType().fortify(i);
-                                    GameLaunch.printPlayerInformation(i);
+                                    String op = GameLaunch.printPlayerInformation(i);
+                                    System.out.println(op);
+                                    startUpPhase.notifyObserver(op);
                                 }
                                 System.out.println("Player " + i + "'s turn ends");
                             }
                         }
-                        //System.out.println("Do you want to continue the game? 'y' or 'n'");
-                        //continueGame = sc.nextLine().trim().charAt(0);
                         continueGame = 'y';
                     }
                     break;
@@ -463,19 +492,20 @@ public class GameLaunch {
      *
      * @param player number of players.
      */
-    public static void printPlayerInformation(int player) {
+    public static String printPlayerInformation(int player) {
         // Printing players' countries with adjacent countries and number of armies
-        System.out.println("Player : " + Game.getPlayersList().get(player).getPlayerName() + " : " + Game.getPlayersList().get(player).getPlayerType());
+        String op = "Player : " + Game.getPlayersList().get(player).getPlayerName() + " : " + Game.getPlayersList().get(player).getPlayerType()+"\n";
         ArrayList<String> countries = Game.getPlayersList().get(player).getOwnedCountries();
         for (String k : countries) {
             Country country = Country.getListOfCountries().get(k);
-            System.out.print(country.getCountryName() + " : " + country.getNumberOfArmies() + " : ");
+            op = op + country.getCountryName() + " : " + country.getNumberOfArmies() + " : ";
             for (String c : country.getNeighbours().keySet()) {
-                System.out.print(c + " ");
+                op = op + c + " ";
             }
-            System.out.println();
+            op = op + "\n";
         }
-        System.out.println();
+        op = op + "\n";
+        return op;
     }
 }
 
